@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension-point id="outline" name="outline Name" schema="schema/outline.exsd"/>
+
+   <extension
+         id="javahexeditorIdentifier"
+         name="javahexeditorName"
+         point="org.eclipse.ui.editors">
+      <editor
+            class="net.sourceforge.javahexeditor.plugin.editors.BinaryEditor"
+            contributorClass="net.sourceforge.javahexeditor.plugin.editors.HexEditorActionBarContributor"
+            extensions="a,bin,cab,class,com,dat,data,drv,dll,exe,hex,iso,jar,lib,o,out,part,pdf,png,ram,res,rom,sys,txt,zip"
+            icon="icons/hex.png"
+            id="net.sourceforge.javahexeditor"
+            name="javahexeditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.Editors"
+            class="net.sourceforge.javahexeditor.plugin.editors.PreferencesPage"
+            id="net.sourceforge.javahexeditor.plugin.editors.PreferencesPage"
+            name="javahexeditor"/>
+   </extension>
+   <extension
+         id="javahexeditorHelpExtensionId"
+         name="javahexeditorHelpExtensionName"
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml"
+            primary="true"/>
+   </extension>
+
+</plugin>

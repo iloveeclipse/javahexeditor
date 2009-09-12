@@ -1,0 +1,1 @@
+gcc -c -g0 -O2 -v -o ../bin/launcher.o launcher.cc
