@@ -32,5 +32,23 @@
             file="toc.xml"
             primary="true"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="javahexeditor.objectContribution1"
+            objectClass="org.eclipse.core.runtime.IAdaptable">
+         <action
+               class="net.sourceforge.javahexeditor.plugin.actions.FileOpenAction"
+               enablesFor="+"
+               icon="icons/hex.png"
+               id="javahexeditor.fileopen.menu"
+               label="Open With Java Hex Editor"
+               menubarPath="additions"
+               style="push"
+               tooltip="Open the Java Hex Editor for selected files">
+         </action>
+      </objectContribution>
+   </extension>
 
 </plugin>
