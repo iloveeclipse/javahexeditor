@@ -20,8 +20,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
-import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.part.EditorInputTransfer;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -64,10 +62,6 @@ public class FileOpenAction implements IObjectActionDelegate {
 
 			if (resource[i].isDirectory()) {
 			}else {
-				//EFS.getLocalFileSystem().getStore(yourPath);
-
-				//IDE.openEditorOnFileStore(page, fileStore);
-
 				IEditorInput editorInput = null;
 				IFile file= ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(resource[i].getPath()));
 
@@ -81,7 +75,7 @@ public class FileOpenAction implements IObjectActionDelegate {
 				IWorkbenchWindow window=PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				try {
-					page.openEditor(editorInput, "net.sourceforge.javahexeditor",true,org.eclipse.ui.IWorkbenchPage.MATCH_NONE);
+					page.openEditor(editorInput, "net.sourceforge.javahexeditor",true,org.eclipse.ui.IWorkbenchPage.MATCH_INPUT | org.eclipse.ui.IWorkbenchPage.MATCH_ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
