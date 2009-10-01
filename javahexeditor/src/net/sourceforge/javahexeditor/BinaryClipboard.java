@@ -2,17 +2,17 @@
  * javahexeditor, a java hex editor
  * Copyright (C) 2006, 2009 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net
  * The official javahexeditor site is sourceforge.net/projects/javahexeditor
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -44,21 +44,21 @@ import org.eclipse.swt.widgets.Display;
  */
 public class BinaryClipboard {
 
-	
+
 static class FileByteArrayTransfer extends ByteArrayTransfer {
 	static final String MYTYPENAME = "myFileByteArrayTypeName";
 	static final int MYTYPEID = registerType(MYTYPENAME);
 	static FileByteArrayTransfer _instance = new FileByteArrayTransfer();
 	private FileByteArrayTransfer() {}
-	
+
 	static FileByteArrayTransfer getInstance() {
 		return _instance;
 	}
 	public void javaToNative(Object object, TransferData transferData) {
 		if (object == null || !(object instanceof File)) return;
-		
+
 		if (isSupportedType(transferData)) {
-			File myType = (File)object;	
+			File myType = (File)object;
 			try {
 				// write data to a byte array and then ask super to convert to pMedium
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -68,18 +68,18 @@ static class FileByteArrayTransfer extends ByteArrayTransfer {
  				writeOut.write(buffer);
 				buffer = out.toByteArray();
 				writeOut.close();
-	
+
 				super.javaToNative(buffer, transferData);
-				
+
 			} catch (IOException e) {}  // copy nothing then
 		}
 	}
 	public Object nativeToJava(TransferData transferData) {
 		if (!isSupportedType(transferData)) return null;
-		
+
 		byte[] buffer = (byte[])super.nativeToJava(transferData);
 		if (buffer == null) return null;
-		
+
 		File myData = null;
 		DataInputStream readIn = new DataInputStream(new ByteArrayInputStream(buffer));
 		try {
@@ -106,13 +106,13 @@ static class MemoryByteArrayTransfer extends ByteArrayTransfer {
 	static final int MYTYPEID = registerType(MYTYPENAME);
 	static MemoryByteArrayTransfer _instance = new MemoryByteArrayTransfer();
 	private MemoryByteArrayTransfer() {}
-	
+
 	static MemoryByteArrayTransfer getInstance() {
 		return _instance;
 	}
 	public void javaToNative(Object object, TransferData transferData) {
 		if (object == null || !(object instanceof byte[])) return;
-	
+
 		if (isSupportedType(transferData)) {
 			byte[] buffer = (byte[])object;
 			super.javaToNative(buffer, transferData);
@@ -123,7 +123,7 @@ static class MemoryByteArrayTransfer extends ByteArrayTransfer {
 		if (isSupportedType(transferData)) {
 			result = super.nativeToJava(transferData);
 		}
-	
+
 		return result;
 	}
 	protected String[] getTypeNames(){
@@ -160,7 +160,8 @@ static boolean deleteFileALaMs(File aFile) {
 			Thread.sleep(333);
 		} catch (InterruptedException e) { /* Keep trying */ }
 	}
-	
+	if (success)
+		System.gc();
 	return success;
 }
 
@@ -217,10 +218,10 @@ public long getContents(BinaryContent content, long start, boolean insert) {
 
 	total = tryGettingMemoryByteArray(content, start, insert);
 	if (total >= 0L) return total;
-	
+
 	total = tryGettingFileByteArray(content, start, insert);
 	if (total >= 0L) return total;
-	
+
 	return 0L;
 }
 
@@ -244,7 +245,7 @@ public boolean hasContents() {
 			FileTransfer.getInstance().isSupportedType(available[i]))
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -290,7 +291,7 @@ long tryGettingFileByteArray(BinaryContent content, long start, boolean insert) 
 	if (lastPaste == null) return -1L;
 	long total = lastPaste.length();
 	if (!insert && total > content.length() - start) return 0L;
-	
+
 	File lock = null;
 	if (clipboardFile.equals(lastPaste)) {
 		for (int i=0; i<9999; ++i) {
@@ -327,7 +328,7 @@ long tryGettingFileByteArray(BinaryContent content, long start, boolean insert) 
 		if (value != null)
 			myFilesReferencesCounter.put(lastPaste, new Integer(value.intValue() + 1));
 	}
-	
+
 	return total;
 }
 
@@ -336,7 +337,7 @@ long tryGettingFiles(BinaryContent content, long start, boolean insert) {
 	String[] files = (String[])myClipboard.getContents(FileTransfer.getInstance());
 	if (files == null)
 		return -1L;
-	
+
 	long total = 0L;
 	if (!insert) {
 		for (int i=0; i<files.length; ++i) {
@@ -367,7 +368,7 @@ long tryGettingFiles(BinaryContent content, long start, boolean insert) {
 			total += file.length();
 		}
 	}
-	
+
 	return total;
 }
 
@@ -381,7 +382,7 @@ long tryGettingMemoryByteArray(BinaryContent content, long start, boolean insert
 	}
 	if (byteArray == null)
 		return -1L;
-	
+
 	long total = byteArray.length;
 	ByteBuffer buffer = ByteBuffer.wrap(byteArray);
 	if (insert) {
@@ -391,7 +392,7 @@ long tryGettingMemoryByteArray(BinaryContent content, long start, boolean insert
 	} else {
 		total = 0L;
 	}
-	
+
 	return total;
 }
 
@@ -410,7 +411,7 @@ boolean updateLock(File lock, int references) throws IOException {
 
 		return true;
 	}
-	
+
 	return false;
 }
 }
