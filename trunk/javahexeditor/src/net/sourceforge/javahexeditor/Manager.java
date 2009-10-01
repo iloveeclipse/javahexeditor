@@ -2,17 +2,17 @@
  * javahexeditor, a java hex editor
  * Copyright (C) 2006, 2009 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net
  * The official javahexeditor site is sourceforge.net/projects/javahexeditor
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -295,7 +295,7 @@ public static void reduceDistance(Shell fixedShell, Shell movingShell) {
 
 
 /**
- * This method initializes composite	
+ * This method initializes composite
  */
 void createComposite() {
 	GridLayout gridLayout = new GridLayout(1, true);
@@ -307,7 +307,7 @@ void createComposite() {
 	createEditorPart(textsParent);
 	hexTexts.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	hexTexts.setEnabled(false);
-	
+
 	GridData statusParentGridData = new GridData();
 	GC gc= new GC(textsParent);
 	statusParentGridData.heightHint = gc.getFontMetrics().getHeight();
@@ -324,7 +324,7 @@ void createComposite() {
 	statusLineGridData.verticalAlignment = SWT.FILL;
 	createStatusPart(statusParent, false);
 	statusLine.setLayoutData(statusLineGridData);
-	
+
 	DropTarget target = new DropTarget(textsParent, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
 	target.setTransfer(new Transfer[] {FileTransfer.getInstance(), TextTransfer.getInstance()});
 	target.addDropListener (new DropTargetAdapter() {
@@ -335,7 +335,7 @@ void createComposite() {
 		public void drop(DropTargetEvent event) {
 			if (event.data == null || ((String[])event.data).length < 1) {
 				event.detail = DND.DROP_NONE;
-			
+
 				return;
 			}
 			File file = new File(((String[])event.data)[0]);
@@ -375,7 +375,7 @@ public void createEditorPart(Composite parent) {
 		fontText = new Font(Display.getCurrent(), fontData);
 		hexTexts.setFont(fontText);
 	}
-	
+
 	hexTexts.addLongSelectionListener(new MySelectionAdapter(MySelectionAdapter.UPDATE_POSITION_TEXT));
 	hexTexts.addListener(SWT.Modify, new Listener() {
 		public void handleEvent(Event event) {
@@ -383,14 +383,14 @@ public void createEditorPart(Composite parent) {
 				statusLine.updateInsertModeText(hexTexts == null ? true : !hexTexts.isOverwriteMode());
 		}
 	});
-	
+
 	if (listOfStatusChangedListeners != null) {
 		for (Iterator i=listOfStatusChangedListeners.iterator(); i.hasNext();) {
 			hexTexts.addListener(SWT.Modify, (Listener)i.next());
 		}
 		listOfStatusChangedListeners = null;
 	}
-	
+
 	if (listOfLongListeners != null) {
 		for (Iterator i=listOfLongListeners.iterator(); i.hasNext();) {
 			hexTexts.addLongSelectionListener((SelectionListener)i.next());
@@ -401,7 +401,7 @@ public void createEditorPart(Composite parent) {
 
 
 /**
- * This method initializes sShell	
+ * This method initializes sShell
  */
 private void createSShell() {
 	sShell = new Shell(Display.getDefault(), SWT.MODELESS | SWT.SHELL_TRIM);
@@ -425,14 +425,14 @@ private void createSShell() {
 	sShell.setText(applicationName);
 	sShell.setLayout(new FillLayout());
 	menuBar = new Menu(sShell, SWT.BAR);
-	
+
 	MenuItem submenuItem = new MenuItem(menuBar, SWT.CASCADE);
 	submenuItem.setText("File");
 	MenuItem submenuItem1 = new MenuItem(menuBar, SWT.CASCADE);
 	submenuItem1.setText("Edit");
 	MenuItem helpItem = new MenuItem(menuBar, SWT.CASCADE);
 	helpItem.setText("Help");
-	
+
 	submenu1 = new Menu(submenuItem1);
 	pushUndo = new MenuItem(submenu1, SWT.PUSH);
 	pushUndo.setText("&Undo\tCtrl+Z");
@@ -532,7 +532,7 @@ private void createSShell() {
 		}
 	});
 	submenuItem.setMenu(submenu);
-	
+
 	submenuHelp = new Menu(helpItem);
 	MenuItem pushOnlineGuide = new MenuItem(submenuHelp, SWT.PUSH);
 	pushOnlineGuide.setText("&User Guide (Online)...");
@@ -545,7 +545,7 @@ private void createSShell() {
 	pushAbout.setText("&About javahexeditor");
 	pushAbout.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.ABOUT));
 	helpItem.setMenu(submenuHelp);
-	
+
 	sShell.setMenuBar(menuBar);
 	createComposite();
 	sShell.addListener(SWT.Close, new Listener () {
@@ -570,7 +570,7 @@ private void createSShell() {
  */
 public void addListener(Listener aListener) {
 	if (aListener == null) return;
-	
+
 	if (hexTexts == null) {
 		if (listOfStatusChangedListeners == null)
 			listOfStatusChangedListeners = new ArrayList();
@@ -590,7 +590,7 @@ public void addListener(Listener aListener) {
 public void addLongSelectionListener(SelectionListener listener) {
 	if (listener == null)
 		throw new IllegalArgumentException();
-	
+
 	if (hexTexts == null) {
 		if (listOfLongListeners == null)
 			listOfLongListeners = new ArrayList();
@@ -628,7 +628,7 @@ public boolean canUndo() {
  */
 public void createStatusPart(Composite aParent, boolean withLeftSeparator) {
 	if (aParent == null) throw new NullPointerException("Cannot use null parent");
-	
+
 	statusLine = new StatusLine(aParent, SWT.NONE, withLeftSeparator);
 	if (hexTexts != null && hexTexts.getEnabled()) {
 		statusLine.updateInsertModeText(!hexTexts.isOverwriteMode());
@@ -639,7 +639,7 @@ public void createStatusPart(Composite aParent, boolean withLeftSeparator) {
 
 boolean doClose() {
 	if (content == null || !content.isDirty()) return true;
-	
+
 	MessageBox box = new MessageBox(sShell, SWT.ICON_WARNING | SWT.YES | SWT.NO | SWT.CANCEL);
 	box.setText("Modified file");
 	box.setMessage( "The current file has been modified.\nSave changes?");
@@ -648,7 +648,7 @@ boolean doClose() {
 		return false;
 	if (result == SWT.YES)
 		return doSave();
-	
+
 	return true;
 }
 
@@ -658,7 +658,7 @@ boolean doClose() {
  */
 public void doCopy() {
 	if (hexTexts == null) return;
-	
+
 	hexTexts.copy();
 }
 
@@ -668,7 +668,7 @@ public void doCopy() {
  */
 public void doCut() {
 	if (hexTexts == null) return;
-	
+
 	hexTexts.cut();
 }
 
@@ -703,7 +703,7 @@ public void doFind() {
  */
 public void doGoTo() {
 	if (content.length() < 1L) return;
-	
+
 	if (goToDialog == null)
 		goToDialog = new GoToDialog(textsParent.getShell());
 	long location = goToDialog.open(content.length() - 1L);
@@ -794,7 +794,7 @@ void doOpenUserGuideUrl(boolean online) {
  */
 public void doPaste() {
 	if (hexTexts == null) return;
-	
+
 	hexTexts.paste();
 }
 
@@ -817,7 +817,7 @@ boolean doSave() {
 		showErrorBox(sShell);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -825,12 +825,12 @@ boolean doSave() {
 boolean doSaveAs() {
 	File file = showSaveAsDialog(sShell, false);
 	if (file == null) return false;
-	
+
 	if (!saveAsFile(file)) {
 		showErrorBox(sShell);
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -845,17 +845,17 @@ public boolean doSaveSelectionAs(File theFile) {
 		lastErrorMessage = textTheFile + theFile + textIsBeingUsed;
 		return false;
 	}
-	
+
 	long[] startAndEnd = hexTexts.getSelection();
 	try {
 		content.get(theFile, startAndEnd[0], startAndEnd[1] - startAndEnd[0]);
 	} catch(IOException e) {
 		lastErrorText = textErrorSave;
 		lastErrorMessage = textCouldNotWriteOnFile + theFile;
-		
+
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -865,7 +865,7 @@ public boolean doSaveSelectionAs(File theFile) {
  */
 public void doSelectAll() {
 	if (hexTexts == null) return;
-	
+
 	hexTexts.selectAll();
 }
 
@@ -923,7 +923,7 @@ public long[] getSelection() {
 	if (hexTexts == null) {
 		return new long[] {0L, 0L};
 	}
-	
+
 	return hexTexts.getSelection();
 }
 
@@ -935,7 +935,7 @@ public long[] getSelection() {
 public boolean isDirty() {
 	if (content == null)
 		return false;
-	
+
 	return content.isDirty();
 }
 
@@ -954,7 +954,7 @@ boolean isFileBeingRead(File aFile) {
  */
 public boolean isOverwriteMode() {
 	if (hexTexts == null) return true;
-	
+
 	return hexTexts.isOverwriteMode();
 }
 
@@ -965,7 +965,7 @@ public boolean isOverwriteMode() {
  */
 public boolean isTextSelected() {
 	if (hexTexts == null) return false;
-	
+
 	long[] selection = hexTexts.getSelection();
 
 	return selection[0] != selection[1];
@@ -993,10 +993,10 @@ void readNonDefaultFont() {
 	} catch (IOException e) {
 		return;
 	}
-	
+
 	String name = properties.getProperty(applicationName + fontExtension + nameExtension);
 	if (name == null) return;
-	
+
 	String styleString = properties.getProperty(applicationName + fontExtension + styleExtension);
 	if (styleString == null) return;
 	int style = PreferencesManager.fontStyleToInt(styleString);
@@ -1008,7 +1008,7 @@ void readNonDefaultFont() {
 	} catch (NumberFormatException e) {
 		return;
 	}
-	
+
 	fontData = new FontData(name, size, style);
 }
 
@@ -1041,13 +1041,13 @@ public void reuseStatusControlFrom(Manager other) {
 public boolean saveAsFile(File theFile) {
 	if (theFile.equals(myFile))
 		return saveFile();
-	
+
 	if (isFileBeingRead(theFile)) {
 		lastErrorText = textErrorSave;
 		lastErrorMessage = textTheFile + theFile + textIsBeingUsed;
 		return false;
 	}
-	
+
 	boolean successful = true;
 	String errorMessage = textCouldNotWriteOnFile + theFile;
 	try {
@@ -1064,7 +1064,7 @@ public boolean saveAsFile(File theFile) {
 		lastErrorMessage = errorMessage;
 	}
 	hexTexts.setContentProvider(content);
-	
+
 	return successful;
 }
 
@@ -1076,11 +1076,15 @@ public boolean saveAsFile(File theFile) {
 public boolean saveFile() {
 	boolean successful = false;
 	String errorMessage = "Could not create temporary file with a unique name";
-	File tempFile = new File(myFile.getParent(), myFile.getName() + 9999);
-	for (int tries = 9998; tries >= 0 && tempFile.exists(); --tries) {
-		tempFile = new File(myFile.getParent(), myFile.getName() + tries);
+	File tempFile = null;
+	try {
+		tempFile = File.createTempFile(myFile.getName(), "9999", myFile.getParentFile());
+		successful = true;
+	} catch (IOException e1) {
+		e1.printStackTrace();
 	}
-	if (!tempFile.exists()) {
+	if (successful) {
+		successful = false;
 		try {
 			errorMessage = "Could not write on temp file " + tempFile;
 			content.get(tempFile);
@@ -1103,7 +1107,7 @@ public boolean saveFile() {
 		lastErrorText = textErrorSave;
 		lastErrorMessage = errorMessage;
 	}
-	
+
 	return successful;
 }
 
@@ -1125,7 +1129,7 @@ public void setFindReplaceLists(List findList, List replaceList) {
 public void setFocus() {
 	if (hexTexts != null)
 		hexTexts.setFocus();
-	
+
 	if (statusLine != null) {
 		statusLine.updateInsertModeText(hexTexts == null ? true : !hexTexts.isOverwriteMode());
 		statusLine.updatePositionText(hexTexts == null ? 0L : hexTexts.getCaretPos());
@@ -1188,10 +1192,10 @@ public File showSaveAsDialog(Shell aShell, boolean selection) {
 		dialog.setText("Save As");
 	String fileText = dialog.open();
 	if (fileText == null) return null;
-	
+
 	File file = new File(fileText);
 	if (file.exists() && !showMessageBox(aShell, fileText)) return null;
-	
+
 	return file;
 }
 
@@ -1215,7 +1219,7 @@ void writeNonDefaultFont() {
 		if (propertiesFile.exists()) propertiesFile.delete();
 		return;
 	}
-	
+
 	Properties properties = new Properties();
 	properties.setProperty(applicationName + fontExtension + nameExtension, fontData.getName());
 	properties.setProperty(applicationName + fontExtension + styleExtension,
