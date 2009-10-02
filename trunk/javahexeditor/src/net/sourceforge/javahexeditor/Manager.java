@@ -95,6 +95,7 @@ class MySelectionAdapter extends SelectionAdapter {
 	static final int TRIM = 18;
 	static final int UNDO = 19;
 	static final int UPDATE_POSITION_TEXT = 20;
+	static final int SELECT_BLOCK = 21;
 	int myAction = -1;
 	MySelectionAdapter(int action) {
 		myAction = action;
@@ -136,9 +137,18 @@ class MySelectionAdapter extends SelectionAdapter {
 			case TRIM: doTrim(); break;
 			case UNDO: doUndo(); break;
 			case UPDATE_POSITION_TEXT:
-				if (statusLine != null)
-					statusLine.updatePositionText(hexTexts == null ? 0L : hexTexts.getCaretPos());
+				if (statusLine != null) {
+					if (hexTexts != null) {
+						if (hexTexts.isSelected())
+							statusLine.updateSelectionText(hexTexts.getSelection());
+						else
+							statusLine.updatePositionText(hexTexts.getCaretPos());						
+					} else {
+						statusLine.updatePositionText(0L);
+					}
+				}
 			break;
+			case SELECT_BLOCK: doSelectBlock(); break;
 			default: break;
 		}
 	}
@@ -188,6 +198,7 @@ private MenuItem pushRedo = null;
 private MenuItem pushSave = null;
 private MenuItem pushSaveAs = null;
 private MenuItem pushSaveSelectionAs = null;
+private MenuItem pushSelectBlock = null;
 private MenuItem pushSelectAll = null;
 private MenuItem pushTrim = null;
 private MenuItem pushUndo = null;
@@ -197,6 +208,7 @@ private Menu submenuHelp = null;
 //private HexFindDialog findDialog = null;
 private FindReplaceDialog findDialog = null;
 private GoToDialog goToDialog = null;
+private SelectBlockDialog selectBlockDialog = null;
 private HexTexts hexTexts = null;
 private StatusLine statusLine = null;
 private Composite textsParent = null;
@@ -438,52 +450,69 @@ private void createSShell() {
 	pushUndo.setText("&Undo\tCtrl+Z");
 	pushUndo.setEnabled(false);
 	pushUndo.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.UNDO));
+	
 	pushRedo = new MenuItem(submenu1, SWT.PUSH);
 	pushRedo.setText("Red&o\tCtrl+Y");
 	pushRedo.setEnabled(false);
 	pushRedo.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.REDO));
+	
 	new MenuItem(submenu1, SWT.SEPARATOR);
 	pushCut = new MenuItem(submenu1, SWT.PUSH);
 	pushCut.setText("Cu&t\tCtrl+X");
 	pushCut.setEnabled(false);
 	pushCut.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.CUT));
+	
 	pushCopy = new MenuItem(submenu1, SWT.PUSH);
 	pushCopy.setText("&Copy\tCtrl+C");
 	pushCopy.setEnabled(false);
 	pushCopy.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.COPY));
+	
 	pushPaste = new MenuItem(submenu1, SWT.PUSH);
 	pushPaste.setText("&Paste\tCtrl+V");
 	pushPaste.setEnabled(false);
 	pushPaste.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.PASTE));
+	
 	new MenuItem(submenu1, SWT.SEPARATOR);
 	pushDelete = new MenuItem(submenu1, SWT.PUSH);
 	pushDelete.setText("&Delete\tDelete");
 	pushDelete.setEnabled(false);
 	pushDelete.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.DELETE));
+	
 	pushTrim = new MenuItem(submenu1, SWT.PUSH);
 	pushTrim.setText("T&rim");
 	pushTrim.setEnabled(false);
 	pushTrim.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.TRIM));
+	
 	pushSelectAll = new MenuItem(submenu1, SWT.PUSH);
 	pushSelectAll.setText("&Select All\tCtrl+A");
 	pushSelectAll.setEnabled(false);
 	pushSelectAll.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.SELECT_ALL));
+	
+	pushSelectBlock = new MenuItem(submenu1, SWT.PUSH);
+	pushSelectBlock.setText("Select &Block...\tCtrl+E");
+	pushSelectBlock.setEnabled(false);
+	pushSelectBlock.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.SELECT_BLOCK));
+	pushSelectBlock.setAccelerator(SWT.CONTROL | 'E');
+	
 	new MenuItem(submenu1, SWT.SEPARATOR);
 	pushGoTo = new MenuItem(submenu1, SWT.PUSH);
 	pushGoTo.setText("&Go to Location...\tCtrl+L");
 	pushGoTo.setEnabled(false);
 	pushGoTo.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.GO_TO));
 	pushGoTo.setAccelerator(SWT.CONTROL | 'L');
+	
 	pushFind = new MenuItem(submenu1, SWT.PUSH);
 	pushFind.setText(textFindReplace);
 	pushFind.setEnabled(false);
 	pushFind.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.FIND));
 	pushFind.setAccelerator(SWT.CONTROL | 'F');
+
 	new MenuItem(submenu1, SWT.SEPARATOR);
 	pushPreferences = new MenuItem(submenu1, SWT.PUSH);
 	pushPreferences.setText("Font Pr&eferences...");
 	pushPreferences.setEnabled(true);
 	pushPreferences.addSelectionListener(new MySelectionAdapter(MySelectionAdapter.PREFERENCES));
+
 	submenu1.addMenuListener(new MenuAdapter() {
 		public void menuShown(MenuEvent e) {
 			boolean selected = isTextSelected();
@@ -632,7 +661,10 @@ public void createStatusPart(Composite aParent, boolean withLeftSeparator) {
 	statusLine = new StatusLine(aParent, SWT.NONE, withLeftSeparator);
 	if (hexTexts != null && hexTexts.getEnabled()) {
 		statusLine.updateInsertModeText(!hexTexts.isOverwriteMode());
-		statusLine.updatePositionText(hexTexts.getCaretPos());
+		if (hexTexts.isSelected())
+			statusLine.updateSelectionText(hexTexts.getSelection());
+		else
+			statusLine.updatePositionText(hexTexts.getCaretPos());
 	}
 }
 
@@ -711,6 +743,21 @@ public void doGoTo() {
 		hexTexts.showMark(location);
 }
 
+/**
+ * Open 'select block' dialog
+ */
+public void doSelectBlock() {
+	if (content.length() < 1L) return;
+
+	if (selectBlockDialog == null)
+		selectBlockDialog = new SelectBlockDialog(textsParent.getShell());
+	long start = selectBlockDialog.open(content.length() - 1L);
+	long end = selectBlockDialog.getFinalEndResult();
+	if ((start >= 0L) && (end >= 0L) && (start != end)) {
+		hexTexts.selectBlock(start, end);
+	}
+}
+
 
 void doOpen(File forceThisFile, boolean isNewFile) {
 	if (!doClose()) return;
@@ -730,6 +777,7 @@ void doOpen(File forceThisFile, boolean isNewFile) {
 	pushGoTo.setEnabled(true);
 	pushPaste.setEnabled(true);
 	pushSelectAll.setEnabled(true);
+	pushSelectBlock.setEnabled(true);
 	pushSaveAs.setEnabled(true);
 	try {
 		openFile(forceThisFile);
@@ -1132,7 +1180,14 @@ public void setFocus() {
 
 	if (statusLine != null) {
 		statusLine.updateInsertModeText(hexTexts == null ? true : !hexTexts.isOverwriteMode());
-		statusLine.updatePositionText(hexTexts == null ? 0L : hexTexts.getCaretPos());
+		if (hexTexts != null) {
+			if (hexTexts.isSelected())
+				statusLine.updateSelectionText(hexTexts.getSelection());
+			else
+				statusLine.updatePositionText(hexTexts.getCaretPos());
+		} else {
+			statusLine.updatePositionText(0L);			
+		}
 	}
 }
 
