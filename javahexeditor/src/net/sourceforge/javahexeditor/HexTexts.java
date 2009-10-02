@@ -1074,6 +1074,9 @@ public long[] getSelection() {
 	return new long[]{myStart, myEnd};
 }
 
+public boolean isSelected() {
+	return (myStart != myEnd);
+}
 
 boolean handleSelectedPreModify() {
 	if (myStart == myEnd || !myInserting) return false;
@@ -1475,6 +1478,14 @@ public void selectAll() {
 	refreshSelections();
 }
 
+/**
+ * Sets the selection from start to end.
+ */
+public void selectBlock(long start, long end) {
+	select(start, end);
+	refreshSelections();
+	showMark(start);
+}
 
 void select(long start, long end) {
 	myUpANibble = 0;

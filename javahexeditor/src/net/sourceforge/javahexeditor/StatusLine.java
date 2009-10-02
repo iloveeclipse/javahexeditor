@@ -107,4 +107,11 @@ public void updatePositionText(long newPos) {
 	
 	position.setText(newPos + " (0x" + Long.toHexString(newPos) + ')');
 }
+
+public void updateSelectionText(long[] sel) {
+	if (isDisposed() || position.isDisposed()) return;
+	
+	position.setText(sel[0] + " (0x" + Long.toHexString(sel[0]) + ") - " + sel[1] + " (0x" + Long.toHexString(sel[1]) + ")");
+}
+
 }

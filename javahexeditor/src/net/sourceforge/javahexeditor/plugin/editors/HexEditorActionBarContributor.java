@@ -71,6 +71,14 @@ class MyMenuContributionItem extends ContributionItem {
 					activeEditor.getManager().doTrim();
 				}
 			});
+		} else if (menuSelectBlock.equals(getId())) {
+			myMenuItem.setText("Select &Block...\tCtrl+E");
+			myMenuItem.setEnabled(true);
+			myMenuItem.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					activeEditor.getManager().doSelectBlock();
+				}
+			});			
 		}
 	}
 }
@@ -113,6 +121,7 @@ final class MyStatusLineContributionItem extends ContributionItem {
 
 static final String menuSaveSelectionAsId = "saveSelectionAs";
 static final String menuTrimId = "trim";
+static final String menuSelectBlock = "selectBlock";
 static final String statusLineItemId = "AllHexEditorStatusItemsItem";
 BinaryEditor activeEditor = null;
 
@@ -131,6 +140,12 @@ public void contributeToMenu(IMenuManager menuManager) {
 	menu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
 	if (menu != null) {
 		menu.insertAfter("delete", new MyMenuContributionItem(menuTrimId));
+		menu.addMenuListener(myMenuListener);
+	}
+
+	menu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
+	if (menu != null) {
+		menu.insertAfter("selectAll", new MyMenuContributionItem(menuSelectBlock));
 		menu.addMenuListener(myMenuListener);
 	}
 	
