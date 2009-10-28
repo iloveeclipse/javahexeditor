@@ -142,9 +142,9 @@ class MySelectionAdapter extends SelectionAdapter {
 						if (hexTexts.isSelected())
 							statusLine.updateSelectionText(hexTexts.getSelection());
 						else
-							statusLine.updatePositionText(hexTexts.getCaretPos());						
+							statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());						
 					} else {
-						statusLine.updatePositionText(0L);
+						statusLine.updatePositionText(0L,(byte) 0);
 					}
 				}
 			break;
@@ -664,7 +664,7 @@ public void createStatusPart(Composite aParent, boolean withLeftSeparator) {
 		if (hexTexts.isSelected())
 			statusLine.updateSelectionText(hexTexts.getSelection());
 		else
-			statusLine.updatePositionText(hexTexts.getCaretPos());
+			statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());
 	}
 }
 
@@ -1184,9 +1184,9 @@ public void setFocus() {
 			if (hexTexts.isSelected())
 				statusLine.updateSelectionText(hexTexts.getSelection());
 			else
-				statusLine.updatePositionText(hexTexts.getCaretPos());
+				statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());
 		} else {
-			statusLine.updatePositionText(0L);			
+			statusLine.updatePositionText(0L,(byte) 0);		
 		}
 	}
 }
