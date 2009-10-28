@@ -33,6 +33,10 @@ import net.sourceforge.javahexeditor.HexTexts;
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.plugin.BinaryEditorPlugin;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -68,6 +72,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.editors.text.ILocationProvider;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.osgi.framework.Bundle;
@@ -137,23 +142,48 @@ System.out.println("Start createPartControl()");System.out.flush();
 	FillLayout fillLayout = new FillLayout();
 	parent.setLayout(fillLayout);
 
+	String charset = null;
 	IEditorInput unresolved = getEditorInput();
 	File systemFile = null;
+	IFile localFile = null;
 	if (unresolved instanceof IPathEditorInput) {
-		IPathEditorInput file = (IPathEditorInput)unresolved;
-		systemFile = file.getPath().toFile();
+		localFile = ((FileEditorInput)unresolved).getFile();
 	} else if (unresolved instanceof ILocationProvider) {
-		ILocationProvider file = (ILocationProvider)unresolved;
-		systemFile = file.getPath(file).toFile();
-	} else { // XXX
-systemFile = inputForVersion3_3(unresolved);  // XXX
+		ILocationProvider location = (ILocationProvider)unresolved;
+		IWorkspaceRoot rootWorkspace = ResourcesPlugin.getWorkspace().getRoot();
+		localFile = rootWorkspace.getFile(location.getPath(location));		
+	} else {
+		URI uri = inputForVersion3_3(unresolved);
+		if (uri != null) {
+			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
+			if (files.length != 0) {
+				localFile = files[0];
+			} else {
+				systemFile = new File(uri);				
+			}
+		} else {
+			systemFile = null;			
+		}
 	}
+	// charset
+	if (localFile != null) {
+		systemFile = localFile.getLocation().toFile();		
+		try {
+			charset = localFile.getCharset(true);
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
+	}
+	// open file
 	try {
-		manager.openFile(systemFile);
+		manager.openFile(systemFile, charset);
 	} catch (IOException e) {
 		throw new RuntimeException(e);
 	}
 	setPartName(systemFile.getName());
+
+	System.out.println("BinaryEditor file    : " + systemFile.getName());
+	System.out.println("BinaryEditor charset : " + manager.getContent().getCharset());
 
 	// Register any global actions with the site's IActionBars.
 	IActionBars bars = getEditorSite().getActionBars();
@@ -360,15 +390,14 @@ System.out.println("BinEditor.init() ends");System.out.flush();
 }
 
 
-private File inputForVersion3_3(IEditorInput input) {
-	File result = null;
+private URI inputForVersion3_3(IEditorInput input) {
+	URI result = null;
 	try {
 		Class aClass = input.getClass();
 		// throws NoSuchMethodException
 		Method uriMethod = aClass.getMethod("getURI", null);
 		// throws IllegalAccessException, InvocationTargetException
-		URI aURI = (URI)uriMethod.invoke(input, null);
-		result = new File(aURI);
+		result = (URI)uriMethod.invoke(input, null);
 	} catch (Throwable e) {
 		return null;
 	}

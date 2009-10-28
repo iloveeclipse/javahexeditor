@@ -105,7 +105,7 @@ static final int SET_TEXT = 0;
 static final int SHIFT_FORWARD = 1;  // frame
 static final int SHIFT_BACKWARD = 2;
 
-
+String charset = null;
 boolean delayedInQueue = false;
 Runnable delayedWaiting = null;
 boolean dragging = false;
@@ -149,17 +149,19 @@ GridData gridData6 = null;
 private GC styledText1GC = null;
 private GC styledText2GC = null;
 private Composite 	column = null;
-private Text 			textSeparator = null;
-private StyledText 		styledText = null;
+private Text 		textSeparator = null;
+private StyledText 	styledText = null;
 private Composite 	column1 = null;
-private Composite 		column1Header = null;
-private StyledText 			headerText = null;
-private StyledText 		styledText1 = null;
+private Composite 	column1Header = null;
+private StyledText 	header1Text = null;
+private StyledText 	styledText1 = null;
 private Composite 	column2 = null;
-private Text 			textSeparator2 = null;
-private StyledText 		styledText2 = null;
+//private Composite 	column2Header = null;
+//private StyledText 	header2Text = null;
+private Text 		textSeparator2 = null;
+private StyledText 	styledText2 = null;
 
-
+/*
 static {
 	// compose byte-to-char and byte-to-hex maps
 	CharsetDecoder d = Charset.defaultCharset().newDecoder().
@@ -191,7 +193,72 @@ static {
 		rowChars.append(byteToHex[i & 0x0ff]).append(' ');
 	headerRow = rowChars.toString();
 }
+*/
 
+/**
+ * compose byte-to-hex map
+ */
+private void composeByteToHexMap() {
+	for (int i = 0; i < 256; ++i) {
+		byteToHex[i] = Character.toString(nibbleToHex[i >>> 4]) + nibbleToHex[i & 0x0f];
+	}
+}
+
+/**
+ * compose byte-to-char map
+ */
+private void composeByteToCharMap() {
+	CharsetDecoder d = Charset.forName(charset).newDecoder().
+				onMalformedInput(CodingErrorAction.REPLACE).
+				onUnmappableCharacter(CodingErrorAction.REPLACE).
+				replaceWith(".");
+	ByteBuffer bb = ByteBuffer.allocate(1);
+	CharBuffer cb = CharBuffer.allocate(1);
+	for (int i = 0; i < 256; ++i) {
+		if (i < 0x20 || i == 0x7f) {
+			byteToChar[i] = '.';
+		} else {
+			bb.clear();
+			bb.put((byte)i);
+			bb.rewind();
+			cb.clear();
+			d.reset();
+			d.decode(bb, cb, true);
+			d.flush(cb);
+			cb.rewind();
+			byteToChar[i] = cb.get();
+		}
+	}	
+}
+
+/**
+ * compose header row
+ */
+private void composeHeaderRow() {
+	StringBuffer rowChars = new StringBuffer();
+	for (int i = 0; i < maxScreenResolution / minCharSize / 3; ++i)
+		rowChars.append(byteToHex[i & 0x0ff]).append(' ');
+	headerRow = rowChars.toString().toUpperCase();
+}
+
+public void setCharset(String name) {
+	charset = name;
+}
+
+public String getCharset() {
+	return charset;
+}
+
+public String getSystemCharset() {
+	return Charset.defaultCharset().toString();
+}
+
+public void setCharsetAndCompose(String name) {
+	if ((name == null) || (name.length() == 0))
+		name = getSystemCharset();
+	setCharset(name);
+	composeByteToCharMap();
+}
 
 /**
  * Get long selection start and end points. Helper method for long selection listeners.
@@ -457,6 +524,11 @@ public HexTexts(final Composite parent, int style) {
 	colorCaretLine = new Color(Display.getCurrent(), 232, 242, 254);  // very light blue
 	colorHighlight = new Color(Display.getCurrent(), 255, 248, 147);  // mellow yellow
 
+	// set default charset & compose
+	setCharsetAndCompose(null);
+	composeByteToHexMap();	
+	composeHeaderRow();
+
 	myClipboard = new BinaryClipboard(parent.getDisplay());
 	myLongSelectionListeners = new ArrayList();
 	addDisposeListener(new DisposeListener() {
@@ -573,13 +645,13 @@ private void initialize() {
 
 	GridData gridData = new GridData();
 	gridData.horizontalIndent = 1;
-	headerText = new StyledText(column1Header, SWT.SINGLE | SWT.READ_ONLY);
-	headerText.setEditable(false);
-	headerText.setEnabled(false);
-	headerText.setBackground(colorLightShadow);
-	headerText.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-	headerText.setLayoutData(gridData);
-	headerText.setFont(fontCurrent);
+	header1Text = new StyledText(column1Header, SWT.SINGLE | SWT.READ_ONLY);
+	header1Text.setEditable(false);
+	header1Text.setEnabled(false);
+	header1Text.setBackground(colorLightShadow);
+	header1Text.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+	header1Text.setLayoutData(gridData);
+	header1Text.setFont(fontCurrent);
 	refreshHeader();
 
 	styledText1 = new StyledText(column1, SWT.MULTI);
@@ -1169,9 +1241,9 @@ public boolean isOverwriteMode() {
 
 void makeFirstRowSameHeight() {
 	((GridData)textSeparator.getLayoutData()).heightHint =
-		headerText.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		header1Text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 	((GridData)textSeparator2.getLayoutData()).heightHint =
-		headerText.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		header1Text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 }
 
 
@@ -1369,7 +1441,7 @@ private void refreshCaretsPosition() {
 
 
 void refreshHeader() {
-	headerText.setText(headerRow.substring(0, Math.min(myBytesPerLine * 3, headerRow.length())));
+	header1Text.setText(headerRow.substring(0, Math.min(myBytesPerLine * 3, headerRow.length())));
 }
 
 
@@ -1567,8 +1639,10 @@ public void setContentProvider(BinaryContent aContent) {
 	boolean firstContent = myContent == null;
 	myContent = aContent;
 	myFinder = null;
-	if (myContent != null)
+	if (myContent != null) {		
+		setCharsetAndCompose(myContent.getCharset());
 		myContent.setActionsHistory();
+	}
 
 	if (firstContent || myEnd > myContent.length() || myTextAreasStart >= myContent.length()) {
 		myTextAreasStart = myStart = myEnd = 0L;
@@ -1615,9 +1689,9 @@ public void setFont(Font font) {
 		fontCurrent = fontDefault;
 	}
 	super.setFont(fontCurrent);
-	headerText.setFont(fontCurrent);
-	headerText.pack(true);
-	GC gc = new GC(headerText);
+	header1Text.setFont(fontCurrent);
+	header1Text.pack(true);
+	GC gc = new GC(header1Text);
 	fontCharWidth = gc.getFontMetrics().getAverageCharWidth();
 	gc.dispose();
 	makeFirstRowSameHeight();
@@ -1721,7 +1795,7 @@ void undo(boolean previousAction) {
 
 
 void updateNumberOfLines() {
-	int height = getClientArea().height - headerText.computeSize(SWT.DEFAULT, SWT.DEFAULT, false).y;
+	int height = getClientArea().height - header1Text.computeSize(SWT.DEFAULT, SWT.DEFAULT, false).y;
 
 	numberOfLines = height / styledText.getLineHeight();
 	if (numberOfLines < 1)
@@ -1761,7 +1835,7 @@ void updateTextsMetrics() {
 	gridData6.widthHint = styledText2.computeTrim(0, 0,
 			myBytesPerLine * fontCharWidth, 100).width;
 	updateNumberOfLines();
-	changed(new Control[]{headerText, styledText, styledText1, styledText2});
+	changed(new Control[]{header1Text, styledText, styledText1, styledText2});
 	updateScrollBar();
 	refreshHeader();
 	myTextAreasStart = (((long)getVerticalBar().getSelection()) * myBytesPerLine) << verticalBarFactor;
