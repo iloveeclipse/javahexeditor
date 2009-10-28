@@ -114,7 +114,7 @@ class MySelectionAdapter extends SelectionAdapter {
 			case DELETE: doDelete(); break;
 			case SELECT_ALL: doSelectAll(); break;
 			case FIND: doFind(); break;
-			case OPEN: doOpen(null, false); break;
+			case OPEN: doOpen(null, false, null); break;
 			case SAVE: doSave(); break;
 			case SAVE_AS: doSaveAs(); break;
 			case SAVE_SELECTION_AS:
@@ -131,7 +131,7 @@ class MySelectionAdapter extends SelectionAdapter {
 			case GO_TO: doGoTo(); break;
 			case GUIDELOCAL: doOpenUserGuideUrl(false); break;
 			case GUIDEONLINE: doOpenUserGuideUrl(true); break;
-			case NEW: doOpen(null, true); break;
+			case NEW: doOpen(null, true, null); break;
 			case PREFERENCES: doPreferences(); break;
 			case REDO: doRedo(); break;
 			case TRIM: doTrim(); break;
@@ -256,7 +256,7 @@ public static void main(String[] args) {
 	thisClass.sShell.pack();
 	thisClass.sShell.open();
 	if (aFile != null)
-		thisClass.doOpen(aFile, false);
+		thisClass.doOpen(aFile, false, null);
 
 	while (!thisClass.sShell.isDisposed()) {
 		try {
@@ -358,7 +358,7 @@ void createComposite() {
 				box.setMessage( "Cannot open the file " + file);
 				box.open();
 			} else {
-				doOpen(file, false);
+				doOpen(file, false, null);
 			}
 		}
 	});
@@ -759,7 +759,7 @@ public void doSelectBlock() {
 }
 
 
-void doOpen(File forceThisFile, boolean isNewFile) {
+void doOpen(File forceThisFile, boolean isNewFile, String charset) {
 	if (!doClose()) return;
 
 	if (forceThisFile == null && !isNewFile) {
@@ -780,7 +780,7 @@ void doOpen(File forceThisFile, boolean isNewFile) {
 	pushSelectBlock.setEnabled(true);
 	pushSaveAs.setEnabled(true);
 	try {
-		openFile(forceThisFile);
+		openFile(forceThisFile, charset);
 	} catch (IOException e) {
 		MessageBox box = new MessageBox(sShell, SWT.ICON_ERROR | SWT.OK);
 		box.setText("File Read Error");
@@ -1025,8 +1025,8 @@ public boolean isTextSelected() {
  * @param aFile the file to be edited
  * @throws IOException when a file has no read access
  */
-public void openFile(File aFile) throws IOException {
-	content = new BinaryContent(aFile);  // throws IOException
+public void openFile(File aFile, String charset) throws IOException {
+	content = new BinaryContent(aFile, charset);  // throws IOException
 	myFile = aFile;
 	hexTexts.setContentProvider(content);
 }
@@ -1104,7 +1104,7 @@ public boolean saveAsFile(File theFile) {
 		content = new BinaryContent();
 		myFile = null;
 		errorMessage = textCouldNotRead;
-		content = new BinaryContent(theFile);
+		content = new BinaryContent(theFile,null);
 		myFile = theFile;
 	} catch(IOException e) {
 		successful = false;
@@ -1143,7 +1143,7 @@ public boolean saveFile() {
 			BinaryClipboard.deleteFileALaMs(myFile);
 			if (tempFile.renameTo(myFile)) {  // successful delete or not try renaming anyway
 				errorMessage = textCouldNotRead;
-				content = new BinaryContent(myFile);
+				content = new BinaryContent(myFile,null);
 				successful = true;
 			}
 		} catch(IOException e) {
