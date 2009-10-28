@@ -21,6 +21,11 @@ package net.sourceforge.javahexeditor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -157,11 +162,27 @@ private StyledText 		styledText2 = null;
 
 static {
 	// compose byte-to-char and byte-to-hex maps
+	CharsetDecoder d = Charset.defaultCharset().newDecoder().
+				onMalformedInput(CodingErrorAction.REPLACE).
+				onUnmappableCharacter(CodingErrorAction.REPLACE).
+				replaceWith(".");
+	ByteBuffer bb = ByteBuffer.allocate(1);
+	CharBuffer cb = CharBuffer.allocate(1);
 	for (int i = 0; i < 256; ++i) {
 		byteToHex[i] = Character.toString(nibbleToHex[i >>> 4]) + nibbleToHex[i & 0x0f];
-		byteToChar[i] = (char)i;
-		if (i < 0x020 || i >= 0x07f && i <= 0x0a0 || i == 0x0ad)
+		if (i < 0x20 || i == 0x7f) {
 			byteToChar[i] = '.';
+		} else {
+			bb.clear();
+			bb.put((byte)i);
+			bb.rewind();
+			cb.clear();
+			d.reset();
+			d.decode(bb, cb, true);
+			d.flush(cb);
+			cb.rewind();
+			byteToChar[i] = cb.get();
+		}
 	}
 
 	// compose header row
@@ -1056,6 +1077,18 @@ public long getCaretPos()
 		return myEnd;
 }
 
+public byte getActualValue() {
+	return getValue(getCaretPos());
+}
+
+public byte getValue(long pos) {
+	try {
+		myContent.get(ByteBuffer.wrap(tmpRawBuffer, 0, 1), null, pos);
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+	return tmpRawBuffer[0];
+}
 
 int getHighlightRange(long start, int length) {
 	if (myLastLocationPosition < start || myLastLocationPosition >= start + length)
@@ -1734,4 +1767,5 @@ void updateTextsMetrics() {
 	myTextAreasStart = (((long)getVerticalBar().getSelection()) * myBytesPerLine) << verticalBarFactor;
 	redrawTextAreas(true);
 }
+
 }

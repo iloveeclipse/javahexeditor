@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Go to dialog. Remembers previous state.
+ * Select block dialog. Remembers previous state.
  * @author anb0s
  */
 public class SelectBlockDialog extends Dialog {
@@ -264,7 +264,7 @@ public long open(long aLimit) {
 		decRadioButton.setSelection(true);
 	}
 	label.setText(
-			"Enter start and end number, 0 to " + limit + " (0x0 to 0x" + Long.toHexString(limit) + ")");
+			"Enter start and end number, 0 to " + limit + " (0x0 to 0x" + Long.toHexString(limit).toUpperCase() + ")");
 	startText.setText(lastStartText);
 	endText.setText(lastEndText);
 	startText.selectAll();
