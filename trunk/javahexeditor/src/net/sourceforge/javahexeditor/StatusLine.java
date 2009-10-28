@@ -19,6 +19,8 @@
  */
 package net.sourceforge.javahexeditor;
 
+import java.util.Formatter;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -70,7 +72,7 @@ private void initialize(boolean withSeparator) {
 	GC gc= new GC(this);
 	FontMetrics fontMetrics = gc.getFontMetrics();
 	GridData gridData = 
-		new GridData(fontMetrics.getAverageCharWidth() * (14 + 4 + 11 + 1), SWT.DEFAULT);
+		new GridData(SWT.DEFAULT /*fontMetrics.getAverageCharWidth() * (14 + 4 + 11 + 1)*/, SWT.DEFAULT);
 	position.setLayoutData(gridData);
 
 	GridData separator2GridData = new GridData();
@@ -102,16 +104,20 @@ public void updateInsertModeText(boolean insert) {
  * Update the position status. Displays its decimal and hex value
  * @param newPos value to display
  */
-public void updatePositionText(long newPos) {
+public void updatePositionText(long newPos, byte value) {
 	if (isDisposed() || position.isDisposed()) return;
 	
-	position.setText(newPos + " (0x" + Long.toHexString(newPos) + ')');
+	String valueBin = "0000000" + Long.toBinaryString(value);
+	String text = String.format("Offset: %1$d (dec) = %1$X (hex), Value: %2$d (dec) = %2$X (hex) = %3$s (bin)", newPos, value, valueBin.substring(valueBin.length()-8));
+	position.setText(text);
+	//position.pack();
 }
 
 public void updateSelectionText(long[] sel) {
 	if (isDisposed() || position.isDisposed()) return;
 	
-	position.setText(sel[0] + " (0x" + Long.toHexString(sel[0]) + ") - " + sel[1] + " (0x" + Long.toHexString(sel[1]) + ")");
+	String text = String.format("Selection: %1$d (0x%1$X) - %2$d (0x%2$X)", sel[0], sel[1]);
+	position.setText(text);
 }
 
 }
