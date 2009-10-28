@@ -100,11 +100,12 @@ static final byte[] hexToNibble = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -1, -1, -1,
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 10, 11, 12, 13, 14, 15};
 static final int maxScreenResolution = 1920;
 static final int minCharSize = 5;
-static final char[] nibbleToHex = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+static final char[] nibbleToHex = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 static final int SET_TEXT = 0;
 static final int SHIFT_FORWARD = 1;  // frame
 static final int SHIFT_BACKWARD = 2;
 
+int charsForFileSizeAddress = 0;
 String charset = null;
 boolean delayedInQueue = false;
 Runnable delayedWaiting = null;
@@ -156,8 +157,8 @@ private Composite 	column1Header = null;
 private StyledText 	header1Text = null;
 private StyledText 	styledText1 = null;
 private Composite 	column2 = null;
-//private Composite 	column2Header = null;
-//private StyledText 	header2Text = null;
+private Composite 	column2Header = null;
+private StyledText 	header2Text = null;
 private Text 		textSeparator2 = null;
 private StyledText 	styledText2 = null;
 
@@ -816,10 +817,14 @@ StringBuffer cookAddresses(long address, int limit) {
 			int nibble = ((int)(address >>> j)) & 0x0f;
 			if (nibble != 0)
 				indenting = false;
-			if (indenting)
-				theText.append(' ');
-			else
+			if (indenting) {
+				if (j >= (charsForFileSizeAddress * 4))
+					theText.append(' ');
+				else
+					theText.append('0');
+			} else {
 				theText.append(nibbleToHex[nibble]);
+			}
 		}
 		theText.append(nibbleToHex[((int)address) & 0x0f]).append(':');
 	}
@@ -1648,6 +1653,8 @@ public void setContentProvider(BinaryContent aContent) {
 		myTextAreasStart = myStart = myEnd = 0L;
 		myCaretStickToStart = false;
 	}
+
+	charsForFileSizeAddress = Long.toHexString(myContent.length()).length();
 
 	updateScrollBar();
 	redrawTextAreas(true);
