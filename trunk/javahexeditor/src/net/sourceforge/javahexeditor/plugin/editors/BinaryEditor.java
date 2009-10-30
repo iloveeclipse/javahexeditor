@@ -162,7 +162,7 @@ System.out.println("Start createPartControl()");System.out.flush();
 				systemFile = new File(uri);				
 			}
 		} else {
-			systemFile = null;			
+			systemFile = null;
 		}
 	}
 	// charset

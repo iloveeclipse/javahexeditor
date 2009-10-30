@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -117,7 +116,7 @@ BinaryClipboard myClipboard = null;
 BinaryContent myContent = null;
 private long myEnd = 0L;
 Finder myFinder = null;
-boolean myInserting = true;
+boolean myInserting = false;
 private KeyListener myKeyAdapter = new MyKeyAdapter();
 private int myLastFocusedTextArea = -1;  // 1 or 2;
 private long myLastLocationPosition = -1L;
@@ -161,40 +160,6 @@ private Composite 	column2Header = null;
 private StyledText 	header2Text = null;
 private Text 		textSeparator2 = null;
 private StyledText 	styledText2 = null;
-
-/*
-static {
-	// compose byte-to-char and byte-to-hex maps
-	CharsetDecoder d = Charset.defaultCharset().newDecoder().
-				onMalformedInput(CodingErrorAction.REPLACE).
-				onUnmappableCharacter(CodingErrorAction.REPLACE).
-				replaceWith(".");
-	ByteBuffer bb = ByteBuffer.allocate(1);
-	CharBuffer cb = CharBuffer.allocate(1);
-	for (int i = 0; i < 256; ++i) {
-		byteToHex[i] = Character.toString(nibbleToHex[i >>> 4]) + nibbleToHex[i & 0x0f];
-		if (i < 0x20 || i == 0x7f) {
-			byteToChar[i] = '.';
-		} else {
-			bb.clear();
-			bb.put((byte)i);
-			bb.rewind();
-			cb.clear();
-			d.reset();
-			d.decode(bb, cb, true);
-			d.flush(cb);
-			cb.rewind();
-			byteToChar[i] = cb.get();
-		}
-	}
-
-	// compose header row
-	StringBuffer rowChars = new StringBuffer();
-	for (int i = 0; i < maxScreenResolution / minCharSize / 3; ++i)
-		rowChars.append(byteToHex[i & 0x0ff]).append(' ');
-	headerRow = rowChars.toString();
-}
-*/
 
 /**
  * compose byte-to-hex map
@@ -327,16 +292,7 @@ private class MyKeyAdapter extends KeyAdapter {
 			break;
 			case SWT.INSERT:
 				if ((e.stateMask & SWT.MODIFIER_MASK) == 0) {
-					drawUnfocusedCaret(false);
-					setCaretsSize(!myInserting);
-					if (myInserting && myUpANibble != 0) {
-						myUpANibble = 0;
-						refreshCaretsPosition();
-						setFocus();
-					} else {
-						drawUnfocusedCaret(true);
-					}
-					notifyListeners(SWT.Modify, null);
+					redrawCaret(true);
 				} else if (e.stateMask == SWT.SHIFT) {
 					paste();
 				} else if (e.stateMask == SWT.CONTROL) {
@@ -555,6 +511,21 @@ public HexTexts(final Composite parent, int style) {
 	myPreviousLine = -1;
 }
 
+/**
+ * redraw the caret with respect of Inserting/Overwriting mode
+ */
+public void redrawCaret(boolean focus) {
+	drawUnfocusedCaret(false);
+	setCaretsSize(focus ? (!myInserting) : myInserting);
+	if (myInserting && myUpANibble != 0) {
+		myUpANibble = 0;
+		refreshCaretsPosition();
+		if (focus) setFocus();
+	} else {
+		drawUnfocusedCaret(true);
+	}
+	if (focus) notifyListeners(SWT.Modify, null);
+}
 
 /**
  * Adds a long selection listener. Events sent to the listener have long start and end points.
@@ -1669,6 +1640,7 @@ public void setContentProvider(BinaryContent aContent) {
  * @see Composite#setFocus()
  */
 public boolean setFocus() {
+	redrawCaret(false);
 	if (myLastFocusedTextArea == 1)
 		return styledText1.setFocus();
 	else
