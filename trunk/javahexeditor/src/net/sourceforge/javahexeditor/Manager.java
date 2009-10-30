@@ -140,11 +140,11 @@ class MySelectionAdapter extends SelectionAdapter {
 				if (statusLine != null) {
 					if (hexTexts != null) {
 						if (hexTexts.isSelected())
-							statusLine.updateSelectionText(hexTexts.getSelection());
+							statusLine.updateSelectionValueText(hexTexts.getSelection(),hexTexts.getActualValue());
 						else
-							statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());						
+							statusLine.updatePositionValueText(hexTexts.getCaretPos(),hexTexts.getActualValue());						
 					} else {
-						statusLine.updatePositionText(0L,(byte) 0);
+						statusLine.updatePositionValueText(0L,(byte) 0);
 					}
 				}
 			break;
@@ -662,9 +662,9 @@ public void createStatusPart(Composite aParent, boolean withLeftSeparator) {
 	if (hexTexts != null && hexTexts.getEnabled()) {
 		statusLine.updateInsertModeText(!hexTexts.isOverwriteMode());
 		if (hexTexts.isSelected())
-			statusLine.updateSelectionText(hexTexts.getSelection());
+			statusLine.updateSelectionValueText(hexTexts.getSelection(),hexTexts.getActualValue());
 		else
-			statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());
+			statusLine.updatePositionValueText(hexTexts.getCaretPos(),hexTexts.getActualValue());
 	}
 }
 
@@ -1182,11 +1182,11 @@ public void setFocus() {
 		statusLine.updateInsertModeText(hexTexts == null ? true : !hexTexts.isOverwriteMode());
 		if (hexTexts != null) {
 			if (hexTexts.isSelected())
-				statusLine.updateSelectionText(hexTexts.getSelection());
+				statusLine.updateSelectionValueText(hexTexts.getSelection(),hexTexts.getActualValue());
 			else
-				statusLine.updatePositionText(hexTexts.getCaretPos(),hexTexts.getActualValue());
+				statusLine.updatePositionValueText(hexTexts.getCaretPos(),hexTexts.getActualValue());
 		} else {
-			statusLine.updatePositionText(0L,(byte) 0);		
+			statusLine.updatePositionValueText(0L,(byte) 0);		
 		}
 	}
 }

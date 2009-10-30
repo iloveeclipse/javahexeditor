@@ -39,6 +39,7 @@ static final String textInsert = "Insert";
 static final String textOverwrite = "Overwrite";
 
 private Label position = null;
+private Label value = null;
 private Label insertMode = null;
 
 
@@ -56,7 +57,7 @@ public StatusLine(Composite parent, int style, boolean withLeftSeparator) {
 
 private void initialize(boolean withSeparator) {
 	GridLayout statusLayout = new GridLayout();
-	statusLayout.numColumns = withSeparator ? 4 : 3;
+	statusLayout.numColumns = withSeparator ? 6 : 5;
 	statusLayout.marginHeight = 0;
 	setLayout(statusLayout);
 	
@@ -68,23 +69,29 @@ private void initialize(boolean withSeparator) {
 		separator1.setLayoutData(separator1GridData);
 	}
 
-	position = new Label(this, SWT.SHADOW_NONE);
 	GC gc= new GC(this);
 	FontMetrics fontMetrics = gc.getFontMetrics();
-	GridData gridData = 
-		new GridData(SWT.DEFAULT /*fontMetrics.getAverageCharWidth() * (14 + 4 + 11 + 1)*/, SWT.DEFAULT);
-	position.setLayoutData(gridData);
+	
+	position = new Label(this, SWT.SHADOW_NONE);
+	GridData gridData1 = new GridData(/*SWT.DEFAULT*/ (11+10+12+3+10+12) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
+	position.setLayoutData(gridData1);
 
-	GridData separator2GridData = new GridData();
-	separator2GridData.grabExcessVerticalSpace = true;
-	separator2GridData.verticalAlignment = SWT.FILL;
+	GridData separator23GridData = new GridData();
+	separator23GridData.grabExcessVerticalSpace = true;
+	separator23GridData.verticalAlignment = SWT.FILL;
 	Label separator2 = new Label(this, SWT.SEPARATOR);
-	separator2.setLayoutData(separator2GridData);
+	separator2.setLayoutData(separator23GridData);
+	
+	value = new Label(this, SWT.SHADOW_NONE);
+	GridData gridData2 = new GridData(/*SWT.DEFAULT*/ (7+3+9+2+9+8+6) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
+	value.setLayoutData(gridData2);
+	
+	Label separator3 = new Label(this, SWT.SEPARATOR);
+	separator3.setLayoutData(separator23GridData);
 
 	insertMode = new Label(this, SWT.SHADOW_NONE);
-	GridData gridData2 = new GridData(fontMetrics.getAverageCharWidth() *
-									(textOverwrite.length() + 2), SWT.DEFAULT);
-	insertMode.setLayoutData(gridData2);
+	GridData gridData3 = new GridData(/*SWT.DEFAULT*/ (textOverwrite.length() + 2) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
+	insertMode.setLayoutData(gridData3);
 	gc.dispose();
 }
 
@@ -99,25 +106,61 @@ public void updateInsertModeText(boolean insert) {
 	insertMode.setText(insert ? textInsert : textOverwrite);
 }
 
-
 /**
- * Update the position status. Displays its decimal and hex value
- * @param newPos value to display
+ * Update the position status and value.
+ * @see updatePositionText
+ * @see updateValueText
  */
-public void updatePositionText(long newPos, byte value) {
-	if (isDisposed() || position.isDisposed()) return;
-	
-	String valueBin = "0000000" + Long.toBinaryString(value);
-	String text = String.format("Offset: %1$d (dec) = %1$X (hex), Value: %2$d (dec) = %2$X (hex) = %3$s (bin)", newPos, value, valueBin.substring(valueBin.length()-8));
-	position.setText(text);
-	//position.pack();
+public void updatePositionValueText(long pos, byte val) {
+	updatePositionText(pos);
+	updateValueText(val);
 }
 
+/**
+ * Update the selection status and value.
+ * @see updateSelectionText
+ * @see updateValueText
+ */
+public void updateSelectionValueText(long[] sel, byte val) {
+	updateSelectionText(sel);
+	updateValueText(val);
+}
+
+/**
+ * Update the position status. Displays its decimal and hex value.
+ * @param newPos position to display
+ */
+public void updatePositionText(long pos) {
+	if (isDisposed() || position.isDisposed()) return;
+	
+	String posText = String.format("Offset: %1$d (dec) = %1$X (hex)", pos);
+	position.setText(posText);
+	//position.pack(true);
+}
+
+/**
+ * Update the value. Displays its decimal, hex and binary value
+ * @param val value to display
+ */
+public void updateValueText(byte val) {
+	if (isDisposed() || position.isDisposed()) return;
+	
+	String valBinText = "0000000" + Long.toBinaryString(val);
+	String valText = String.format("Value: %1$d (dec) = %1$X (hex) = %2$s (bin)", val, valBinText.substring(valBinText.length()-8));
+	value.setText(valText);
+	//value.pack(true);
+}
+
+/**
+ * Update the selection status. Displays its decimal and hex values for start and end selection
+ * @param sel selection array to display: [0] = start, [1] = end
+ */
 public void updateSelectionText(long[] sel) {
 	if (isDisposed() || position.isDisposed()) return;
 	
-	String text = String.format("Selection: %1$d (0x%1$X) - %2$d (0x%2$X)", sel[0], sel[1]);
-	position.setText(text);
+	String selText = String.format("Selection: %1$d (0x%1$X) - %2$d (0x%2$X)", sel[0], sel[1]);
+	position.setText(selText);
+	//position.pack(true);
 }
 
 }
