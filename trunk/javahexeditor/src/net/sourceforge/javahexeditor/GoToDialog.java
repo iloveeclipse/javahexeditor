@@ -93,20 +93,36 @@ private void createComposite() {
 	rowLayout1.type = SWT.VERTICAL;
 	composite = new Composite(composite1, SWT.NONE);
 	composite.setLayout(rowLayout1);
+	
 	SelectionAdapter hexTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			text.setText(text.getText());  // generate event
-			lastHexButtonSelected = e.widget == hexRadioButton;
+			if (lastHexButtonSelected) return;
+			String textNew = text.getText();
+			textNew = Integer.toHexString(Integer.parseInt(textNew)).toUpperCase();
+			text.setText(textNew);  // generate event
+			lastHexButtonSelected = true;
 		}
 	};
+
+	SelectionAdapter decTextSelectionAdapter = new SelectionAdapter() {
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			if (!lastHexButtonSelected) return;
+			String textNew = text.getText();
+			textNew = Integer.toString(Integer.parseInt(textNew, 16));
+			text.setText(textNew);  // generate event
+			lastHexButtonSelected = false;
+		}
+	};
+
 	hexRadioButton = new Button(composite, SWT.RADIO);
 	hexRadioButton.setText("Hex");
 	hexRadioButton.addSelectionListener(defaultSelectionAdapter);
 	hexRadioButton.addSelectionListener(hexTextSelectionAdapter);
+
 	decRadioButton = new Button(composite, SWT.RADIO);
 	decRadioButton.setText("Dec");
 	decRadioButton.addSelectionListener(defaultSelectionAdapter);
-	decRadioButton.addSelectionListener(hexTextSelectionAdapter);
+	decRadioButton.addSelectionListener(decTextSelectionAdapter);
 }
 
 
