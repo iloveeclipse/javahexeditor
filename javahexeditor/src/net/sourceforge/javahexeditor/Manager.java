@@ -751,7 +751,7 @@ public void doSelectBlock() {
 
 	if (selectBlockDialog == null)
 		selectBlockDialog = new SelectBlockDialog(textsParent.getShell());
-	long start = selectBlockDialog.open(content.length() - 1L);
+	long start = selectBlockDialog.open(hexTexts.getSelection(), content.length() - 1L);
 	long end = selectBlockDialog.getFinalEndResult();
 	if ((start >= 0L) && (end >= 0L) && (start != end)) {
 		hexTexts.selectBlock(start, end);

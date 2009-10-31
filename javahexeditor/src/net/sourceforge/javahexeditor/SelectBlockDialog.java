@@ -85,13 +85,14 @@ class myModifyListener implements ModifyListener {
 static final Pattern patternDecDigits = Pattern.compile("[0-9]+");
 static final Pattern patternHexDigits = Pattern.compile("[0-9a-fA-F]+");
 private Shell sShell = null;
-private Composite composite = null;
-private Composite composite2 = null;
+private Composite compositeRadio = null;
+//private Composite compositeText = null;
+private Composite compositeRadioAndText = null;
+private Composite compositeButtons = null;
 private Button hexRadioButton = null;
 private Button decRadioButton = null;
 private Button button = null;
 private Button button1 = null;
-private Composite composite1 = null;
 private Text startText = null;
 private myModifyListener startTextListener = null;
 private Text endText = null;
@@ -128,25 +129,92 @@ private void createComposite() {
 	rowLayout1.marginBottom = 2;
 	//rowLayout1.marginWidth = 5;
 	rowLayout1.type = SWT.VERTICAL;
-	composite = new Composite(composite1, SWT.NONE);
-	composite.setLayout(rowLayout1);
+	compositeRadio = new Composite(compositeRadioAndText, SWT.NONE);
+	compositeRadio.setLayout(rowLayout1);
+	
 	SelectionAdapter hexTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			startText.setText(startText.getText());  // generate event
-			endText.setText(endText.getText());  // generate event
-			lastHexButtonSelected = e.widget == hexRadioButton;
+			if (lastHexButtonSelected) return;
+			String startTextNew = startText.getText();
+			String endTextNew = endText.getText();
+			startTextNew = Integer.toHexString(Integer.parseInt(startTextNew)).toUpperCase();
+			endTextNew = Integer.toHexString(Integer.parseInt(endTextNew)).toUpperCase();
+			startText.setText(startTextNew);  // generate event
+			endText.setText(endTextNew);  // generate event
+			lastHexButtonSelected = true;
 		}
 	};
-	hexRadioButton = new Button(composite, SWT.RADIO);
+	
+	SelectionAdapter decTextSelectionAdapter = new SelectionAdapter() {
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			if (!lastHexButtonSelected) return;
+			String startTextNew = startText.getText();
+			String endTextNew = endText.getText();
+			startTextNew = Integer.toString(Integer.parseInt(startTextNew, 16));
+			endTextNew = Integer.toString(Integer.parseInt(endTextNew, 16));
+			startText.setText(startTextNew);  // generate event
+			endText.setText(endTextNew);  // generate event
+			lastHexButtonSelected = false;
+		}
+	};
+
+	hexRadioButton = new Button(compositeRadio, SWT.RADIO);
 	hexRadioButton.setText("Hex");
 	hexRadioButton.addSelectionListener(defaultSelectionAdapter);
 	hexRadioButton.addSelectionListener(hexTextSelectionAdapter);
-	decRadioButton = new Button(composite, SWT.RADIO);
+
+	decRadioButton = new Button(compositeRadio, SWT.RADIO);
 	decRadioButton.setText("Dec");
 	decRadioButton.addSelectionListener(defaultSelectionAdapter);
-	decRadioButton.addSelectionListener(hexTextSelectionAdapter);
+	decRadioButton.addSelectionListener(decTextSelectionAdapter);
 }
 
+/**
+ * This method initializes composite1
+ */
+private void createComposite1() {
+	GridLayout gridLayout = new GridLayout();
+	gridLayout.numColumns = 3;
+
+	compositeRadioAndText = new Composite(sShell, SWT.NONE);
+	compositeRadioAndText.setLayout(gridLayout);
+	
+	createComposite();
+
+/*
+	RowLayout rowLayout1 = new RowLayout();
+	rowLayout1.marginTop = 2;
+	rowLayout1.marginBottom = 2;
+	rowLayout1.type = SWT.VERTICAL;
+	compositeText = new Composite(compositeRadioAndText, SWT.NONE);
+	compositeText.setLayout(rowLayout1);
+*/
+	
+	startText = new Text(compositeRadioAndText, SWT.BORDER | SWT.SINGLE);
+	startText.setTextLimit(30);
+	int columns = 35;
+	GC gc = new GC(startText);
+	FontMetrics fm = gc.getFontMetrics();
+	int width = columns * fm.getAverageCharWidth();
+	gc.dispose();
+	startText.setLayoutData(new GridData(width, SWT.DEFAULT));
+	startTextListener = new myModifyListener();
+	startText.addModifyListener(startTextListener);
+
+	endText = new Text(compositeRadioAndText, SWT.BORDER | SWT.SINGLE);
+	endText.setTextLimit(30);
+	gc = new GC(endText);
+	fm = gc.getFontMetrics();
+	width = columns * fm.getAverageCharWidth();
+	gc.dispose();
+	endText.setLayoutData(new GridData(width, SWT.DEFAULT));	
+	endTextListener = new myModifyListener();
+	endText.addModifyListener(endTextListener);
+
+	FormData formData = new FormData();
+	formData.top = new FormAttachment(label);
+	compositeRadioAndText.setLayoutData(formData);
+}
 
 /**
  * This method initializes composite2	
@@ -158,13 +226,13 @@ private void createComposite2() {
 	rowLayout1.marginHeight = 10;
 	rowLayout1.marginWidth = 10;
 	rowLayout1.fill = true;
-	composite2 = new Composite(sShell, SWT.NONE);
+	compositeButtons = new Composite(sShell, SWT.NONE);
 	FormData formData = new FormData();
-	formData.left = new FormAttachment(composite1);
+	formData.left = new FormAttachment(compositeRadioAndText);
 	formData.right = new FormAttachment(100);
-	composite2.setLayoutData(formData);
-	composite2.setLayout(rowLayout1);
-	button = new Button(composite2, SWT.NONE);
+	compositeButtons.setLayoutData(formData);
+	compositeButtons.setLayout(rowLayout1);
+	button = new Button(compositeButtons, SWT.NONE);
 	button.setText("Select");
 	button.addSelectionListener(defaultSelectionAdapter);
 	button.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
@@ -177,7 +245,7 @@ private void createComposite2() {
 		}
 	});
 	sShell.setDefaultButton(button);
-	button1 = new Button(composite2, SWT.NONE);
+	button1 = new Button(compositeButtons, SWT.NONE);
 	button1.setText("Close");
 	button1.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
@@ -185,41 +253,6 @@ private void createComposite2() {
 		}
 	});
 }
-
-
-/**
- * This method initializes composite1
- */
-private void createComposite1() {
-	GridLayout gridLayout = new GridLayout();
-	gridLayout.numColumns = 3;
-	composite1 = new Composite(sShell, SWT.NONE);
-	composite1.setLayout(gridLayout);
-	createComposite();
-	startText = new Text(composite1, SWT.BORDER | SWT.SINGLE);
-	startText.setTextLimit(30);
-	int columns = 35;
-	GC gc = new GC(startText);
-	FontMetrics fm = gc.getFontMetrics();
-	int width = columns * fm.getAverageCharWidth();
-	gc.dispose();
-	startText.setLayoutData(new GridData(width, SWT.DEFAULT));
-	startTextListener = new myModifyListener();
-	startText.addModifyListener(startTextListener);
-	endText = new Text(composite1, SWT.BORDER | SWT.SINGLE);
-	endText.setTextLimit(30);
-	gc = new GC(endText);
-	fm = gc.getFontMetrics();
-	width = columns * fm.getAverageCharWidth();
-	gc.dispose();
-	endText.setLayoutData(new GridData(width, SWT.DEFAULT));	
-	endTextListener = new myModifyListener();
-	endText.addModifyListener(endTextListener);
-	FormData formData = new FormData();
-	formData.top = new FormAttachment(label);
-	composite1.setLayoutData(formData);
-}
-
 
 /**
  * This method initializes sShell	
@@ -244,27 +277,35 @@ private void createSShell() {
 	FormData formData2 = new FormData();
 	formData2.left = new FormAttachment(0);
 	formData2.right = new FormAttachment(100);
-	formData2.top = new FormAttachment(composite1);
+	formData2.top = new FormAttachment(compositeRadioAndText);
 	formData2.bottom = new FormAttachment(100, -10);
 	label2.setLayoutData(formData2);
 }
 
 
-public long open(long aLimit) {
-	limit = aLimit;
+public long open(long[] sel, long aLimit) {
+	limit = aLimit;	
 	finalStartResult = -1L;
 	finalEndResult = -1L;
 	if (sShell == null || sShell.isDisposed())
 		createSShell();
-	sShell.pack();
+	sShell.pack();	
 	Manager.reduceDistance(getParent(), sShell);
 	if (lastHexButtonSelected) {
 		hexRadioButton.setSelection(true);
 	} else {
 		decRadioButton.setSelection(true);
 	}
-	label.setText(
-			"Enter start and end number, 0 to " + limit + " (0x0 to 0x" + Long.toHexString(limit).toUpperCase() + ")");
+	label.setText("Enter start and end number, 0 to " + limit + " (0x0 to 0x" + Long.toHexString(limit).toUpperCase() + ")");
+	if ((sel != null) && (sel[0] != sel[1])) {
+		if (lastHexButtonSelected) {
+			lastStartText = Long.toHexString(sel[0]).toUpperCase();
+			lastEndText = Long.toHexString(sel[1]).toUpperCase();
+		} else {
+			lastStartText = Long.toString(sel[0]);
+			lastEndText = Long.toString(sel[1]);
+		}		
+	}
 	startText.setText(lastStartText);
 	endText.setText(lastEndText);
 	startText.selectAll();
