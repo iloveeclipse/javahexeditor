@@ -738,9 +738,15 @@ public void doGoTo() {
 
 	if (goToDialog == null)
 		goToDialog = new GoToDialog(textsParent.getShell());
+
 	long location = goToDialog.open(content.length() - 1L);
-	if (location >= 0L)
-		hexTexts.showMark(location);
+	if (location >= 0L) {
+		long button = goToDialog.getButtonPressed();
+		if (button == 1)
+			hexTexts.showMark(location);
+		else
+			hexTexts.selectBlock(location,location);
+	}
 }
 
 /**

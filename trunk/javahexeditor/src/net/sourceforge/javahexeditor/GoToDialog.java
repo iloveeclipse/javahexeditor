@@ -28,6 +28,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -57,8 +58,9 @@ private Composite composite = null;
 private Composite composite2 = null;
 private Button hexRadioButton = null;
 private Button decRadioButton = null;
-private Button button = null;
-private Button button1 = null;
+private Button showButton = null;
+private Button gotoButton = null;
+private Button closeButton = null;
 private Composite composite1 = null;
 private Text text = null;
 private Label label = null;
@@ -69,6 +71,8 @@ SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
 	}
 };
 long finalResult = -1L;
+long buttonPressed = 0;
+
 boolean lastHexButtonSelected = true;
 String lastLocationText = null;
 long limit = -1L;
@@ -125,6 +129,18 @@ private void createComposite() {
 	decRadioButton.addSelectionListener(decTextSelectionAdapter);
 }
 
+/**
+ * Save the result and close dialog
+ */
+private void saveResultAndClose() {
+	lastLocationText = text.getText();
+	finalResult = tempResult;
+	sShell.close();
+}
+
+public long getButtonPressed() {
+	return buttonPressed;
+}
 
 /**
  * This method initializes composite2	
@@ -136,30 +152,43 @@ private void createComposite2() {
 	rowLayout1.marginHeight = 10;
 	rowLayout1.marginWidth = 10;
 	rowLayout1.fill = true;
+
 	composite2 = new Composite(sShell, SWT.NONE);
 	FormData formData = new FormData();
 	formData.left = new FormAttachment(composite1);
 	formData.right = new FormAttachment(100);
 	composite2.setLayoutData(formData);
 	composite2.setLayout(rowLayout1);
-	button = new Button(composite2, SWT.NONE);
-	button.setText("Show location");
-	button.addSelectionListener(defaultSelectionAdapter);
-	button.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+
+	showButton = new Button(composite2, SWT.NONE);
+	showButton.setText("Show location");
+	showButton.addSelectionListener(defaultSelectionAdapter);
+	showButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			lastLocationText = text.getText();
-			finalResult = tempResult;
+			buttonPressed = 1;
+			saveResultAndClose();
+		}
+	});
+
+	gotoButton = new Button(composite2, SWT.NONE);
+	gotoButton.setText("Go to location");
+	gotoButton.addSelectionListener(defaultSelectionAdapter);
+	gotoButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			buttonPressed = 2;
+			saveResultAndClose();
+		}
+	});
+	
+	closeButton = new Button(composite2, SWT.NONE);
+	closeButton.setText("Close");
+	closeButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 			sShell.close();
 		}
 	});
-	sShell.setDefaultButton(button);
-	button1 = new Button(composite2, SWT.NONE);
-	button1.setText("Close");
-	button1.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			sShell.close();
-		}
-	});
+	
+	sShell.setDefaultButton(showButton);	
 }
 
 
@@ -196,10 +225,12 @@ private void createComposite1() {
 				tempResult = Long.parseLong(newText, radix);
 			
 			if (tempResult >= 0L && tempResult <= limit) {
-				button.setEnabled(true);
+				showButton.setEnabled(true);
+				gotoButton.setEnabled(true);
 				label2.setText("");
 			} else {
-				button.setEnabled(false);
+				showButton.setEnabled(false);
+				gotoButton.setEnabled(false);
 				if ("".equals(newText))
 					label2.setText("");
 				else if (tempResult < 0)
@@ -247,8 +278,11 @@ private void createSShell() {
 public long open(long aLimit) {
 	limit = aLimit;
 	finalResult = -1L;
-	if (sShell == null || sShell.isDisposed())
+	buttonPressed = 0;
+	if (sShell == null || sShell.isDisposed()) {
 		createSShell();
+	}
+
 	sShell.pack();
 	Manager.reduceDistance(getParent(), sShell);
 	if (lastHexButtonSelected) {
