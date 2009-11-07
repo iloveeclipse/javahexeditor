@@ -399,8 +399,7 @@ private void createFindReplaceButtonsComposite() {
 	replaceFindButton.addSelectionListener(defaultSelectionAdapter);
 	replaceFindButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			replace();
-			doFind();
+			doReplaceFind();
 		}
 	});
 	replaceButton = new Button(findReplaceButtonsComposite, SWT.NONE);
@@ -409,9 +408,7 @@ private void createFindReplaceButtonsComposite() {
 	replaceButton.addSelectionListener(defaultSelectionAdapter);
 	replaceButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-			replace();
-			enableDisableControls();
-			feedbackLabel.setText("");
+			doReplace();
 		}
 	});
 	replaceAllButton = new Button(findReplaceButtonsComposite, SWT.NONE);
@@ -582,6 +579,16 @@ private void createSShell() {
 	});
 }
 
+private void doReplace() {
+	replace();
+	enableDisableControls();
+	feedbackLabel.setText("");
+}
+
+private void doReplaceFind() {
+	replace();
+	doFind();
+}
 
 private void doFind() {
 	prepareToRun();

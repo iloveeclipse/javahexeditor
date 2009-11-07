@@ -1184,6 +1184,8 @@ long incrementPosWithinLimits(long oldPos, boolean countNibbles) {
 
 private void initFinder(String findString, boolean isHexString, boolean searchForward,
 		boolean ignoreCase) {
+	if (!searchForward)
+		myCaretStickToStart = true; 
 	if (myFinder == null || !findString.equals(myPreviousFindString) ||
 			isHexString != myPreviousFindStringWasHex || ignoreCase != myPreviousFindIgnoredCase) {
 		myPreviousFindString = findString;
