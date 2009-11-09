@@ -240,9 +240,9 @@ System.out.println("BinaryEditor, long selection");
 			new ISelectionListener() {
 				public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 					if ("net.sourceforge.javahexeditor".equals(part.getSite().getId())) return;
-					Object[] startEnd = ((StructuredSelection)selection).toArray();
+/*					Object[] startEnd = ((StructuredSelection)selection).toArray();
 System.out.println("BinaryEditor received selection from:"+part.getSite().getRegisteredName()+", "+
-startEnd[0]+","+startEnd[1]);
+startEnd[0]+","+startEnd[1]);*/
 				}
 			});
 //	getSite().setSelectionProvider(this);
