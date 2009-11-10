@@ -13,7 +13,7 @@
             extensions="a,bin,cab,class,com,dat,data,drv,dll,exe,hex,iso,jar,lib,o,out,part,pdf,png,ram,res,rom,sys,txt,zip"
             icon="icons/hex.png"
             id="net.sourceforge.javahexeditor"
-            name="javahexeditor">
+            name="Hex Editor">
       </editor>
    </extension>
    <extension
@@ -43,10 +43,10 @@
                enablesFor="+"
                icon="icons/hex.png"
                id="javahexeditor.fileopen.menu"
-               label="Open With Java Hex Editor"
+               label="Open With Hex Editor"
                menubarPath="additions"
                style="push"
-               tooltip="Open the Java Hex Editor for selected files">
+               tooltip="Open the Hex Editor for selected files">
          </action>
       </objectContribution>
    </extension>
