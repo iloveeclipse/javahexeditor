@@ -150,6 +150,16 @@ public BinaryContent() {
  * @param aFile the backing content provider
  * @throws IOException when i/o problems occur. The content will be empty but valid
  */
+public BinaryContent(File aFile) throws IOException {
+	this(aFile, null);
+}
+
+
+/**
+ * Create new content from a file
+ * @param aFile the backing content provider
+ * @throws IOException when i/o problems occur. The content will be empty but valid
+ */
 public BinaryContent(File aFile, String aCharset) throws IOException {
 	this();
 	if (aFile == null || aFile.length() < 1L)
