@@ -28,7 +28,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -100,14 +99,18 @@ private void createComposite() {
 	
 	SelectionAdapter hexTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			text.setText(text.getText());  // generate event
+			lastHexButtonSelected = e.widget == hexRadioButton;
+/* Crashes when the text is not a number
 			if (lastHexButtonSelected) return;
 			String textNew = text.getText();
 			textNew = Integer.toHexString(Integer.parseInt(textNew)).toUpperCase();
 			text.setText(textNew);  // generate event
 			lastHexButtonSelected = true;
+*/
 		}
 	};
-
+/* Crashes when the text is not radix 16
 	SelectionAdapter decTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 			if (!lastHexButtonSelected) return;
@@ -117,7 +120,10 @@ private void createComposite() {
 			lastHexButtonSelected = false;
 		}
 	};
-
+*/
+// Besides the crashes: the user always knows which number is entering, don't need any automatic
+// conversion. What does sometimes happen is one enters the right number and the wrong hex or dec was
+// selected. In that case automatic conversion is the wrong thing to do and very annoying.
 	hexRadioButton = new Button(composite, SWT.RADIO);
 	hexRadioButton.setText("Hex");
 	hexRadioButton.addSelectionListener(defaultSelectionAdapter);
@@ -126,7 +132,7 @@ private void createComposite() {
 	decRadioButton = new Button(composite, SWT.RADIO);
 	decRadioButton.setText("Dec");
 	decRadioButton.addSelectionListener(defaultSelectionAdapter);
-	decRadioButton.addSelectionListener(decTextSelectionAdapter);
+	decRadioButton.addSelectionListener(hexTextSelectionAdapter);//decTextSelectionAdapter);
 }
 
 /**
@@ -152,7 +158,7 @@ private void createComposite2() {
 	rowLayout1.marginHeight = 10;
 	rowLayout1.marginWidth = 10;
 	rowLayout1.fill = true;
-
+	
 	composite2 = new Composite(sShell, SWT.NONE);
 	FormData formData = new FormData();
 	formData.left = new FormAttachment(composite1);
@@ -169,7 +175,7 @@ private void createComposite2() {
 			saveResultAndClose();
 		}
 	});
-
+	
 	gotoButton = new Button(composite2, SWT.NONE);
 	gotoButton.setText("Go to location");
 	gotoButton.addSelectionListener(defaultSelectionAdapter);
@@ -187,8 +193,8 @@ private void createComposite2() {
 			sShell.close();
 		}
 	});
-	
-	sShell.setDefaultButton(showButton);	
+
+	sShell.setDefaultButton(showButton);
 }
 
 
