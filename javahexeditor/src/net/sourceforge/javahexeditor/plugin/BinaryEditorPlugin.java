@@ -25,7 +25,6 @@ import java.util.List;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 
@@ -126,12 +125,9 @@ public BinaryEditorPlugin() {
  */
 public void start(BundleContext context) throws Exception {
 	super.start(context);
-	Bundle[] bundles = context.getBundles();
-System.out.println(bundles.length + " plugins");
-for (int i = 0; i < bundles.length; ++i){
-System.out.println("Location:"+bundles[i].getLocation()+", Symbolic name:"+
-bundles[i].getSymbolicName());
-}
+//Bundle[] bundles = context.getBundles();System.out.println(bundles.length + " plugins");
+//for (int i = 0; i < bundles.length; ++i){System.out.println("Location:"+bundles[i].getLocation()+
+//", Symbolic name:"+bundles[i].getSymbolicName());}
 }
 
 
