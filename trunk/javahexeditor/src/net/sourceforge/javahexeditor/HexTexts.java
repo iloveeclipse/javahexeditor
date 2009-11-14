@@ -2,17 +2,17 @@
  * javahexeditor, a java hex editor
  * Copyright (C) 2006, 2009 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net
  * The official javahexeditor site is sourceforge.net/projects/javahexeditor
- *
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -110,6 +110,14 @@ boolean delayedInQueue = false;
 Runnable delayedWaiting = null;
 boolean dragging = false;
 int fontCharWidth = -1;
+ArrayList highlightRangesInScreen = null;
+private ArrayList mergeChangeRanges = null;
+private ArrayList mergeHighlightRanges = null;
+private int mergeIndexChange = -2;
+private int mergeIndexHighlight = -2;
+private boolean mergeRangesIsBlue = false;
+private boolean mergeRangesIsHighlight = false;
+private int mergeRangesPosition = -1;
 private int myBytesPerLine = 16;
 private boolean myCaretStickToStart = false;  // stick to end
 BinaryClipboard myClipboard = null;
@@ -148,18 +156,17 @@ GridData gridData5 = null;
 GridData gridData6 = null;
 private GC styledText1GC = null;
 private GC styledText2GC = null;
-private Composite 	column = null;
-private Text 		textSeparator = null;
-private StyledText 	styledText = null;
-private Composite 	column1 = null;
-private Composite 	column1Header = null;
-private StyledText 	header1Text = null;
-private StyledText 	styledText1 = null;
-private Composite 	column2 = null;
-private Composite 	column2Header = null;
-private StyledText 	header2Text = null;
-private Text 		textSeparator2 = null;
-private StyledText 	styledText2 = null;
+// indentation means containment (ie. 'textSeparator' and 'styledText' are contained within 'column')
+private Composite column = null;
+private Text          textSeparator = null;
+private StyledText    styledText = null;
+private Composite column1 = null;
+private Composite     column1Header = null;
+private StyledText        header1Text = null;
+private StyledText    styledText1 = null;
+private Composite column2 = null;
+private Text          textSeparator2 = null;
+private StyledText    styledText2 = null;
 
 /**
  * compose byte-to-hex map
@@ -216,7 +223,8 @@ public String getCharset() {
 }
 
 public String getSystemCharset() {
-	return Charset.defaultCharset().toString();
+	return System.getProperty("file.encoding", "utf-8");
+//	return Charset.defaultCharset().toString();
 }
 
 public void setCharsetAndCompose(String name) {
@@ -253,7 +261,7 @@ public static byte[] hexStringToByte(String hexString) {
 		String hexByte = hexString.substring(i * 2, i * 2 + 2);
 		tmp[i] = (byte)Integer.parseInt(hexByte, 16);
 	}
-
+	
 	return tmp;
 }
 
@@ -332,12 +340,12 @@ private class MyKeyAdapter extends KeyAdapter {
 
 private class MyMouseAdapter extends MouseAdapter {
 	int charLen;
-
+	
 	public MyMouseAdapter(boolean hexContent) {
 		charLen = 1;
 		if (hexContent) charLen = 3;
 	}
-
+	
 	public void mouseDown(MouseEvent e) {
 		if (e.button == 1)
 			dragging = true;
@@ -363,7 +371,7 @@ private class MyMouseAdapter extends MouseAdapter {
 			notifyLongSelectionListeners();
 		}
 	}
-
+	
 	public void mouseUp(MouseEvent e) {
 		if (e.button == 1)
 			dragging = false;
@@ -397,12 +405,12 @@ private class MyPaintAdapter implements PaintListener {
 
 private class MySelectionAdapter extends SelectionAdapter implements SelectionListener {
 	int charLen;
-
+	
 	public MySelectionAdapter(boolean hexContent) {
 		charLen = 1;
 		if (hexContent) charLen = 3;
 	}
-
+	
 	public void widgetSelected(SelectionEvent e) {
 		if (!dragging)
 			return;
@@ -416,7 +424,7 @@ private class MySelectionAdapter extends SelectionAdapter implements SelectionLi
 			lower = higher;
 			higher = e.x / charLen;
 		}
-
+		
 		select(myTextAreasStart + lower, myTextAreasStart + higher);
 		if (selection != (myStart != myEnd))
 			notifyListeners(SWT.Modify, null);
@@ -456,7 +464,7 @@ private class MyVerifyKeyAdapter implements VerifyKeyListener {
 				}};
 				runnableAdd(delayed);
 				updateScrollBar();
-
+				
 				notifyListeners(SWT.Modify, null);
 				notifyLongSelectionListeners();
 			}
@@ -477,9 +485,10 @@ private class MyVerifyKeyAdapter implements VerifyKeyListener {
  */
 public HexTexts(final Composite parent, int style) {
 	super(parent, style | SWT.BORDER | SWT.V_SCROLL);
-
+	
 	colorCaretLine = new Color(Display.getCurrent(), 232, 242, 254);  // very light blue
 	colorHighlight = new Color(Display.getCurrent(), 255, 248, 147);  // mellow yellow
+	highlightRangesInScreen = new ArrayList();
 
 	// set default charset & compose
 	setCharsetAndCompose(null);
@@ -542,14 +551,14 @@ public void redrawCaret(boolean focus) {
 public void addLongSelectionListener(SelectionListener listener) {
 	if (listener == null)
 		throw new IllegalArgumentException();
-
+	
 	if (!myLongSelectionListeners.contains(listener))
 		myLongSelectionListeners.add(listener);
 }
 
 
 /**
- * This method initializes composite
+ * This method initializes composite	
  */
 private void initialize() {
 	GridLayout gridLayout1 = new GridLayout();
@@ -570,7 +579,7 @@ private void initialize() {
 	column.setBackground(colorLightShadow);
 	GridData gridDataColumn = new GridData(SWT.BEGINNING, SWT.FILL, false, true);
 	column.setLayoutData(gridDataColumn);
-
+	
 	GridData gridDataTextSeparator = new GridData(SWT.FILL, SWT.BEGINNING, true, false);
 	gridDataTextSeparator.widthHint = 10;
 	textSeparator = new Text(column, SWT.SEPARATOR);
@@ -594,7 +603,7 @@ private void initialize() {
 	styledText.setLayoutData(gridDataAddresses);
 	setAddressesGridDataWidthHint();
 	styledText.setContent(new DisplayedContent(styledText, charsForAddress, numberOfLines));
-
+	
 	column1 = new Composite(this, SWT.NONE);
 	GridLayout column1Layout = new GridLayout();
 	column1Layout.marginHeight = 0;
@@ -605,7 +614,7 @@ private void initialize() {
 	column1.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 	GridData gridDataColumn1 = new GridData(SWT.BEGINNING, SWT.FILL, false, true);
 	column1.setLayoutData(gridDataColumn1);
-
+	
 	column1Header = new Composite(column1, SWT.NONE);
 	column1Header.setBackground(colorLightShadow);
 	GridLayout column1HeaderLayout = new GridLayout();
@@ -614,7 +623,7 @@ private void initialize() {
 	column1Header.setLayout(column1HeaderLayout);
 	GridData gridDataColumn1Header = new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false);
 	column1Header.setLayoutData(gridDataColumn1Header);
-
+		
 	GridData gridData = new GridData();
 	gridData.horizontalIndent = 1;
 	header1Text = new StyledText(column1Header, SWT.SINGLE | SWT.READ_ONLY);
@@ -662,7 +671,7 @@ private void initialize() {
 	Caret nonDefaultCaret = new Caret(defaultCaret.getParent(), defaultCaret.getStyle());
 	nonDefaultCaret.setBounds(defaultCaret.getBounds());
 	styledText1.setCaret(nonDefaultCaret);
-
+	
 	column2 = new Composite(this, SWT.NONE);
 	GridLayout column2Layout = new GridLayout();
 	column2Layout.marginHeight = 0;
@@ -708,7 +717,7 @@ private void initialize() {
 	nonDefaultCaret.setBounds(defaultCaret.getBounds());
 	styledText2.setCaret(nonDefaultCaret);
 	styledText2GC = new GC(styledText2);
-
+	
 	super.setFont(fontCurrent);
 	ScrollBar vertical = getVerticalBar();
 	vertical.setSelection(0);
@@ -721,7 +730,7 @@ private void initialize() {
 			myTextAreasStart =
 				(((long)getVerticalBar().getSelection()) << verticalBarFactor) * (long)myBytesPerLine;
 			if (previousStart == myTextAreasStart) return;
-
+			
 			Runnable delayed = new Runnable() {public void run() {
 				redrawTextAreas(false);
 				setFocus();
@@ -799,7 +808,7 @@ StringBuffer cookAddresses(long address, int limit) {
 		}
 		theText.append(nibbleToHex[((int)address) & 0x0f]).append(':');
 	}
-
+	
 	return theText;
 }
 
@@ -807,7 +816,7 @@ StringBuffer cookAddresses(long address, int limit) {
 StringBuffer cookTexts(boolean isHexOutput, int length) {
 	if (length > tmpRawBuffer.length) length = tmpRawBuffer.length;
 	StringBuffer result = null;
-
+	
 	if (isHexOutput) {
 		result = new StringBuffer(length * 3);
 		for (int i=0; i<length; ++i) {
@@ -840,7 +849,7 @@ public void cut() {
  */
 public boolean deleteNotSelected() {
 	if (!myInserting || myStart < 1L && myEnd >= myContent.length()) return false;
-
+	
 	myContent.delete(myEnd, myContent.length() - myEnd);
 	myContent.delete(0L, myStart);
 	myStart = 0L;
@@ -865,7 +874,7 @@ public boolean deleteSelected() {
 	myUpANibble = 0;
 	ensureWholeScreenIsVisible();
 	restoreStateAfterModify();
-
+	
 	return true;
 }
 
@@ -879,7 +888,7 @@ void doModifyKeyPressed(KeyEvent event) {
 		event.widget == styledText1 && ((event.stateMask & SWT.MODIFIER_MASK) != 0 ||
 		keyCode < '0' || keyCode > '9' && keyCode < 'a' || keyCode > 'f'))
 		return;
-
+	
 	if (getCaretPos() == myContent.length() && !myInserting) {
 		ensureCaretIsVisible();
 		redrawTextAreas(false);
@@ -938,12 +947,12 @@ private long doNavigateKeyPressed(boolean ctrlKey, int keyCode, long oldPos, boo
 		case SWT.ARROW_UP:
 			if (oldPos >= myBytesPerLine) oldPos -= myBytesPerLine;
 		break;
-
+			
 		case SWT.ARROW_DOWN:
 			if (oldPos <= myContent.length() - myBytesPerLine) oldPos += myBytesPerLine;
 			if (countNibbles && oldPos == myContent.length()) myUpANibble = 0;
 		break;
-
+		
 		case SWT.ARROW_LEFT:
 			if (countNibbles && (oldPos > 0 || oldPos == 0 && myUpANibble > 0)) {
 				if (myUpANibble == 0) --oldPos;
@@ -952,11 +961,11 @@ private long doNavigateKeyPressed(boolean ctrlKey, int keyCode, long oldPos, boo
 			if (!countNibbles && oldPos > 0)
 				--oldPos;
 		break;
-
+			
 		case SWT.ARROW_RIGHT:
 			oldPos = incrementPosWithinLimits(oldPos, countNibbles);
 		break;
-
+		
 		case SWT.END:
 			if (ctrlKey) {
 				oldPos = myContent.length();
@@ -976,7 +985,7 @@ private long doNavigateKeyPressed(boolean ctrlKey, int keyCode, long oldPos, boo
 			}
 			myUpANibble = 0;
 		break;
-
+		
 		case SWT.PAGE_UP:
 			if (oldPos >= myBytesPerLine)
 			{
@@ -985,7 +994,7 @@ private long doNavigateKeyPressed(boolean ctrlKey, int keyCode, long oldPos, boo
 					oldPos = (oldPos + myBytesPerLine * numberOfLines_1) % myBytesPerLine;
 			}
 		break;
-
+		
 		case SWT.PAGE_DOWN:
 			if (oldPos <= myContent.length() - myBytesPerLine)
 			{
@@ -997,14 +1006,14 @@ private long doNavigateKeyPressed(boolean ctrlKey, int keyCode, long oldPos, boo
 			if (countNibbles && oldPos == myContent.length()) myUpANibble = 0;
 		break;
 	}
-
+	
 	return oldPos;
 }
 
 
 void drawUnfocusedCaret(boolean visible) {
 	if (styledText1.isDisposed()) return;
-
+	
 	GC unfocusedGC = null;
 	Caret unfocusedCaret = null;
 	int chars = 0;
@@ -1053,7 +1062,7 @@ private void ensureWholeScreenIsVisible() {
 	if (myTextAreasStart + myBytesPerLine * numberOfLines > myContent.length())
 		myTextAreasStart = myContent.length() - (myContent.length() - 1L) % myBytesPerLine - 1L -
 							myBytesPerLine * numberOfLines_1;
-
+	
 	if (myTextAreasStart < 0L)
 		myTextAreasStart = 0L;
 }
@@ -1072,7 +1081,7 @@ private void ensureWholeScreenIsVisible() {
 public boolean findAndSelect(String findString, boolean isHexString, boolean searchForward,
 		boolean ignoreCase) throws IOException {
 	boolean result  = findAndSelectInternal(findString, isHexString, searchForward, ignoreCase, true);
-
+	
 	return result;
 }
 
@@ -1080,7 +1089,7 @@ public boolean findAndSelect(String findString, boolean isHexString, boolean sea
 private boolean findAndSelectInternal(String findString, boolean isHexString, boolean searchForward,
 		boolean ignoreCase, boolean updateGui) throws IOException {
 	if (findString == null) return true;
-
+	
 	initFinder(findString, isHexString, searchForward, ignoreCase);
 	final Object[] result = new Object[2];
 	Manager.blockUntilFinished(new Runnable() {
@@ -1108,7 +1117,7 @@ private boolean findAndSelectInternal(String findString, boolean isHexString, bo
 
 		return true;
 	}
-
+	
 	return false;
 }
 
@@ -1138,11 +1147,21 @@ public byte getValue(long pos) {
 	return tmpRawBuffer[0];
 }
 
-int getHighlightRange(long start, int length) {
-	if (myLastLocationPosition < start || myLastLocationPosition >= start + length)
-		return -1;
+/**
+ * Get the binary content
+ * @return the content being edited
+ */
+public BinaryContent getContent() {
+	return myContent;
+}
 
-	return (int)(myLastLocationPosition - myTextAreasStart);
+
+private void getHighlightRangesInScreen(long start, int length) {
+	highlightRangesInScreen.clear();
+	if (myLastLocationPosition >= start && myLastLocationPosition < start + length) {
+		highlightRangesInScreen.add(new Integer((int)(myLastLocationPosition - myTextAreasStart)));
+		highlightRangesInScreen.add(new Integer(1));
+	}
 }
 
 
@@ -1161,10 +1180,10 @@ public boolean isSelected() {
 
 boolean handleSelectedPreModify() {
 	if (myStart == myEnd || !myInserting) return false;
-
+	
 	myContent.delete(myStart, myEnd - myStart);
 	myEnd = myStart;
-
+	
 	return true;
 }
 
@@ -1177,7 +1196,7 @@ long incrementPosWithinLimits(long oldPos, boolean countNibbles) {
 		} else {
 			++oldPos;
 		}
-
+	
 	return oldPos;
 }
 
@@ -1218,44 +1237,137 @@ public boolean isOverwriteMode() {
 
 
 void makeFirstRowSameHeight() {
-	((GridData)textSeparator.getLayoutData()).heightHint =
+	((GridData)textSeparator.getLayoutData()).heightHint = 
 		header1Text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-	((GridData)textSeparator2.getLayoutData()).heightHint =
+	((GridData)textSeparator2.getLayoutData()).heightHint = 
 		header1Text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 }
 
 
-ArrayList mergeRanges(ArrayList changeRanges, int highlighted) {
-	if (changeRanges.size() < 1 && highlighted < 0) return null;
-
+/**
+ * Merge ranges of changes in file with ranges of highlighted elements.
+ * Finds lowest range border, finds next lowest range border. That's the first result. Keeps going
+ * until last range border.
+ * @return list of StyleRanges, each with a style of type 'changed', 'highlighted', or both.
+ */
+ArrayList mergeRanges(ArrayList changeRanges, ArrayList highlightRanges) {
+	if (!mergerInit(changeRanges, highlightRanges)) {
+		return null;
+	}
 	ArrayList result = new ArrayList();
-	boolean merged = highlighted < 0;
-	for (Iterator i=changeRanges.iterator(); i.hasNext();) {
-		int startPos = (int)(((Long)i.next()).longValue() - myTextAreasStart);
-		int endPos = startPos + ((Long)i.next()).intValue();
-		if (!merged && endPos > highlighted) {
-			merged = true;
-			if (startPos < highlighted)
-				result.add(new StyleRange(startPos, highlighted - startPos, colorBlue, null));
-			result.add(new StyleRange(highlighted, 1, startPos <= highlighted ? colorBlue : null,
-					colorHighlight));
-			if (endPos - 1 > highlighted)
-				result.add(new StyleRange(highlighted + 1, endPos - highlighted - 1, colorBlue, null));
-		} else {
-			result.add(new StyleRange(startPos, endPos - startPos, colorBlue, null));
+	mergerNext();
+	int start = mergeRangesPosition;
+	boolean blue = mergeRangesIsBlue;
+	boolean highlight = mergeRangesIsHighlight;
+	while (mergerNext()) {
+		if (blue || highlight) {
+			result.add(new StyleRange(start, mergeRangesPosition - start, blue ? colorBlue : null,
+					highlight ? colorHighlight : null));
+		}
+		start = mergeRangesPosition;
+		blue = mergeRangesIsBlue;
+		highlight = mergeRangesIsHighlight;
+	}
+	
+	return result;
+}
+
+
+boolean mergerCatchUps() {
+	boolean withinRange = false;
+	if (mergeChangeRanges != null && mergeChangeRanges.size() > mergeIndexChange) {
+		withinRange = true;
+		if (mergerPosition(true) < mergeRangesPosition) {
+			++mergeIndexChange;
 		}
 	}
-	if (!merged)
-		result.add(new StyleRange(highlighted, 1, null, colorHighlight));
-//for(Iterator i=result.iterator();i.hasNext();)System.out.println(i.next());
+	if (mergeHighlightRanges != null && mergeHighlightRanges.size() > mergeIndexHighlight) {
+		withinRange = true;
+		if (mergerPosition(false) < mergeRangesPosition) {
+			++mergeIndexHighlight;
+		}
+	}
+	
+	return withinRange;
+}
 
+
+/**
+ * Initialise merger variables
+ * @return whether the parameters hold any data
+ */
+boolean mergerInit(ArrayList changeRanges, ArrayList highlightRanges) {
+	if ((changeRanges == null || changeRanges.size() < 2) &&
+		(highlightRanges == null || highlightRanges.size() < 2)) {
+		return false;
+	}
+	this.mergeChangeRanges = changeRanges;
+	this.mergeHighlightRanges = highlightRanges;
+	mergeRangesIsBlue = false;
+	mergeRangesIsHighlight = false;
+	mergeRangesPosition = -1;
+	mergeIndexChange = 0;
+	mergeIndexHighlight = 0;
+	
+	return true;
+}
+
+
+int mergerMinimumInChangesHighlights() {
+	int change = Integer.MAX_VALUE;
+	if (mergeChangeRanges != null && mergeChangeRanges.size() > mergeIndexChange) {
+		change = mergerPosition(true);
+	}
+	int highlight = Integer.MAX_VALUE;
+	if (mergeHighlightRanges != null && mergeHighlightRanges.size() > mergeIndexHighlight) {
+		highlight = mergerPosition(false);
+	}
+	int result = Math.min(change, highlight);
+	if (change == result) {
+		mergeRangesIsBlue = (mergeIndexChange & 1) == 0;
+	}
+	if (highlight == result) {
+		mergeRangesIsHighlight = (mergeIndexHighlight & 1) == 0;
+	}
+	
+	return result;
+}
+
+
+boolean mergerNext() {
+	++mergeRangesPosition;
+	if (!mergerCatchUps()) {
+		return false;
+	}
+	mergeRangesPosition = mergerMinimumInChangesHighlights();
+	
+	return true;
+}
+
+
+int mergerPosition(boolean changesNotHighlights) {
+	int result = -1;
+	if (changesNotHighlights) {
+		result = (int)(((Long)mergeChangeRanges.get(mergeIndexChange & 0xfffffffe)).longValue() -
+				myTextAreasStart);
+		if ((mergeIndexChange & 1) == 1) {
+			result = (int)Math.min(myBytesPerLine * numberOfLines,
+					result + ((Long)mergeChangeRanges.get(mergeIndexChange)).longValue());
+		}
+	} else {
+		result = ((Integer)mergeHighlightRanges.get(mergeIndexHighlight & 0xfffffffe)).intValue();
+		if ((mergeIndexHighlight & 1) == 1) {
+			result += ((Integer)mergeHighlightRanges.get(mergeIndexHighlight)).intValue();
+		}
+	}
+	
 	return result;
 }
 
 
 void notifyLongSelectionListeners() {
 	if (myLongSelectionListeners.isEmpty()) return;
-
+	
 	Event basicEvent = new Event();
 	basicEvent.widget = this;
 	SelectionEvent anEvent = new SelectionEvent(basicEvent);
@@ -1263,9 +1375,9 @@ void notifyLongSelectionListeners() {
 	anEvent.x = (int)myStart;
 	anEvent.height = (int)(myEnd >>> 32);
 	anEvent.y = (int)myEnd;
-
+	
 	Iterator listeners = myLongSelectionListeners.iterator();
-
+	
 	while (listeners.hasNext()) {
 		SelectionListener aListener = (SelectionListener)listeners.next();
 		aListener.widgetSelected(anEvent);
@@ -1282,7 +1394,7 @@ void notifyLongSelectionListeners() {
  */
 public void paste() {
 	if (!myClipboard.hasContents()) return;
-
+	
 	handleSelectedPreModify();
 	long caretPos = getCaretPos();
 	long total = myClipboard.getContents(myContent, caretPos, myInserting);
@@ -1362,9 +1474,9 @@ void redrawTextAreas(boolean fromScratch) {
 		}
 	}
 	myPreviousRedrawStart = myTextAreasStart;
-
+	
 	StringBuffer newText = cookAddresses(newLinesStart, linesShifted * myBytesPerLine);
-
+	
 	ArrayList changeRanges = new ArrayList();
 	int actuallyRead = 0;
 	try {
@@ -1375,8 +1487,8 @@ void redrawTextAreas(boolean fromScratch) {
 	}
 	StringBuffer resultHex = cookTexts(true, actuallyRead);
 	StringBuffer resultChar = cookTexts(false, actuallyRead);
-	int highlightRange = getHighlightRange(newLinesStart, linesShifted * myBytesPerLine);
-	ArrayList viewRanges = mergeRanges(changeRanges, highlightRange);
+	getHighlightRangesInScreen(newLinesStart, linesShifted * myBytesPerLine);
+	ArrayList viewRanges = mergeRanges(changeRanges, highlightRangesInScreen);
 	redrawTextAreas(mode, newText, resultHex, resultChar, viewRanges);
 	refreshSelections();
 	refreshCaretsPosition();
@@ -1428,16 +1540,16 @@ void refreshSelections() {
 		myStart > myTextAreasStart + myBytesPerLine * numberOfLines ||
 		myEnd <= myTextAreasStart)
 		return;
-
+	
 	long startLocation = myStart - myTextAreasStart;
 	if (startLocation < 0L) startLocation = 0L;
 	int intStart = (int)startLocation;
-
+	
 	long endLocation = myEnd - myTextAreasStart;
 	if (endLocation > myBytesPerLine * numberOfLines)
 		endLocation = myBytesPerLine * numberOfLines;
 	int intEnd = (int)endLocation;
-
+	
 	if (myCaretStickToStart) {
 		int tmp = intStart;
 		intStart = intEnd;
@@ -1459,7 +1571,7 @@ public void removeLongSelectionListener(SelectionListener listener)
 {
 	if (listener == null)
 		throw new IllegalArgumentException();
-
+	
 	myLongSelectionListeners.remove(listener);
 }
 
@@ -1510,7 +1622,7 @@ public int replaceAll(String findString, boolean isFindHexString, boolean search
 		boolean ignoreCase, String replaceString, boolean isReplaceHexString) throws IOException {
 	int result = 0;
 	stopSearching = false;
-	while (!stopSearching &&
+	while (!stopSearching && 
 			findAndSelectInternal(findString, isFindHexString, searchForward, ignoreCase, false)) {
 		++result;
 		replace(replaceString, isReplaceHexString);
@@ -1518,7 +1630,7 @@ public int replaceAll(String findString, boolean isFindHexString, boolean search
 	if (result > 0) {
 		setSelection(getSelection()[0], getSelection()[1]);
 	}
-
+	
 	return result;
 }
 
@@ -1527,7 +1639,7 @@ void restoreStateAfterModify() {
 	ensureCaretIsVisible();
 	redrawTextAreas(true);
 	updateScrollBar();
-
+	
 	notifyListeners(SWT.Modify, null);
 	notifyLongSelectionListeners();
 }
@@ -1578,7 +1690,7 @@ void select(long start, long end) {
 		myStart = start;
 		if (myStart > myContent.length()) myStart = myContent.length();
 	}
-
+	
 	myEnd = myStart;
 	if (end > myStart) {
 		myEnd = end;
@@ -1602,7 +1714,7 @@ void setCaretsSize(boolean insert) {
 	int height = styledText1.getCaret().getSize().y;
 	if (!myInserting)
 		width = fontCharWidth;
-
+	
 	styledText1.getCaret().setSize(width, height);
 	styledText2.getCaret().setSize(width, height);
 }
@@ -1626,7 +1738,7 @@ public void setContentProvider(BinaryContent aContent) {
 		myTextAreasStart = myStart = myEnd = 0L;
 		myCaretStickToStart = false;
 	}
-
+	
 	charsForFileSizeAddress = Long.toHexString(myContent.length()).length();
 
 	updateScrollBar();
@@ -1721,13 +1833,15 @@ void shiftStartAndEnd(long newPos) {
  */
 public void showMark(long position) {
 	myLastLocationPosition = position;
+	if (position < 0) return;
+	
 	position = position - position % myBytesPerLine;
 	myTextAreasStart = position;
 	if (numberOfLines > 2)
 		myTextAreasStart = position - (numberOfLines / 2) * myBytesPerLine;
 	ensureWholeScreenIsVisible();
 	redrawTextAreas(true);
-	setFocus();
+//	setFocus();
 	updateScrollBar();
 }
 
@@ -1749,7 +1863,7 @@ long totalNumberOfLines() {
 	if (myContent != null) {
 		result = (myContent.length() - 1L) / myBytesPerLine + 1L;
 	}
-
+	
 	return result;
 }
 
@@ -1765,7 +1879,7 @@ public void undo() {
 void undo(boolean previousAction) {
 	long[] selection = previousAction ? myContent.undo() : myContent.redo();
 	if (selection == null) return;
-
+	
 	myUpANibble = 0;
 	myStart = selection[0];
 	myEnd = selection[1];
@@ -1781,9 +1895,9 @@ void updateNumberOfLines() {
 	numberOfLines = height / styledText.getLineHeight();
 	if (numberOfLines < 1)
 		numberOfLines = 1;
-
+	
 	numberOfLines_1 = numberOfLines - 1;
-
+	
 	((DisplayedContent)styledText.getContent()).setDimensions(charsForAddress, numberOfLines);
 	((DisplayedContent)styledText1.getContent()).setDimensions(myBytesPerLine * 3, numberOfLines);
 	((DisplayedContent)styledText2.getContent()).setDimensions(myBytesPerLine, numberOfLines);
