@@ -19,8 +19,6 @@
  */
 package net.sourceforge.javahexeditor;
 
-import java.util.Formatter;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -71,7 +69,7 @@ private void initialize(boolean withSeparator) {
 
 	GC gc= new GC(this);
 	FontMetrics fontMetrics = gc.getFontMetrics();
-	
+
 	position = new Label(this, SWT.SHADOW_NONE);
 	GridData gridData1 = new GridData(/*SWT.DEFAULT*/ (11+10+12+3+10+12) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
 	position.setLayoutData(gridData1);
@@ -81,14 +79,20 @@ private void initialize(boolean withSeparator) {
 	separator23GridData.verticalAlignment = SWT.FILL;
 	Label separator2 = new Label(this, SWT.SEPARATOR);
 	separator2.setLayoutData(separator23GridData);
-	
+
 	value = new Label(this, SWT.SHADOW_NONE);
 	GridData gridData2 = new GridData(/*SWT.DEFAULT*/ (7+3+9+2+9+8+6) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
 	value.setLayoutData(gridData2);
 	
+	// From Eclipse 3.1's GridData javadoc:
+	// NOTE: Do not reuse GridData objects. Every control in a Composite that is managed by a
+	// GridLayout must have a unique GridData
+	GridData separator3GridData = new GridData();
+	separator3GridData.grabExcessVerticalSpace = true;
+	separator3GridData.verticalAlignment = SWT.FILL;
 	Label separator3 = new Label(this, SWT.SEPARATOR);
-	separator3.setLayoutData(separator23GridData);
-
+	separator3.setLayoutData(separator3GridData);
+	
 	insertMode = new Label(this, SWT.SHADOW_NONE);
 	GridData gridData3 = new GridData(/*SWT.DEFAULT*/ (textOverwrite.length() + 2) * fontMetrics.getAverageCharWidth(), SWT.DEFAULT);
 	insertMode.setLayoutData(gridData3);
@@ -133,7 +137,8 @@ public void updateSelectionValueText(long[] sel, byte val) {
 public void updatePositionText(long pos) {
 	if (isDisposed() || position.isDisposed()) return;
 	
-	String posText = String.format("Offset: %1$d (dec) = %1$X (hex)", pos);
+	String posText = "Offset: " + pos + " (dec) = " + Long.toHexString(pos) + " (hex)";
+//	String posText = String.format("Offset: %1$d (dec) = %1$X (hex)", pos);
 	position.setText(posText);
 	//position.pack(true);
 }
@@ -146,7 +151,9 @@ public void updateValueText(byte val) {
 	if (isDisposed() || position.isDisposed()) return;
 	
 	String valBinText = "0000000" + Long.toBinaryString(val);
-	String valText = String.format("Value: %1$d (dec) = %1$X (hex) = %2$s (bin)", val, valBinText.substring(valBinText.length()-8));
+	String valText = "Value: " + val + " (dec) = " + Integer.toHexString(0x0ff & val) + " (hex) = " +
+		valBinText.substring(valBinText.length()-8) + " (bin)";
+//	String valText = String.format("Value: %1$d (dec) = %1$X (hex) = %2$s (bin)", val, valBinText.substring(valBinText.length()-8));
 	value.setText(valText);
 	//value.pack(true);
 }
@@ -158,7 +165,9 @@ public void updateValueText(byte val) {
 public void updateSelectionText(long[] sel) {
 	if (isDisposed() || position.isDisposed()) return;
 	
-	String selText = String.format("Selection: %1$d (0x%1$X) - %2$d (0x%2$X)", sel[0], sel[1]);
+	String selText = "Selection: " + sel[0] + " (0x" + Long.toHexString(sel[0]) + ") - " + sel[1] +
+		" (0x" + Long.toHexString(sel[1]) + ")";
+//	String selText = String.format("Selection: %1$d (0x%1$X) - %2$d (0x%2$X)", sel[0], sel[1]);
 	position.setText(selText);
 	//position.pack(true);
 }
