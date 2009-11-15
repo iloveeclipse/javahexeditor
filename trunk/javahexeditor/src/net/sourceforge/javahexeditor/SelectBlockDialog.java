@@ -134,6 +134,10 @@ private void createComposite() {
 	
 	SelectionAdapter hexTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+			startText.setText(startText.getText());  // generate event
+			endText.setText(endText.getText());  // generate event
+			lastHexButtonSelected = e.widget == hexRadioButton;			
+/* Crashes when the text is not a number			
 			if (lastHexButtonSelected) return;
 			String startTextNew = startText.getText();
 			String endTextNew = endText.getText();
@@ -142,9 +146,10 @@ private void createComposite() {
 			startText.setText(startTextNew);  // generate event
 			endText.setText(endTextNew);  // generate event
 			lastHexButtonSelected = true;
+*/
 		}
 	};
-	
+/* Crashes when the text is not radix 16	
 	SelectionAdapter decTextSelectionAdapter = new SelectionAdapter() {
 		public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 			if (!lastHexButtonSelected) return;
@@ -157,7 +162,10 @@ private void createComposite() {
 			lastHexButtonSelected = false;
 		}
 	};
-
+*/
+// Besides the crashes: the user always knows which number is entering, don't need any automatic
+// conversion. What does sometimes happen is one enters the right number and the wrong hex or dec was
+// selected. In that case automatic conversion is the wrong thing to do and very annoying.
 	hexRadioButton = new Button(compositeRadio, SWT.RADIO);
 	hexRadioButton.setText("Hex");
 	hexRadioButton.addSelectionListener(defaultSelectionAdapter);
@@ -166,7 +174,8 @@ private void createComposite() {
 	decRadioButton = new Button(compositeRadio, SWT.RADIO);
 	decRadioButton.setText("Dec");
 	decRadioButton.addSelectionListener(defaultSelectionAdapter);
-	decRadioButton.addSelectionListener(decTextSelectionAdapter);
+	//decRadioButton.addSelectionListener(decTextSelectionAdapter);
+	hexRadioButton.addSelectionListener(hexTextSelectionAdapter);
 }
 
 /**
