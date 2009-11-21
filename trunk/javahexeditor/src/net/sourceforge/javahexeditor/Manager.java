@@ -1131,11 +1131,16 @@ public boolean saveFile() {
 	boolean successful = false;
 	String errorMessage = "Could not create temporary file with a unique name";
 	File tempFile = null;
+	// It can happen that in two successive "Save File"'s the first one didn't get the temp file
+	// deleted due to limitations in the os (windows). With this loop it's possible to save many times
+	for (int tries = 9999; tries >= 0 && !successful; --tries) {
 	try {
-		tempFile = File.createTempFile(myFile.getName(), "9999", myFile.getParentFile());
+		// + "99" is to avoid IllegalArgumentException
+		tempFile = File.createTempFile(myFile.getName() + "99", "" + tries, myFile.getParentFile());
 		successful = true;
 	} catch (IOException e1) {
 		e1.printStackTrace();
+	}
 	}
 	if (successful) {
 		successful = false;
