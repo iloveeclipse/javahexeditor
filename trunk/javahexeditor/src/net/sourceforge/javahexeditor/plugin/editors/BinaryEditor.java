@@ -123,7 +123,8 @@ System.out.println("BinEditor constructor:"+this);System.out.flush();
 
 
 public void addSelectionChangedListener(ISelectionChangedListener listener) {
-System.out.println("BinaryEditor addSelectionChangedListener()");
+System.out.println("BinaryEditor addSelectionChangedListener()"+listener+", "+
+((selectionListeners==null)?0:selectionListeners.size()));
 	if (listener == null) return;
 	
 	if (selectionListeners == null) {
@@ -146,8 +147,11 @@ System.out.println("Start createPartControl()");System.out.flush();
 	IEditorInput unresolved = getEditorInput();
 	File systemFile = null;
 	IFile localFile = null;
-	if (unresolved instanceof IPathEditorInput) {
+	if (unresolved instanceof FileEditorInput) {
 		localFile = ((FileEditorInput)unresolved).getFile();
+	} else if (unresolved instanceof IPathEditorInput) {  // eg. FileInPlaceEditorInput
+		IPathEditorInput file = (IPathEditorInput)unresolved;
+		systemFile = file.getPath().toFile();
 	} else if (unresolved instanceof ILocationProvider) {
 		ILocationProvider location = (ILocationProvider)unresolved;
 		IWorkspaceRoot rootWorkspace = ResourcesPlugin.getWorkspace().getRoot();
@@ -155,7 +159,17 @@ System.out.println("Start createPartControl()");System.out.flush();
 	} else {
 		URI uri = inputForVersion3_3(unresolved);
 		if (uri != null) {
-			IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IFile[] files = new IFile[0];
+			try {
+				// throws NoSuchMethodException
+				Method method = ResourcesPlugin.class.getMethod("findFilesForLocationURI",
+						new Class[] {URI.class});
+				// throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+				files = (IFile[])method.invoke(root, new Object[] {uri});
+			} catch (Exception e) {}  // keep going with no charset
+			// since 3.2
+			//IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri);
 			if (files.length != 0) {
 				localFile = files[0];
 			} else {
@@ -291,6 +305,8 @@ System.out.println("getAdapter(" + required + ")");System.out.flush();
 		result = outlinePage;
 	} else if (BinaryContent.class.isAssignableFrom(required)) {
 		result = getManager().getContent();
+	} else if (Manager.class.isAssignableFrom(required)) {
+		result = getManager();
 	} else {
 		result = super.getAdapter(required);
 	}
@@ -465,10 +481,18 @@ public void setSelection(ISelection selection) {
 System.out.println("BinaryEditor setSelection()");
 	if (selection.isEmpty()) return;
 	StructuredSelection aSelection = (StructuredSelection)selection;
-	long start = ((Long)aSelection.getFirstElement()).longValue();
+	long[] startEnd = (long[])aSelection.getFirstElement();
+	long start = startEnd[0];
 	long end = start;
+	if (startEnd.length > 1) {
+		end = startEnd[1];
+	}
 	if (aSelection.size() > 1) {
-		end = ((Long)aSelection.toArray()[1]).longValue();
+		startEnd = (long[])aSelection.toArray()[1];
+		end = startEnd[0];
+		if (startEnd.length > 1) {
+			end = startEnd[1];
+		}
 	}
 	getManager().setSelection(start, end);
 }
