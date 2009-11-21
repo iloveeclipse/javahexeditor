@@ -1,11 +1,15 @@
 package net.sourceforge.javahexeditor.plugin.actions;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,10 +23,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileStore;
 
 public class FileOpenAction implements IObjectActionDelegate {
 
@@ -68,14 +69,57 @@ public class FileOpenAction implements IObjectActionDelegate {
 	            if (file != null ) {
 	            	editorInput = new FileEditorInput(file);
 	            } else {
-	            	IFileStore file_store = EFS.getLocalFileSystem().getStore(new Path(resource[i].getPath()));
-	            	editorInput = new FileStoreEditorInput(file_store);
+	            	// pre-3.3
+	            	// apparently 3.1 can open external files exclusively with File -> Open File...,
+	            	// via org.eclipse.ui.internal.editors.text.OpenExternalFileAction.
+	            	// createEditorInput(File aFile), so we don't have to support this scenario.
+	            	//editorInput = new JavaFileEditorInput(resource[i]);
+	            	// since 3.3
+	            	try {
+	            		// throws ClassNotFoundException
+	            		Class efsClass = Class.forName("org.eclipse.core.filesystem.EFS");
+	            		// throws NoSuchMethodException
+	            		Method systemMethod = efsClass.getMethod("getLocalFileSystem", null);
+	            		// throws IllegalAccessException, IllegalArgumentException,
+	            		// InvocationTargetException
+	            		Object iFileSystemObject = systemMethod.invoke(null, null);
+	            		Class iFileSystemClass =
+	            			Class.forName("org.eclipse.core.filesystem.IFileSystem");
+	            		Method getStoreMethod =
+	            			iFileSystemClass.getMethod("getStore", new Class[] {IPath.class});
+	            		Object file_store = getStoreMethod.invoke(iFileSystemObject,
+	            				new Object[] {new Path(resource[i].getPath())});
+	            		Class inputClass = Class.forName("org.eclipse.ui.ide.FileStoreEditorInput");
+	            		Constructor constructor = inputClass.getConstructor(new Class[] {
+	            				Class.forName("org.eclipse.core.filesystem.IFileStore")});
+	            		editorInput = (IEditorInput)constructor.newInstance(new Object[] {file_store});
+	            	} catch (Exception e) {}  // 3.1, 3.2 should do nothing and return gracefully
+	            	//IFileStore file_store = EFS.getLocalFileSystem().getStore(new Path(resource[i].getPath()));
+	            	//editorInput = new FileStoreEditorInput(file_store);
 	            }
 
 				IWorkbenchWindow window=PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 				IWorkbenchPage page = window.getActivePage();
 				try {
-					page.openEditor(editorInput, "net.sourceforge.javahexeditor",true,org.eclipse.ui.IWorkbenchPage.MATCH_INPUT | org.eclipse.ui.IWorkbenchPage.MATCH_ID);
+					try {
+						// throws NoSuchMethodException
+						Method openEditorMethod = IWorkbenchPage.class.getMethod("openEditor",
+							new Class[] {IEditorInput.class, String.class, boolean.class, int.class
+						});
+						// throws IllegalAccessException, IllegalArgumentException,
+						// InvocationTargetException
+						openEditorMethod.invoke(page, new Object[] {editorInput,
+							"net.sourceforge.javahexeditor", Boolean.TRUE, new Integer(3)});
+					} catch (Exception e) {
+						if (e instanceof InvocationTargetException) {
+							e.getCause().printStackTrace();
+						} else {
+							// pre-3.2, by default matches with MATCH_INPUT only
+							page.openEditor(editorInput, "net.sourceforge.javahexeditor", true);
+						}
+					}
+					// since 3.2
+					//page.openEditor(editorInput, "net.sourceforge.javahexeditor",true,org.eclipse.ui.IWorkbenchPage.MATCH_INPUT | org.eclipse.ui.IWorkbenchPage.MATCH_ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
