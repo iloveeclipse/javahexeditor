@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/net.sourceforge.javahexeditor.feature_0.4.0.jar" id="net.sourceforge.javahexeditor.feature" version="0.4.0">
+      <category name="Java Hex Editor"/>
+   </feature>
+   <category-def name="Java Hex Editor" label="Java Hex Editor"/>
+</site>
