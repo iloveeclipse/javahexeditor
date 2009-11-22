@@ -66,6 +66,7 @@ public class AllTests {
 		// crashes. Workaround: test first one, then the other.
 		//$JUnit-BEGIN$
 		suite.addTestSuite(BinaryContentTest.class);
+		suite.addTestSuite(HexTextsTest.class);
 		suite.addTestSuite(FinderTest.class);
 		suite.addTestSuite(UndoRedoTest.class);
 		//$JUnit-END$
