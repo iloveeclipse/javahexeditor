@@ -880,14 +880,12 @@ public boolean deleteSelected() {
 
 
 void doModifyKeyPressed(KeyEvent event) {
-	int keyCode = event.keyCode;
 	char aChar = event.character;
-	if ((keyCode & SWT.KEYCODE_BIT) != 0)
-		keyCode &= ~SWT.KEYCODE_BIT;
-	if (keyCode > 255 || aChar > 255 || event.stateMask == SWT.CTRL ||
+	if (aChar == '\0' || aChar == '\b' || aChar == '\u007f' || event.stateMask == SWT.CTRL ||
 		event.widget == styledText1 && ((event.stateMask & SWT.MODIFIER_MASK) != 0 ||
-		keyCode < '0' || keyCode > '9' && keyCode < 'a' || keyCode > 'f'))
+		aChar < '0' || aChar > '9' && aChar < 'A' || aChar > 'F' && aChar < 'a' || aChar > 'f')) {
 		return;
+	}
 	
 	if (getCaretPos() == myContent.length() && !myInserting) {
 		ensureCaretIsVisible();
@@ -900,15 +898,15 @@ void doModifyKeyPressed(KeyEvent event) {
 			if (event.widget == styledText2) {
 				myContent.insert((byte)aChar, getCaretPos());
 			} else if (myUpANibble == 0) {
-				myContent.insert((byte)(hexToNibble[keyCode - '0'] << 4), getCaretPos());
+				myContent.insert((byte)(hexToNibble[aChar - '0'] << 4), getCaretPos());
 			} else {
-				myContent.overwrite(hexToNibble[keyCode - '0'], 4, 4, getCaretPos());
+				myContent.overwrite(hexToNibble[aChar - '0'], 4, 4, getCaretPos());
 			}
 		} else {
 			if (event.widget == styledText2) {
 				myContent.overwrite((byte)aChar, getCaretPos());
 			} else {
-				myContent.overwrite(hexToNibble[keyCode - '0'], myUpANibble * 4, 4, getCaretPos());
+				myContent.overwrite(hexToNibble[aChar - '0'], myUpANibble * 4, 4, getCaretPos());
 			}
 			myContent.get(ByteBuffer.wrap(tmpRawBuffer, 0, 1), null, getCaretPos());
 			int offset = (int)(getCaretPos() - myTextAreasStart);
