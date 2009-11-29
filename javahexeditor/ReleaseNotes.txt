@@ -31,6 +31,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	javahexeditor change log
 	------------------------
 
+29/11/2009 version 0.4.0.
+	Added Block selection dialog; selection and values in status bar.
+	Use system default character encoding.
+	Added "Open With Hex Editor" menu option in Eclipse context menu.
+	Added plugin to update site.
+	Moved sources to source control (svn).
+	Thanks Andre Bossert and Alexander Kuramshin for your contributions.
+
 28/6/2009 version 0.3.1.
 	Added replace option in Find dialog.
 	User guide available in plugin.

@@ -64,8 +64,10 @@ public class AllTests {
 		// XXX gcj 4.3.0 won't let to memory-map twice the same file in the same virtual machine.
 		// BinaryContentTest and FinderTest both map TestsLongData.hex so if run from gcj the test
 		// crashes. Workaround: test first one, then the other.
+		// Plus file TestsLongData.hex should be with length 0.
 		//$JUnit-BEGIN$
 		suite.addTestSuite(BinaryContentTest.class);
+		// not tested in gcc: should adapt launcher. XXX
 		suite.addTestSuite(HexTextsTest.class);
 		suite.addTestSuite(FinderTest.class);
 		suite.addTestSuite(UndoRedoTest.class);
