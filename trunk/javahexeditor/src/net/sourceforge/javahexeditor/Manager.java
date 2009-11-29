@@ -107,7 +107,10 @@ class MySelectionAdapter extends SelectionAdapter {
 				box.setText("About javahexeditor");
 				box.setMessage( "javahexeditor, copyright(c) 2006, 2009 Jordi Bergenthal.\n" +
 								"Released under the terms of the GNU General Public License.\n" +
-								"Visit http://sourceforge.net/projects/javahexeditor");
+								"Visit http://sourceforge.net/projects/javahexeditor\n" +
+								"\nContributions:\n" +
+								"Andre Bossert   Menus, dialogs, status bar.\n" +
+								"Alexander Kuramshin   Charset encoding.");
 				box.open();
 			break;
 			case PASTE: doPaste(); break;
