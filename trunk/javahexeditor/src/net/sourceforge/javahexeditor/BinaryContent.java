@@ -135,7 +135,7 @@ boolean myChangesInserted = false;
 long myChangesPosition = -1L;
 TreeSet myRanges = null;
 Iterator tailTree = null;
-String charset = null;
+
 
 /**
  * Create new empty content.
@@ -151,31 +151,13 @@ public BinaryContent() {
  * @throws IOException when i/o problems occur. The content will be empty but valid
  */
 public BinaryContent(File aFile) throws IOException {
-	this(aFile, null);
-}
-
-
-/**
- * Create new content from a file
- * @param aFile the backing content provider
- * @throws IOException when i/o problems occur. The content will be empty but valid
- */
-public BinaryContent(File aFile, String aCharset) throws IOException {
 	this();
 	if (aFile == null || aFile.length() < 1L)
 		return;
 
-	charset = aCharset; 
 	myRanges.add(new Range(0L, aFile, false));
 }
 
-public String getCharset() {
-	return charset;
-}
-
-public void setCharset(String aCharset) {
-	charset = aCharset;
-}
 
 void actionsOn(boolean on) {
 	if (on) {

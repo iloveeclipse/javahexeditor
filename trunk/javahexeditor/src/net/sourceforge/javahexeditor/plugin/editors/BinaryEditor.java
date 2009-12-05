@@ -196,9 +196,6 @@ System.out.println("Start createPartControl()");System.out.flush();
 	}
 	setPartName(systemFile.getName());
 
-	System.out.println("BinaryEditor file    : " + systemFile.getName());
-	System.out.println("BinaryEditor charset : " + manager.getContent().getCharset());
-
 	// Register any global actions with the site's IActionBars.
 	IActionBars bars = getEditorSite().getActionBars();
 	String id = ActionFactory.UNDO.getId();

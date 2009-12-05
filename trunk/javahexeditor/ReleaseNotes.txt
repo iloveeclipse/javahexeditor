@@ -31,6 +31,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	javahexeditor change log
 	------------------------
 
+6/12/2009 version 0.4.1.
+	Bugfix: charset 8859-1 chars between 128 and 159 have length 0.
+
 29/11/2009 version 0.4.0.
 	Added Block selection dialog; selection and values in status bar.
 	Use system default character encoding.

@@ -1035,8 +1035,9 @@ public boolean isTextSelected() {
  * @throws IOException when a file has no read access
  */
 public void openFile(File aFile, String charset) throws IOException {
-	content = new BinaryContent(aFile, charset);  // throws IOException
+	content = new BinaryContent(aFile);  // throws IOException
 	myFile = aFile;
+	hexTexts.setCharset(charset);
 	hexTexts.setContentProvider(content);
 }
 
@@ -1113,7 +1114,7 @@ public boolean saveAsFile(File theFile) {
 		content = new BinaryContent();
 		myFile = null;
 		errorMessage = textCouldNotRead;
-		content = new BinaryContent(theFile,null);
+		content = new BinaryContent(theFile);
 		myFile = theFile;
 	} catch(IOException e) {
 		successful = false;
@@ -1157,7 +1158,7 @@ public boolean saveFile() {
 			BinaryClipboard.deleteFileALaMs(myFile);
 			if (tempFile.renameTo(myFile)) {  // successful delete or not try renaming anyway
 				errorMessage = textCouldNotRead;
-				content = new BinaryContent(myFile,null);
+				content = new BinaryContent(myFile);
 				successful = true;
 			}
 		} catch(IOException e) {
