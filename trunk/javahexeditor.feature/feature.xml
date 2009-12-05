@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.javahexeditor.feature"
       label="Java Hex Editor Feature"
-      version="0.4.0"
+      version="0.4.1"
       provider-name="pestatije, anb0s">
 
    <description url="http://javahexeditor.sourceforge.net">
@@ -901,7 +901,7 @@ Public License instead of this License.
          id="net.sourceforge.javahexeditor"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
 </feature>
