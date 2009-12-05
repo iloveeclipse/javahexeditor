@@ -181,6 +181,8 @@ private void composeByteToHexMap() {
  * compose byte-to-char map
  */
 private void composeByteToCharMap() {
+	if (charset == null || styledText2 == null) return;
+	
 	CharsetDecoder d = Charset.forName(charset).newDecoder().
 				onMalformedInput(CodingErrorAction.REPLACE).
 				onUnmappableCharacter(CodingErrorAction.REPLACE).
@@ -199,9 +201,18 @@ private void composeByteToCharMap() {
 			d.decode(bb, cb, true);
 			d.flush(cb);
 			cb.rewind();
-			byteToChar[i] = cb.get();
+			char decoded = cb.get();
+			// neither font metrics nor graphic context work for charset 8859-1 chars between 128 and
+			// 159
+			String text = styledText2.getText();
+			styledText2.setText("" + decoded);
+			if (styledText2.getLocationAtOffset(1).x == styledText2.getLocationAtOffset(0).x) {
+				decoded = '.';
+			}
+			styledText2.setText(text);
+			byteToChar[i] = decoded;
 		}
-	}	
+	}
 }
 
 /**
@@ -214,9 +225,6 @@ private void composeHeaderRow() {
 	headerRow = rowChars.toString().toUpperCase();
 }
 
-public void setCharset(String name) {
-	charset = name;
-}
 
 public String getCharset() {
 	return charset;
@@ -227,10 +235,10 @@ public String getSystemCharset() {
 //	return Charset.defaultCharset().toString();
 }
 
-public void setCharsetAndCompose(String name) {
+public void setCharset(String name) {
 	if ((name == null) || (name.length() == 0))
 		name = getSystemCharset();
-	setCharset(name);
+	charset = name;
 	composeByteToCharMap();
 }
 
@@ -490,8 +498,6 @@ public HexTexts(final Composite parent, int style) {
 	colorHighlight = new Color(Display.getCurrent(), 255, 248, 147);  // mellow yellow
 	highlightRangesInScreen = new ArrayList();
 
-	// set default charset & compose
-	setCharsetAndCompose(null);
 	composeByteToHexMap();	
 	composeHeaderRow();
 
@@ -717,6 +723,7 @@ private void initialize() {
 	nonDefaultCaret.setBounds(defaultCaret.getBounds());
 	styledText2.setCaret(nonDefaultCaret);
 	styledText2GC = new GC(styledText2);
+	setCharset(null);
 	
 	super.setFont(fontCurrent);
 	ScrollBar vertical = getVerticalBar();
@@ -1728,7 +1735,6 @@ public void setContentProvider(BinaryContent aContent) {
 	myContent = aContent;
 	myFinder = null;
 	if (myContent != null) {		
-		setCharsetAndCompose(myContent.getCharset());
 		myContent.setActionsHistory();
 	}
 
