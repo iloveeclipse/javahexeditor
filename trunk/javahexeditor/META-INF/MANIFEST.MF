@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Java Hex Editor Plug-in
 Bundle-SymbolicName: net.sourceforge.javahexeditor; singleton:=true
-Bundle-Version: 0.4.0
+Bundle-Version: 0.4.1
 Bundle-Activator: net.sourceforge.javahexeditor.plugin.BinaryEditorPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
