@@ -81,8 +81,8 @@ public class HexTexts extends Composite
 
 /**
  * Map of displayed chars. Chars that cannot be displayed correctly are changed for a '.' char.
- * There are slight differences on which chars can correctly be displayed in each operating system,
- * or font system. This is a lowest common denominator. Currently 0-1f, 7f-a0, and ad map to '.'
+ * There are differences on which chars can correctly be displayed in each operating system,
+ * charset encoding, or font system.
  */
 public static final char[] byteToChar = new char[256];
 static final String[] byteToHex = new String[256];
@@ -205,8 +205,9 @@ private void composeByteToCharMap() {
 			// neither font metrics nor graphic context work for charset 8859-1 chars between 128 and
 			// 159
 			String text = styledText2.getText();
-			styledText2.setText("" + decoded);
-			if (styledText2.getLocationAtOffset(1).x == styledText2.getLocationAtOffset(0).x) {
+			styledText2.setText("|" + decoded);
+			if (styledText2.getLocationAtOffset(2).x - styledText2.getLocationAtOffset(1).x <
+				styledText2.getLocationAtOffset(1).x - styledText2.getLocationAtOffset(0).x) {
 				decoded = '.';
 			}
 			styledText2.setText(text);

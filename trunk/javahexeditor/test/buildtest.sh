@@ -1,1 +1,8 @@
-gcj -g0 -O2 -v -fsource=1.4 --classpath=../src\;junit3.8.2/junit.jar -o test.exe --main=net.sourceforge.javahexeditor.AllTests -L. -L../bin -L/mingw/lib/gcc/mingw32/4.3.0 -L/mingw/lib/gcj-4.3.0-9 `find ./net -name "*.java"` -ljavahexeditor -ljunit -lm -lgdi32 -lws2_32 -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -luser32 -lkernel32 -ladvapi32 -lshell32 -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -lstdc++ -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -luser32 -lkernel32 -ladvapi32 -lshell32 -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -lswt4javahexeditor-win32 -lswt-win32-3139 -lmsvcrt -lgcj -lole32 -lcomctl32 -luser32 -lgdi32 -lcomdlg32 -lkernel32 -lshell32 -loleaut32 -ladvapi32 -limm32 -lwinspool -loleacc -lusp10 -Wl,testsdatahex.o -Wl,testslongdatahex.o -Wl,testsunicodehex.o
+export SWT_JAR_LIB_NAME="swt-3.5.1-win32-win32-x86"
+export PATH_SEPARATOR=";"
+
+gcj -g0 -O2 -s -v -fsource=1.4 -static-libgcj -static-libgcc \
+--classpath=../src${PATH_SEPARATOR}../../swt/$SWT_JAR_LIB_NAME/swt.jar${PATH_SEPARATOR}junit3.8.2/junit.jar \
+-o ../../bin/test.exe --main=net.sourceforge.javahexeditor.AllTests -L../../bin `find ./net -name "*.java"` \
+-ljavahexeditor -ljunit -lswt4javahexeditor ../../bin/swt-so.o ../../bin/testsdatahex.o \
+../../bin/testslongdatahex.o ../../bin/testsunicodehex.o

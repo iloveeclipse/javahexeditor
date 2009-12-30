@@ -2,28 +2,32 @@ Build setup:
 
 - Win XP SP1
 
-- Visual C++ 2005 Express Edition (http://www.microsoft.com/express/2005/) and
-  Microsoft Platform SDK (http://www.microsoft.com/downloads/details.aspx?familyid=EBA0128F-A770-45F1-86F3-7AB010B398A3)
+- MinGW/MSYS with gcc-4.4.0:
+  binutils-2.20-1-mingw32-bin.tar.gz
+  gcc-core-4.4.0-mingw32-bin.tar.gz
+  gcc-core-4.4.0-mingw32-dll.tar.gz
+  gcc-java-4.4.0-mingw32-bin-2.tar.gz
+  gcc-java-4.4.0-mingw32-dll.tar.gz
+  gmp-4.2.4-mingw32-dll.tar.gz
+  libiconv-1.13.1-1-mingw32-dll-2.tar.gz
+  mingwrt-3.17-mingw32-dev.tar.gz
+  mingwrt-3.17-mingw32-dll.tar.gz
+  mpfr-2.4.1-mingw32-dll.tar.gz
+  pthreads-w32-2.8.0-mingw32-dll.tar.gz
+  w32api-3.14-mingw32-dev.tar.gz
+  MSYS-1.0.11.exe
 
-- MinGW/MSYS with gcc-4.3.0 (gcc-3.4.5 has Pattern and Matcher classes not implemented):
-  mingw-runtime-3.14, w32api-3.11, binutils-2.17.50-20060824-1, gcc-4.3.0
-
-- SWT 3.1.2 (3139)
+- SWT 3.5.1 (3555)
 
 
 Scripts to be configured/run:
 
-- swt/win32-3139/build.bat (SWT natives static library)
-
-- swt/buildclass.sh (SWT .class files for the classpath when compiling javahexeditor)
-
 - swt/buildnonnative.sh (SWT non natives static library)
-
-- javahexeditor/compc.sh (javahexeditor launcher object file)
 
 - javahexeditor/buildnonnative.sh (javahexeditor non natives static library)
 
-- javahexeditor/compres.sh (javahexeditor icon and user guide resource object files)
+- javahexeditor/compres.sh (javahexeditor icon and user guide and swt dll 
+  resource object files)
 
 - javahexeditor/link.sh (win32 executable)
 
