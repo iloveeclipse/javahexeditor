@@ -31,7 +31,6 @@ import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -274,12 +273,19 @@ public static void main(String[] args) {
 			thisClass.lastErrorText = textErrorFatal;
 			thisClass.lastErrorMessage = applicationName + " has crashed. The error cause is not " +
 					"known.\nFollowing is the error stack trace.\n\n" + e;
-			StackTraceElement[] trace = e.getStackTrace();
-			for (int i=0; i<trace.length; ++i)
-				thisClass.lastErrorMessage += "\nat " + trace[i];
+			Throwable t = e;
+			while (t != null) {
+        for (int i = 0; i < t.getStackTrace().length; ++i) {
+          thisClass.lastErrorMessage += "\nat " + t.getStackTrace()[i];
+        }
+        t = t.getCause();
+        if (t != null) {
+          thisClass.lastErrorMessage += "\nCaused by " + t;
+        }
+			}
 			thisClass.showErrorBox(thisClass.sShell);
 			display.dispose();
-			throw(e);
+			throw e;
 		}
 	}
 	display.dispose();
