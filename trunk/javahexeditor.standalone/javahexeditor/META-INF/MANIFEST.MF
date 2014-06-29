@@ -1,0 +1,41 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Hex Editor Plug-in
+Bundle-SymbolicName: net.sourceforge.javahexeditor; singleton:=true
+Bundle-Version: 0.4.2
+Bundle-Activator: net.sourceforge.javahexeditor.plugin.BinaryEditorPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.views,
+ org.eclipse.ui.editors,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.core.filesystem; resolution:=optional
+Eclipse-AutoStart: true
+Bundle-Vendor: pestatije, anb0s
+Export-Package: net.sourceforge.javahexeditor;
+  uses:="org.eclipse.swt.events,
+   org.eclipse.swt.dnd,
+   org.eclipse.swt.custom,
+   org.eclipse.swt.graphics,
+   org.eclipse.swt.widgets,
+   org.eclipse.swt.layout",
+ net.sourceforge.javahexeditor.plugin;
+  uses:="org.eclipse.jface.preference,
+   org.eclipse.ui.plugin,
+   org.eclipse.swt.graphics,
+   org.osgi.framework",
+ net.sourceforge.javahexeditor.plugin.actions;uses:="org.eclipse.jface.action,org.eclipse.ui,org.eclipse.jface.viewers",
+ net.sourceforge.javahexeditor.plugin.editors;
+  uses:="org.eclipse.core.runtime,
+   org.eclipse.ui,
+   org.eclipse.ui.part,
+   org.eclipse.jface.action,
+   org.eclipse.jface.preference,
+   org.eclipse.ui.views.contentoutline,
+   org.eclipse.jface.viewers,
+   org.eclipse.jface.util,
+   org.eclipse.swt.widgets,
+   net.sourceforge.javahexeditor"
