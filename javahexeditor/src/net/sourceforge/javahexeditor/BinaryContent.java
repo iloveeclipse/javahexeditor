@@ -647,9 +647,10 @@ public final class BinaryContent {
 		    // to access past the 2Gb barrier there is no choice but use
 		    // plain ByteBuffers in gcj
 		    bufferFromMap = false;
-		    if (buffer == null)
+		    if (buffer == null){
 			buffer = ByteBuffer
 				.allocateDirect((int) mappedFileBufferLength);
+		    }
 		    buffer.position(0);
 		    buffer.limit(partLength);
 		}
@@ -695,6 +696,7 @@ public final class BinaryContent {
 		data.position((int) range.dataOffset);
 		result = data.get((int) (position - range.position)) & 0x0ff;
 	    } else if (value instanceof RandomAccessFile) {
+		@SuppressWarnings("resource")
 		RandomAccessFile randomFile = (RandomAccessFile) value;
 		randomFile.seek(position);
 		result = randomFile.read();
