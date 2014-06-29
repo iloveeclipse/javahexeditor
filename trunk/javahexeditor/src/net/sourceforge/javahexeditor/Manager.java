@@ -61,11 +61,11 @@ public final class Manager {
 
     private FindReplaceHistory findReplaceHistory;
     private FontData fontData;
-    private Font font;
+    Font font;
     private List<Listener> listOfStatusChangedListeners;
     private List<SelectionListener> listOfLongListeners;
 
-    // Vvisual controls
+    // Visual controls
     private Shell shell;
     private Composite textsParent;
     private HexTexts hexTexts;
@@ -159,7 +159,7 @@ public final class Manager {
 	hexTexts = new HexTexts(textsParent, SWT.NONE);
 	hexTexts.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	hexTexts.setEnabled(false);
-
+	
 	hexTexts.addDisposeListener(new DisposeListener() {
 	    @Override
 	    public void widgetDisposed(DisposeEvent e) {
