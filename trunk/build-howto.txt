@@ -1,0 +1,36 @@
+Build setup:
+
+- Win XP SP1
+
+- MinGW/MSYS with gcc-4.4.0:
+  binutils-2.20-1-mingw32-bin.tar.gz
+  gcc-core-4.4.0-mingw32-bin.tar.gz
+  gcc-core-4.4.0-mingw32-dll.tar.gz
+  gcc-java-4.4.0-mingw32-bin-2.tar.gz
+  gcc-java-4.4.0-mingw32-dll.tar.gz
+  gmp-4.2.4-mingw32-dll.tar.gz
+  libiconv-1.13.1-1-mingw32-dll-2.tar.gz
+  mingwrt-3.17-mingw32-dev.tar.gz
+  mingwrt-3.17-mingw32-dll.tar.gz
+  mpfr-2.4.1-mingw32-dll.tar.gz
+  pthreads-w32-2.8.0-mingw32-dll.tar.gz
+  w32api-3.14-mingw32-dev.tar.gz
+  MSYS-1.0.11.exe
+
+- SWT 3.5.1 (3555)
+
+
+Scripts to be configured/run:
+
+- swt/buildnonnative.sh (SWT non natives static library)
+
+- javahexeditor/buildnonnative.sh (javahexeditor non natives static library)
+
+- javahexeditor/compres.sh (javahexeditor icon and user guide and swt dll 
+  resource object files)
+
+- javahexeditor/link.sh (win32 executable)
+
+
+As a last step I use UPX (upx.sourceforge.net) to reduce the file size:
+upx --brute javahexeditor-win32_.exe
