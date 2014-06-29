@@ -8,7 +8,7 @@
          name="javahexeditorName"
          point="org.eclipse.ui.editors">
       <editor
-            class="net.sourceforge.javahexeditor.plugin.editors.BinaryEditor"
+            class="net.sourceforge.javahexeditor.plugin.editors.HexEditor"
             contributorClass="net.sourceforge.javahexeditor.plugin.editors.HexEditorActionBarContributor"
             extensions="a,bin,cab,class,com,dat,data,drv,dll,exe,hex,iso,jar,lib,o,out,part,pdf,png,ram,res,rom,sys,txt,zip"
             icon="icons/hex.png"
@@ -23,7 +23,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.ui.preferencePages.Editors"
-            class="net.sourceforge.javahexeditor.plugin.editors.PreferencesPage"
+            class="net.sourceforge.javahexeditor.plugin.editors.HexEditorPreferencesPage"
             id="net.sourceforge.javahexeditor.plugin.editors.PreferencesPage"
             name="Java Hex Editor"/>
    </extension>
@@ -54,7 +54,7 @@
       </objectContribution>
    </extension>
    <extension
-         point="org.eclipse.core.runtime.contentTypes">
+         point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             file-extensions="bin"
             id="javahexeditor.binaryFile"
