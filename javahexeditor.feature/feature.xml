@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.sourceforge.javahexeditor.feature"
+      id="net.sourceforge.javahexeditor"
       label="Java Hex Editor Feature"
-      version="0.4.1"
-      provider-name="pestatije, anb0s">
+      version="0.4.9"
+      provider-name="pestatije, anb0s, peterdell">
 
    <description url="http://javahexeditor.sourceforge.net">
-      A java hex editor. Standalone application (SWT widgets) and Eclipse plugin. Support for very large files. Hex, Ascii and Unicode find. Overwrite/insert modes. Binary and text cut/copy/paste. Undo/redo.
+      A java hex editor. Standalone application (SWT widgets) and Eclipse
+plugin. Support for very large files. Hex, ASCII and Unicode
+find. Overwrite/insert modes. Binary and text cut/copy/paste.
+Undo/redo.
    </description>
 
    <copyright url="http://www.gnu.org/licenses/gpl-2.0.txt">
@@ -901,7 +904,7 @@ Public License instead of this License.
          id="net.sourceforge.javahexeditor"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
