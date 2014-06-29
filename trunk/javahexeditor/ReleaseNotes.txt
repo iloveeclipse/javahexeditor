@@ -18,18 +18,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+javahexeditor installation notes
+--------------------------------
 
-	javahexeditor installation notes
-	--------------------------------
-
-	See http://javahexeditor.sourceforge.net/userGuide.html or
-		alternatively, the userGuide.html file in the source code
-		release.
+See http://javahexeditor.sourceforge.net/userGuide.html or
+alternatively the userGuide.html file in the source code release.
 	
-	
-	
-	javahexeditor change log
-	------------------------
+javahexeditor change log
+------------------------
 
 29/12/2009 version 0.4.2.
 	Moved precompiled to swt 3.5.1, gcc 4.4.0.
