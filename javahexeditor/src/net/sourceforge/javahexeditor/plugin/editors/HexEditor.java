@@ -122,7 +122,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 
     public static final String ID = "net.sourceforge.javahexeditor";
 
-    private Manager manager;
+    Manager manager;
     private IContentOutlinePage outlinePage;
     private IPropertyChangeListener preferencesChangeListener;
     Set<ISelectionChangedListener> selectionListeners;

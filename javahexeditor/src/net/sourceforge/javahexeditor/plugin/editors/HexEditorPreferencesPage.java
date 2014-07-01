@@ -72,11 +72,10 @@ public class HexEditorPreferencesPage extends PreferencePage implements
 	store.setValue(Preferences.FONT_NAME, fontData.getName());
 	store.setValue(Preferences.FONT_STYLE, fontData.getStyle());
 	store.setValue(Preferences.FONT_SIZE, fontData.getHeight());
-	store.firePropertyChangeEvent(Preferences.FONT_DATA,
-		null, fontData);
+	store.firePropertyChangeEvent(Preferences.FONT_DATA, null, fontData);
 
 	try {
-	    new InstanceScope().getNode(HexEditorPlugin.ID).flush();
+	    InstanceScope.INSTANCE.getNode(HexEditorPlugin.ID).flush();
 	} catch (BackingStoreException ex) {
 
 	    throw new RuntimeException("Cannot store preferences for plugin '"

@@ -1,10 +1,12 @@
-package net.sourceforge.javahexeditor;
+package net.sourceforge.javahexeditor.test;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import net.sourceforge.javahexeditor.BinaryContent;
+import net.sourceforge.javahexeditor.HexTexts;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;

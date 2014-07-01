@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * 
  * @author Jordi
  */
-final class BinaryContentFinder {
+public final class BinaryContentFinder {
 
     public static final class Match {
 	private boolean found;

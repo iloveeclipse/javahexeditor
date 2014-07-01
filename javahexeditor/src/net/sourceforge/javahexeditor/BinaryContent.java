@@ -171,7 +171,8 @@ public final class BinaryContent {
 	}
     }
 
-    static final long mappedFileBufferLength = 2048 * 1024; // for mapped file
+    public static final long mappedFileBufferLength = 2048 * 1024; // for mapped file
+    
     // I/O
 
     BinaryContentActionHistory actions; // undo/redo actions history
@@ -616,6 +617,7 @@ public final class BinaryContent {
      * @return number of bytes read
      * @throws IOException
      */
+    @SuppressWarnings("null")
     public long get(File destinationFile, long start, long length)
 	    throws IOException {
 	if (start < 0L || length < 0L || start + length > length())
@@ -649,7 +651,7 @@ public final class BinaryContent {
 		    bufferFromMap = false;
 		    if (buffer == null){
 			buffer = ByteBuffer
-				.allocateDirect((int) mappedFileBufferLength);
+				.allocateDirect((int) mappedFileBufferLength);		
 		    }
 		    buffer.position(0);
 		    buffer.limit(partLength);
