@@ -45,9 +45,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -100,13 +97,8 @@ public final class HexEditor {
 	    case ABOUT:
 		MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
 			| SWT.OK);
-		box.setText("About javahexeditor");
-		box.setMessage("javahexeditor, copyright(c) 2006, 2009 Jordi Bergenthal.\n"
-			+ "Released under the terms of the GNU General Public License.\n"
-			+ "Visit http://sourceforge.net/projects/javahexeditor\n"
-			+ "\nContributions:\n"
-			+ "Andre Bossert         Menus, dialogs, status bar.\n"
-			+ "Alexander Kuramshin   Charset encoding.");
+		box.setText(Texts.ABOUT_DIALOG_TITLE);
+		box.setMessage(Texts.ABOUT_DIALOG_TEXT);
 		box.open();
 		break;
 	    case PASTE:
@@ -154,8 +146,6 @@ public final class HexEditor {
 		break;
 	    case NEW:
 		doOpen(null, true, null);
-		// TODO
-		// hexTexts.setInsertMode(true);
 		break;
 	    case PREFERENCES:
 		doPreferences();
@@ -639,22 +629,21 @@ public final class HexEditor {
     void doOpenUserGuide(boolean online) {
 
 	if (helpShell == null || helpShell.isDisposed()) {
-	    helpShell = new Shell();
+	    helpShell = new Shell(Display.getCurrent());
 
-	    helpShell.setLayout(new FormLayout());
+	    GridLayout gridLayout = new GridLayout();
+	    gridLayout.numColumns = 1;
+	    helpShell.setLayout(gridLayout);
 
-	    FormData data = new FormData();
-	    data.left = new FormAttachment(0, 0);
-	    data.right = new FormAttachment(100, 0);
-	    // data.top = new FormAttachment(canvas, 5, SWT.DEFAULT);
-	    // data.bottom = new FormAttachment(status, -5, SWT.DEFAULT);
-
-	    helpBrowser = new Browser(shell, SWT.NONE);
+	    helpBrowser = new Browser(helpShell, SWT.NONE);
+	    GridData data = new GridData();
+	    data.horizontalAlignment = GridData.FILL;
+	    data.verticalAlignment = GridData.FILL;
+	    data.horizontalSpan = 1;
+	    data.grabExcessHorizontalSpace = true;
+	    data.grabExcessVerticalSpace = true;
 	    helpBrowser.setLayoutData(data);
-
 	}
-	helpShell.setVisible(true);
-	helpBrowser.setVisible(true);
 
 	String fileName = "userGuide.html";
 	String url;
@@ -693,9 +682,9 @@ public final class HexEditor {
 	    }
 	}
 
+	helpShell.open();
 	helpShell.setText(url);
 	helpBrowser.setUrl(url);
-	helpBrowser.setText("TEST");
 
     }
 

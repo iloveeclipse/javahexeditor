@@ -29,4 +29,13 @@ final class Texts {
     public static final String SAVE_ERROR = "Save error";
     public static final String OUT_OF_MEMORY_ERROR = "Out of memory error";
 
+    public static final String ABOUT_DIALOG_TITLE = "About javahexeditor";
+    public static final String ABOUT_DIALOG_TEXT = "javahexeditor, copyright(c) 2006 - 2014 Jordi Bergenthal.\n"
+	    + "Released under the terms of the GNU General Public License.\n"
+	    + "Visit http://sourceforge.net/projects/javahexeditor\n"
+	    + "\nContributions:\n"
+	    + "Andre Bossert\t\tMenus, dialogs, status bar.\n"
+	    + "Alexander Kuramshin\tCharset encoding.\n"
+	    + "Peter Dell\t\t\tRefactoring.";
+
 }
