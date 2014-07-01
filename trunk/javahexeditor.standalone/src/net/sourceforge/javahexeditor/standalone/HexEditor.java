@@ -19,17 +19,19 @@
  */
 package net.sourceforge.javahexeditor.standalone;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.PreferencesManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -193,9 +195,6 @@ public final class HexEditor {
     private Menu fileSubMenu;
     private Menu editSubMenu;
     private Menu helpSubMenu;
-
-    private Shell helpShell;
-    private Browser helpBrowser;
 
     /**
      * Point of entry to the standalone version
@@ -627,28 +626,15 @@ public final class HexEditor {
     }
 
     void doOpenUserGuide(boolean online) {
-
-	if (helpShell == null || helpShell.isDisposed()) {
-	    helpShell = new Shell(Display.getCurrent());
-
-	    GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 1;
-	    helpShell.setLayout(gridLayout);
-
-	    helpBrowser = new Browser(helpShell, SWT.NONE);
-	    GridData data = new GridData();
-	    data.horizontalAlignment = GridData.FILL;
-	    data.verticalAlignment = GridData.FILL;
-	    data.horizontalSpan = 1;
-	    data.grabExcessHorizontalSpace = true;
-	    data.grabExcessVerticalSpace = true;
-	    helpBrowser.setLayoutData(data);
-	}
-
-	String fileName = "userGuide.html";
-	String url;
+	final String fileName = "userGuide.html";
+	URI uri;
 	if (online) {
-	    url = "http://javahexeditor.sourceforge.net/" + fileName;
+	    try {
+		uri = new URI("http://javahexeditor.sourceforge.net/"
+			+ fileName);
+	    } catch (URISyntaxException ex) {
+		throw new RuntimeException(ex);
+	    }
 	} else {
 	    {
 		InputStream inStream = getClass().getResourceAsStream(
@@ -678,13 +664,15 @@ public final class HexEditor {
 		} catch (IOException ignore) {
 		    // Open browser anyway
 		}
-		url = localFile.toURI().toString();
+		uri = localFile.toURI();
 	    }
 	}
+	try {
+	    Desktop.getDesktop().browse(uri);
+	} catch (IOException ex) {
+	    ex.printStackTrace();
+	}
 
-	helpShell.open();
-	helpShell.setText(url);
-	helpBrowser.setUrl(url);
 
     }
 
