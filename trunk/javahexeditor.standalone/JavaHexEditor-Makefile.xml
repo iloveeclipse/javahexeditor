@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jars" name="Create Runnable Jars for Project net.sourceforge.javahexeditor.standalone with Jar-in-Jar Loader">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required                                        -->
+	<target name="create_run_jars">
+		<delete file="out/win32-x86/JavaHexEditor.jar">
+		</delete>
+		<jar destfile="out/win32-x86/JavaHexEditor.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
+				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
+			</manifest>
+			<zipfileset src="lib/jar-in-jar-loader.zip" />
+			<fileset dir="../net.sourceforge.javahexeditor/bin">
+				<exclude name="net/sourceforge/javahexeditor/test/**"/>
+			</fileset>
+			<fileset dir="bin" />
+			<zipfileset dir="lib" includes="org.eclipse.osgi.jar" />
+			<zipfileset dir="lib/win32-x86" includes="swt.jar" />
+		</jar>
+		
+		<delete file="out/win32-x86_64/JavaHexEditor.jar">
+		</delete>
+		<jar destfile="out/win32-x86_64/JavaHexEditor.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
+				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
+			</manifest>
+			<zipfileset src="lib/jar-in-jar-loader.zip" />
+			<fileset dir="../net.sourceforge.javahexeditor/bin">
+				<exclude name="net/sourceforge/javahexeditor/test/**"/>
+			</fileset>
+			<fileset dir="bin" />
+			<zipfileset dir="lib" includes="org.eclipse.osgi.jar" />
+			<zipfileset dir="lib/win32-x86_64" includes="swt.jar" />
+		</jar>
+		
+		<delete file="out/linux-x86/JavaHexEditor.jar">
+		</delete>
+		<jar destfile="out/linux-x86/JavaHexEditor.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
+				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
+			</manifest>
+			<zipfileset src="lib/jar-in-jar-loader.zip" />
+			<fileset dir="../net.sourceforge.javahexeditor/bin">
+				<exclude name="net/sourceforge/javahexeditor/test/**"/>
+			</fileset>
+			<fileset dir="bin" />
+			<zipfileset dir="lib" includes="org.eclipse.osgi.jar" />
+			<zipfileset dir="lib/linux-x86" includes="swt.jar" />
+		</jar>
+	</target>
+</project>

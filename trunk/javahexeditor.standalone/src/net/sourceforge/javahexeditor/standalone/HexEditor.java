@@ -63,7 +63,7 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * @author Jordi, Peter Dell
  */
-final class HexEditor {
+public final class HexEditor {
 
     private final class MySelectionAdapter extends SelectionAdapter {
 	public static final int ABOUT = 0;
@@ -105,7 +105,7 @@ final class HexEditor {
 			+ "Released under the terms of the GNU General Public License.\n"
 			+ "Visit http://sourceforge.net/projects/javahexeditor\n"
 			+ "\nContributions:\n"
-			+ "Andre Bossert   Menus, dialogs, status bar.\n"
+			+ "Andre Bossert         Menus, dialogs, status bar.\n"
 			+ "Alexander Kuramshin   Charset encoding.");
 		box.open();
 		break;
@@ -256,13 +256,13 @@ final class HexEditor {
 		    display.sleep();
 		}
 	    } catch (OutOfMemoryError e) {
-		errorText = Texts.textErrorOutOfMemory;
+		errorText = Texts.OUT_OF_MEMORY_ERROR;
 		errorMessage = Manager.APPLICATION_NAME
 			+ " has run out of memory.\n"
 			+ "Try saving the current data and repeating the last action.";
 		showErrorBox(errorText, errorMessage);
 	    } catch (RuntimeException e) {
-		errorText = Texts.textErrorFatal;
+		errorText = Texts.FATAL_ERROR;
 		errorMessage = Manager.APPLICATION_NAME
 			+ " has crashed. The error cause is not "
 			+ "known.\nFollowing is the error stack trace.\n\n" + e;
@@ -566,7 +566,7 @@ final class HexEditor {
 	try {
 	    manager.saveFile();
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.textErrorSave, ex.getMessage());
+	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
 	    return false;
 	}
 
@@ -603,7 +603,7 @@ final class HexEditor {
 	try {
 	    manager.saveAsFile(file);
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.textErrorSave, ex.getMessage());
+	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
 	    return false;
 	}
 
@@ -619,7 +619,7 @@ final class HexEditor {
 	try {
 	    manager.doSaveSelectionAs(file);
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.textErrorSave, ex.getMessage());
+	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
 	}
 
     }

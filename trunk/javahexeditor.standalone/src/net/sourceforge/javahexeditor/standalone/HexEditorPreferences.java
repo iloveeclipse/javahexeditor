@@ -97,7 +97,7 @@ class HexEditorPreferences {
 	    properties.store(stream, null);
 	    stream.close();
 	} catch (IOException e) {
-	    System.err.println(Texts.textCouldNotWriteOnFile
+	    System.err.println(Texts.COULD_NOT_WRITE_FILE
 		    + propertiesFile.getPath());
 	}
     }

@@ -20,20 +20,13 @@
 
 package net.sourceforge.javahexeditor.standalone;
 
-import org.eclipse.osgi.util.NLS;
-
-final class Texts extends NLS {
+final class Texts {
     public static final String EMPTY = "";
 
-
-    public static final String textCouldNotRead = "Could not read from saved file, try reopening the editor";
-    public static final String textCouldNotWriteOnFile = "Could not write on file ";
+    public static final String COULD_NOT_WRITE_FILE = "Could not write file ";
     public static final String FIND_MENU_ITEM_LABEL = "&Find/Replace...\tCtrl+F";
-    public static final String textIsBeingUsed = "\nis currently being used by the editor.\n"
-	    + "Cannot overwrite file.";
-    public static final String textTheFile = "The file ";
-    public static final String textErrorFatal = "Unexpected fatal error";
-    public static final String textErrorSave = "Save error";
-    public static final String textErrorOutOfMemory = "Out of memory error";
+    public static final String FATAL_ERROR = "Unexpected fatal error";
+    public static final String SAVE_ERROR = "Save error";
+    public static final String OUT_OF_MEMORY_ERROR = "Out of memory error";
 
 }
