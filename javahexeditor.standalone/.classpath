@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.osgi.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.swt.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/net.sourceforge.javahexeditor"/>
+	<classpathentry kind="lib" path="lib/win32-x86_64/swt.jar" sourcepath="lib/win32-x86_64/src.zip"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.osgi.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
