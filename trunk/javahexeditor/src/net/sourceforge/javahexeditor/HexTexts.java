@@ -80,7 +80,7 @@ import org.eclipse.swt.widgets.Text;
  * 
  * @author Jordi
  */
-final class HexTexts extends Composite {
+public final class HexTexts extends Composite {
 
     /**
      * Map of displayed chars. Chars that cannot be displayed correctly are

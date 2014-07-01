@@ -15,14 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.filesystem; resolution:=optional
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: pestatije, anb0s, peterdell
-Export-Package: net.sourceforge.javahexeditor;
-  uses:="org.eclipse.swt.events,
-   org.eclipse.swt.dnd,
-   org.eclipse.swt.custom,
-   org.eclipse.swt.graphics,
-   org.eclipse.swt.widgets,
-   org.eclipse.swt.layout",
- net.sourceforge.javahexeditor.plugin;
+Export-Package: net.sourceforge.javahexeditor.plugin;
   uses:="org.eclipse.jface.preference,
    org.eclipse.ui.plugin,
    org.eclipse.swt.graphics,
@@ -38,5 +31,12 @@ Export-Package: net.sourceforge.javahexeditor;
    org.eclipse.jface.viewers,
    org.eclipse.jface.util,
    org.eclipse.swt.widgets,
-   net.sourceforge.javahexeditor"
+   net.sourceforge.javahexeditor",
+ net.sourceforge.javahexeditor.test;
+  uses:="org.eclipse.swt.events,
+   org.eclipse.swt.dnd,
+   org.eclipse.swt.custom,
+   org.eclipse.swt.graphics,
+   org.eclipse.swt.widgets,
+   org.eclipse.swt.layout"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

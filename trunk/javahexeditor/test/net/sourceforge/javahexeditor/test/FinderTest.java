@@ -17,12 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package net.sourceforge.javahexeditor;
+package net.sourceforge.javahexeditor.test;
 
 import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import net.sourceforge.javahexeditor.BinaryContent;
+import net.sourceforge.javahexeditor.BinaryContentFinder;
 import net.sourceforge.javahexeditor.BinaryContentFinder.Match;
 
 public final class FinderTest extends TestCase {
