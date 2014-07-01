@@ -159,7 +159,7 @@ public final class Manager {
 	hexTexts = new HexTexts(textsParent, SWT.NONE);
 	hexTexts.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	hexTexts.setEnabled(false);
-	
+
 	hexTexts.addDisposeListener(new DisposeListener() {
 	    @Override
 	    public void widgetDisposed(DisposeEvent e) {
@@ -412,6 +412,9 @@ public final class Manager {
 	}
 
 	hexTexts.setFocus();
+	if (newFile) {
+	    hexTexts.setInsertMode(true);
+	}
     }
 
     /**
