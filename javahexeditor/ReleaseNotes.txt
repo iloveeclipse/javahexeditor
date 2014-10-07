@@ -22,17 +22,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 javahexeditor installation notes
 --------------------------------
 
-See http://javahexeditor.sourceforge.net/userGuide.html or
-alternatively the userGuide.html file in the source code release.
+See http://javahexeditor.sourceforge.net.
 	
 	
 javahexeditor change log
 ------------------------
 
-29/12/2014 version 0.4.9.
-	Separated Eclipse plugin from standalong application.
+??/??/2014 version 0.4.9.
+	Separated Eclipse plugin from standalone application.
 	Included standard OSGI and SWT jars for location and UI widgets.
-	New build process created separate self-contain "JavaHexEditor.jar" file for Linux (32-bit), Windows (32-bit) and Windows (64-bit) 
+	New build process created separate self-contained "JavaHexEditor.jar" file for Linux (32-bit), Windows (32-bit) and Windows (64-bit) 
 
 29/12/2009 version 0.4.2.
 	Moved precompiled to swt 3.5.1, gcc 4.4.0.
