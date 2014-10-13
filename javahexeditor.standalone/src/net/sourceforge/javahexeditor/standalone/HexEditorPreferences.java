@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import net.sourceforge.javahexeditor.Preferences;
 import net.sourceforge.javahexeditor.PreferencesManager;
+import net.sourceforge.javahexeditor.SWTUtility;
 
 import org.eclipse.swt.graphics.FontData;
 
@@ -96,10 +97,12 @@ class HexEditorPreferences {
 	    FileOutputStream stream = new FileOutputStream(propertiesFile);
 	    properties.store(stream, null);
 	    stream.close();
-	} catch (IOException e) {
-	    System.err.println(Texts.COULD_NOT_WRITE_FILE
-		    + propertiesFile.getPath());
+	} catch (IOException ex) {
+	    SWTUtility
+		    .showErrorMessage(Texts.COULD_NOT_WRITE_FILE
+			    + propertiesFile.getAbsolutePath() + ": "
+			    + ex.getMessage());
+
 	}
     }
-
 }

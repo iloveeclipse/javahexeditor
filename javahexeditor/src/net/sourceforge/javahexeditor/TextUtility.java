@@ -56,7 +56,7 @@ public final class TextUtility {
 	for (int i = 0; i < parameters.length; i++) {
 	    String parameter = parameters[i];
 	    if (parameter == null) {
-		parameter = "";
+		parameter = Texts.EMPTY;
 	    }
 	    text = text.replace(PARAMETERS[i], parameter);
 	}

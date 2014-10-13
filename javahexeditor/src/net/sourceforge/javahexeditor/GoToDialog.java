@@ -253,9 +253,9 @@ final class GoToDialog extends Dialog {
 		    if (Texts.EMPTY.equals(newText))
 			label2.setText(Texts.EMPTY);
 		    else if (tempResult < 0)
-			label2.setText(Texts.DIALOG_ERROR_NOT_A_NUMBER);
+			label2.setText(Texts.DIALOG_ERROR_NOT_A_NUMBER_MESSAGE);
 		    else
-			label2.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE);
+			label2.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE_MESSAGE);
 		}
 	    }
 	});
@@ -298,8 +298,7 @@ final class GoToDialog extends Dialog {
 	    createShell();
 	}
 
-	shell.pack();
-	Manager.reduceDistance(getParent(), shell);
+	SWTUtility.reduceDistance(getParent(), shell);
 	if (lastHexButtonSelected) {
 	    hexRadioButton.setSelection(true);
 	} else {

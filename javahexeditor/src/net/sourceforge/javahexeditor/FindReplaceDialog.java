@@ -347,8 +347,7 @@ final class FindReplaceDialog extends Dialog {
 	if (shell == null || shell.isDisposed()) {
 	    createShell();
 	}
-	shell.pack();
-	Manager.reduceDistance(getParent(), shell);
+	SWTUtility.reduceDistance(getParent(), shell);
 	findGroup.refreshCombo();
 	long selectionLength = myTarget.getSelection().getLength();
 	if (selectionLength > 0L
@@ -634,7 +633,8 @@ final class FindReplaceDialog extends Dialog {
 
     void doFind() {
 	prepareToRun();
-	progressBarStopButton.setText(Texts.FIND_REPLACE_DIALOG_STOP_SEARCHING_BUTTON_LABEL);
+	progressBarStopButton
+		.setText(Texts.FIND_REPLACE_DIALOG_STOP_SEARCHING_BUTTON_LABEL);
 	String findLiteral = findGroup.textCombo.getText();
 	String message;
 

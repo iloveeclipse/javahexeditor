@@ -35,20 +35,18 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Manager of the javahexeditor application, either in its standalone or Eclipse
- * plugin version. Manages creation of widgets, and executes menu actions, like
- * File->Save. Call createEditorPart() before any menu actions.
+ * Manager of the javahexeditor application, either in its stand alone or
+ * Eclipse plugin version. Manages creation of widgets, and executes menu
+ * actions, like File->Save. Call createEditorPart() before any menu actions.
  * 
  * @author Jordi
  */
@@ -74,68 +72,6 @@ public final class Manager {
     private FindReplaceDialog findDialog;
     private GoToDialog goToDialog;
     private SelectBlockDialog selectBlockDialog;
-
-    /**
-     * Blocks the caller until the task is finished. Does not block the user
-     * interface thread.
-     * 
-     * @param task
-     *            independent of the user interface thread (no widgets used)
-     */
-    public static void blockUntilFinished(Runnable task) {
-	Thread thread = new Thread(task);
-	thread.start();
-	Display display = Display.getCurrent();
-	final boolean[] pollerEnabled = { false };
-	while (thread.isAlive() && !display.isDisposed()) {
-	    if (!display.readAndDispatch()) {
-		// awake periodically so it returns when task has finished
-		if (!pollerEnabled[0]) {
-		    pollerEnabled[0] = true;
-		    display.timerExec(300, new Runnable() {
-			@Override
-			public void run() {
-			    pollerEnabled[0] = false;
-			}
-		    });
-		}
-		display.sleep();
-	    }
-	}
-    }
-
-    /**
-     * Helper method to make a shell come closer to another shell
-     * 
-     * @param fixedShell
-     *            where movingShell will get closer to
-     * @param movingShell
-     *            shell to be relocated
-     */
-    public static void reduceDistance(Shell fixedShell, Shell movingShell) {
-	if (fixedShell == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'fixedShell' must not be null.");
-	}
-	if (movingShell == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'movingShell' must not be null.");
-	}
-	Rectangle fixed = fixedShell.getBounds();
-	Rectangle moving = movingShell.getBounds();
-	int[] fixedLower = { fixed.x, fixed.y };
-	int[] fixedHigher = { fixed.x + fixed.width, fixed.y + fixed.height };
-	int[] movingLower = { moving.x, moving.y };
-	int[] movingSpan = { moving.width, moving.height };
-
-	for (int i = 0; i < 2; ++i) {
-	    if (movingLower[i] + movingSpan[i] < fixedLower[i])
-		movingLower[i] = fixedLower[i] - movingSpan[i] + 10;
-	    else if (fixedHigher[i] < movingLower[i])
-		movingLower[i] = fixedHigher[i] - 10;
-	}
-	movingShell.setLocation(movingLower[0], movingLower[1]);
-    }
 
     /**
      * Creates editor part of parent application. Can only be called once per
@@ -294,7 +230,7 @@ public final class Manager {
 		    "Parameter 'parent' must not be null.");
 	}
 	statusLine = new StatusLine(parent, SWT.NONE, withLeftSeparator);
-	if (hexTexts != null && hexTexts.getEnabled()) {
+	if (hexTexts != null && hexTexts.isEnabled()) {
 	    statusLine.updateInsertMode(!hexTexts.isOverwriteMode());
 	    if (hexTexts.isSelected())
 		statusLine.updateSelectionValue(hexTexts.getSelection(),
@@ -384,6 +320,7 @@ public final class Manager {
 	}
     }
 
+    @SuppressWarnings("null")
     public void doOpen(File forceThisFile, boolean newFile, String charset) {
 
 	if (forceThisFile == null && !newFile) {
@@ -397,18 +334,16 @@ public final class Manager {
 	    try {
 		forceThisFile = forceThisFile.getCanonicalFile();
 	    } catch (IOException e) {
-	    } // use non-canonical one then
+		// use non-canonical one then
+	    }
 	}
-	hexTexts.setEnabled(true);
 
 	try {
 	    openFile(forceThisFile, charset);
-	} catch (IOException e) {
-	    MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-	    box.setText("File Read Error");
-	    box.setMessage("The file " + forceThisFile
-		    + "\n cannot be opened for reading.");
-	    box.open();
+	} catch (IOException ex) {
+	    SWTUtility.showMessage(shell, SWT.ICON_ERROR | SWT.OK,
+		    Texts.FILE_READ_ERROR_TITLE, Texts.FILE_READ_ERROR_MESSAGE,
+		    forceThisFile.getAbsolutePath(), ex.getMessage());
 	}
 
 	hexTexts.setFocus();
@@ -533,9 +468,6 @@ public final class Manager {
     }
 
     private boolean isFileBeingRead(File file) {
-	// System.out.println("saving file:"+aFile);
-	// System.out.println("current file:"+myFile);
-	// System.out.println("using files:"+content.getOpenFiles());
 	return file.equals(contentFile)
 		|| content.getOpenFiles().contains(file);
     }
@@ -580,6 +512,8 @@ public final class Manager {
 	this.contentFile = contentFile;
 	hexTexts.setCharset(charset);
 	hexTexts.setContentProvider(content);
+	hexTexts.setEnabled(true);
+
     }
 
     /**
@@ -590,6 +524,10 @@ public final class Manager {
      *            manager to copy its control from
      */
     public void reuseStatusLinelFrom(Manager other) {
+	if (other == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'other' must not be null.");
+	}
 	statusLine = other.statusLine;
     }
 
@@ -647,10 +585,10 @@ public final class Manager {
      */
     public void saveFile() throws IOException {
 	boolean successful = false;
-	String errorMessage = "Could not create temporary file with a unique name";
+	String errorMessage = Texts.MANAGER_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
 	File tempFile = null;
 	// It can happen that in two successive "Save File"'s the first one
-	// didn't get the temp file deleted due to limitations in the os
+	// didn't get the temp file deleted due to limitations in the OS
 	// (windows). With this loop it's possible to save many times
 	for (int tries = 9999; tries >= 0 && !successful; --tries) {
 	    try {
@@ -664,18 +602,20 @@ public final class Manager {
 	if (tempFile != null) {
 	    successful = false;
 	    try {
-		// TODO Translate & parameters
-		errorMessage = "Could not write on temp file " + tempFile;
+		errorMessage = TextUtility.format(
+			Texts.MANAGER_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE,
+			tempFile.getAbsolutePath());
 		content.get(tempFile);
 		content.dispose();
 		content = new BinaryContent();
-		errorMessage = "Could not overwrite file "
-			+ contentFile.getAbsolutePath()
-			+ ", a temporary copy can be found in file "
-			+ tempFile.getAbsolutePath();
+		errorMessage = TextUtility.format(
+			Texts.MANAGER_MESSAGE_COULD_OVERWRITE_FILE,
+			contentFile.getAbsolutePath(),
+			tempFile.getAbsolutePath());
+
 		BinaryContentClipboard.deleteFileALaMs(contentFile);
-		if (tempFile.renameTo(contentFile)) { // successful delete or
-						      // not try
+		// Successful delete or not try
+		if (tempFile.renameTo(contentFile)) {
 		    // renaming anyway
 		    errorMessage = TextUtility
 			    .format(Texts.MANAGER_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
@@ -780,37 +720,26 @@ public final class Manager {
      */
     public File showSaveAsDialog(Shell aShell, boolean selection) {
 	FileDialog dialog = new FileDialog(aShell, SWT.SAVE);
-	if (selection)
-	    dialog.setText("Save Selection As");
-	else
-	    dialog.setText("Save As");
-	String fileText = dialog.open();
-	if (fileText == null)
+	if (selection) {
+	    dialog.setText(Texts.SAVE_DIALOG_TITLE_SAVE_SELECTION_AS);
+	} else {
+	    dialog.setText(Texts.SAVE_DIALOG_TITLE_SAVE_AS);
+	}
+	String filePath = dialog.open();
+	if (filePath == null) {
 	    return null;
+	}
 
-	File file = new File(fileText);
-	if (file.exists() && !showMessageBox(aShell, fileText))
-	    return null;
-
+	File file = new File(filePath);
+	if (file.exists()) {
+	    if (SWTUtility.showMessage(aShell, SWT.ICON_WARNING | SWT.YES
+		    | SWT.NO, Texts.SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS,
+		    Texts.SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS,
+		    file.getAbsolutePath()) != SWT.YES) {
+		return null;
+	    }
+	}
 	return file;
-    }
-
-    /**
-     * Show a message box with a file-already-exists message
-     * 
-     * @param aShell
-     *            parent of the dialog
-     * @param file
-     * @return
-     */
-    public boolean showMessageBox(Shell aShell, String file) {
-	MessageBox aMessageBox = new MessageBox(aShell, SWT.ICON_WARNING
-		| SWT.YES | SWT.NO);
-	aMessageBox.setText("File already exists");
-	aMessageBox.setMessage("The file " + file
-		+ " already exists.\nOverwrite file?");
-
-	return aMessageBox.open() == SWT.YES;
     }
 
     /**

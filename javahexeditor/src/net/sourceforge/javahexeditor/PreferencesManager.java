@@ -20,12 +20,12 @@
 package net.sourceforge.javahexeditor;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -50,7 +50,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Manager of all preferences-editing widgets, with an optional standalone
+ * Manager of all preferences-editing widgets, with an optional stand-alone
  * dialog.
  * 
  * @author Jordi
@@ -226,7 +226,7 @@ public final class PreferencesManager {
 	});
 	sampleText = new Text(group, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
 		| SWT.READ_ONLY | SWT.BORDER);
-	sampleText.setText("ca fe ba be 00 00 01 2d");
+	sampleText.setText(Texts.PREFERENCES_MANAGER_SAMPLE_TEXT);
 	sampleText.setEditable(false);
 	GridData gridData8 = new GridData();
 	gridData8.horizontalSpan = 3;
@@ -357,19 +357,20 @@ public final class PreferencesManager {
 
     int getSize() {
 	int size = 0;
-	if (!"".equals(text2.getText())) {
+	String text = text2.getText();
+	if (!text.isEmpty()) {
 	    try {
-		size = Integer.parseInt(text2.getText());
+		size = Integer.parseInt(text);
 	    } catch (NumberFormatException e) {
 	    } // was not a number, keep it 0
 	}
 	// bugfix: HexText's raw array overflows when font is very small and
-	// window very big
-	// very small sizes would compromise responsiveness in large windows,
-	// and they are too small
-	// to see anyway
-	if (size == 1 || size == 2)
+	// window very big very small sizes would compromise responsiveness in
+	// large windows,
+	// and they are too small to see anyway
+	if (size == 1 || size == 2) {
 	    size = 3;
+	}
 
 	return size;
     }
@@ -384,8 +385,7 @@ public final class PreferencesManager {
 	dialogResult = SWT.CANCEL; // when user presses escape
 	if (dialog == null || dialog.isDisposed())
 	    createDialog(aParentShell);
-	dialog.pack();
-	Manager.reduceDistance(aParentShell, dialog);
+	SWTUtility.reduceDistance(aParentShell, dialog);
 	dialog.open();
 	Display display = parent.getDisplay();
 	while (!dialog.isDisposed()) {

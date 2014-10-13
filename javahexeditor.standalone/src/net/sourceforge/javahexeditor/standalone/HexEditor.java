@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.PreferencesManager;
+import net.sourceforge.javahexeditor.SWTUtility;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -59,6 +60,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
 /**
+ * Stand-alone wrapper for the Hex Editor.
  * 
  * @author Jordi, Peter Dell
  */
@@ -197,7 +199,7 @@ public final class HexEditor {
     private Menu helpSubMenu;
 
     /**
-     * Point of entry to the standalone version
+     * Point of entry to the stand-alone version
      * 
      * @param args
      *            optional first String: name of a file to edit
@@ -208,7 +210,7 @@ public final class HexEditor {
     }
 
     /**
-     * Point of entry to the standalone version
+     * Point of entry to the stand-alone version
      * 
      * @param args
      *            The command line arguments, not <code>null</code>.
@@ -670,9 +672,9 @@ public final class HexEditor {
 	try {
 	    Desktop.getDesktop().browse(uri);
 	} catch (IOException ex) {
-	    ex.printStackTrace();
+	    SWTUtility.showErrorMessage(Texts.OPEN_USER_GUIDE_ERROR + " "
+		    + uri.toString() + ":" + ex.getMessage());
 	}
-
 
     }
 

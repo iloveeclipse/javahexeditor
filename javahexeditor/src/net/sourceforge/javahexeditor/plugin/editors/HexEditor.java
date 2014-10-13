@@ -28,6 +28,7 @@ import java.util.Set;
 
 import net.sourceforge.javahexeditor.BinaryContent;
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
+import net.sourceforge.javahexeditor.Log;
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.Preferences;
 import net.sourceforge.javahexeditor.TextUtility;
@@ -68,9 +69,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IURIEditorInput;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.editors.text.ILocationProvider;
@@ -81,6 +80,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 public final class HexEditor extends EditorPart implements ISelectionProvider {
+
+    private static final String OUTLINE_ID = "net.sourceforge.javahexeditor.outline";
 
     private static class MyAction extends Action {
 	private Manager manager;
@@ -131,16 +132,11 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 
     public HexEditor() {
 	super();
+	manager = new Manager();
     }
 
     @Override
     public void addSelectionChangedListener(ISelectionChangedListener listener) {
-	System.out
-		.println("HexEditor addSelectionChangedListener()"
-			+ listener
-			+ ", "
-			+ ((selectionListeners == null) ? 0
-				: selectionListeners.size()));
 	if (listener == null) {
 	    return;
 	}
@@ -259,7 +255,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 	manager.addLongSelectionListener(new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		System.out.println("HexEditor, long selection");
+		Log.log(this, "Long selection: {0}", e);
 		if (selectionListeners == null) {
 		    return;
 		}
@@ -274,25 +270,16 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 		}
 	    }
 	});
-	getSite().getPage().addSelectionListener(// getSite().getPage().getActiveEditor().getSite().getId(),
-		new ISelectionListener() {
-		    @Override
-		    public void selectionChanged(IWorkbenchPart part,
-			    ISelection selection) {
-			if ("net.sourceforge.javahexeditor".equals(part
-				.getSite().getId()))
-			    return;
-			/*
-			 * Object[] startEnd =
-			 * ((StructuredSelection)selection).toArray();
-			 * System.out
-			 * .println("HexEditor received selection from:"
-			 * +part.getSite().getRegisteredName()+", "+
-			 * startEnd[0]+","+startEnd[1]);
-			 */
-		    }
-		});
-	// getSite().setSelectionProvider(this);
+	// getSite().getPage().addSelectionListener(
+	// new ISelectionListener() {
+	// @Override
+	// public void selectionChanged(IWorkbenchPart part,
+	// ISelection selection) {
+	// if (ID.equals(part.getSite().getId())) {
+	// return;
+	// }
+	// }
+	// });
     }
 
     @Override
@@ -334,9 +321,6 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 	} else {
 	    result = super.getAdapter(required);
 	}
-	System.out.println("getAdapter(" + required + ") = " + result);
-	System.out.flush();
-
 	return result;
     }
 
@@ -346,16 +330,12 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
      * @return the manager
      */
     public Manager getManager() {
-	if (manager == null)
-	    manager = new Manager();
-
 	return manager;
     }
 
     IContentOutlinePage getOutlinePage() {
 	IExtensionRegistry registry = Platform.getExtensionRegistry();
-	IExtensionPoint point = registry
-		.getExtensionPoint("net.sourceforge.javahexeditor.outline");
+	IExtensionPoint point = registry.getExtensionPoint(OUTLINE_ID);
 	if (point == null) {
 	    return null;
 	}
@@ -399,27 +379,15 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
     @Override
     public ISelection getSelection() {
 	RangeSelection rangeSelection = getManager().getSelection();
-	System.out.println("HexEditor getSelection(), returns "
-		+ rangeSelection.toString());
 	return new StructuredSelection(new Object[] {
 		new Long(rangeSelection.start), new Long(rangeSelection.end) });
-    }
-
-    boolean implementsInterface(IEditorInput input, String interfaceName) {
-	Class<?>[] classes = input.getClass().getInterfaces();
-	for (int i = 0; i < classes.length; ++i) {
-	    if (interfaceName.equals(classes[i].getName()))
-		return true;
-	}
-
-	return false;
     }
 
     @Override
     public void init(IEditorSite site, final IEditorInput input)
 	    throws PartInitException {
-	System.out.println("HexEditor.init() starts:" + this
-		+ ", selection provider:" + site.getSelectionProvider());
+	Log.log(this, "init starts with selection provider {0}",
+		site.getSelectionProvider());
 
 	setSite(site);
 	if (!(input instanceof IPathEditorInput)
@@ -429,7 +397,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 		    + "'is not a file");
 	}
 	setInput(input);
-	// when opening an external file the workbench (Eclipse 3.1) calls
+	// When opening an external file the workbench (Eclipse 3.1) calls
 	// HexEditorActionBarContributor.
 	// MyStatusLineContributionItem.fill() before
 	// HexEditorActionBarContributor.setActiveEditor()
@@ -451,7 +419,6 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
     @Override
     public void removeSelectionChangedListener(
 	    ISelectionChangedListener listener) {
-	System.out.println("HexEditor removeSelectionChangedListener()");
 	if (selectionListeners != null) {
 	    selectionListeners.remove(listener);
 	}
@@ -513,7 +480,6 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 
     @Override
     public void setSelection(ISelection selection) {
-	System.out.println("HexEditor setSelection()");
 	if (selection.isEmpty()) {
 	    return;
 	}
@@ -536,10 +502,10 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 
     /**
      * Updates the status of actions: enables/disables them depending on whether
-     * there is text selected and whether inserting or overwriting is avtive.
+     * there is text selected and whether inserting or overwriting is active.
      * Undo/redo actions are enabled/disabled as well.
      */
-    public void updateActionsStatus() {
+    void updateActionsStatus() {
 	boolean textSelected = getManager().isTextSelected();
 	boolean lengthModifiable = textSelected && !manager.isOverwriteMode();
 	IActionBars bars = getEditorSite().getActionBars();
