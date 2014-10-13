@@ -20,6 +20,7 @@
 package net.sourceforge.javahexeditor.plugin.editors;
 
 import net.sourceforge.javahexeditor.Manager;
+import net.sourceforge.javahexeditor.Texts;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ContributionItem;
@@ -45,7 +46,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  * 
  * @author Jordi
  */
-public class HexEditorActionBarContributor extends EditorActionBarContributor {
+public final class HexEditorActionBarContributor extends EditorActionBarContributor {
 
     private final class MyMenuContributionItem extends ContributionItem {
 	MenuItem myMenuItem;
@@ -59,8 +60,8 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 	    boolean textSelected = activeEditor == null ? false : activeEditor
 		    .getManager().isTextSelected();
 	    myMenuItem = new MenuItem(parent, SWT.PUSH, index);
-	    if (menuSaveSelectionAsId.equals(getId())) {
-		myMenuItem.setText("Save Selection As...");
+	    if (MenuIds.SAVE_SELECTION_AS.equals(getId())) {
+		myMenuItem.setText(Texts.EDITOR_MENU_SAVE_SELECTION_AS_LABEL);
 		myMenuItem.setEnabled(textSelected);
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
 		    @Override
@@ -68,8 +69,8 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 			activeEditor.saveToFile(true);
 		    }
 		});
-	    } else if (menuTrimId.equals(getId())) {
-		myMenuItem.setText("Trim");
+	    } else if (MenuIds.TRIM.equals(getId())) {
+		myMenuItem.setText(Texts.EDITOR_MENU_TRIM_LABEL);
 		myMenuItem.setEnabled(textSelected
 			&& !activeEditor.getManager().isOverwriteMode());
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -78,8 +79,9 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 			activeEditor.getManager().doTrim();
 		    }
 		});
-	    } else if (menuSelectBlock.equals(getId())) {
-		myMenuItem.setText("Select &Block...\tCtrl+E");
+	    } else if (MenuIds.SELECT_BLOCK.equals(getId())) {
+		myMenuItem.setText(Texts.EDITOR_MENU_SELECT_BLOCK_LABEL);
+		myMenuItem.setAccelerator(SWT.CONTROL | 'E');
 		myMenuItem.setEnabled(true);
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
 		    @Override
@@ -105,7 +107,7 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 	    IContributionItem contributionItem = bars.getMenuManager()
 		    .findUsingPath(
 			    IWorkbenchActionConstants.M_FILE + '/'
-				    + menuSaveSelectionAsId);
+				    + MenuIds.SAVE_SELECTION_AS);
 	    if (contributionItem != null
 		    && ((MyMenuContributionItem) contributionItem).myMenuItem != null
 		    && !((MyMenuContributionItem) contributionItem).myMenuItem
@@ -114,7 +116,7 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 			.setEnabled(textSelected);
 
 	    contributionItem = bars.getMenuManager().findUsingPath(
-		    IWorkbenchActionConstants.M_EDIT + '/' + menuTrimId);
+		    IWorkbenchActionConstants.M_EDIT + '/' + MenuIds.TRIM);
 	    if (contributionItem != null
 		    && ((MyMenuContributionItem) contributionItem).myMenuItem != null
 		    && !((MyMenuContributionItem) contributionItem).myMenuItem
@@ -137,10 +139,17 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 	}
     }
 
-    private static final String menuSaveSelectionAsId = "saveSelectionAs";
-    private static final String menuTrimId = "trim";
-    private static final String menuSelectBlock = "selectBlock";
-    private static final String statusLineItemId = "AllHexEditorStatusItemsItem";
+    private static final class MenuIds {
+	private static final String SAVE_SELECTION_AS = "saveSelectionAs";
+	private static final String TRIM = "trim";
+	private static final String SELECT_BLOCK = "selectBlock";
+	private static final String SAVE_AS = "saveAs";
+	private static final String DELETE = "delete";
+	private static final String SELECT_ALL = "selectAll";
+	private static final String ADDITIONS = "additions";
+    }
+
+    private static final String STATUS_LINE_ITEM_ID = "AllHexEditorStatusItemsItem";
 
     HexEditor activeEditor;
 
@@ -153,21 +162,22 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 		.findMenuUsingPath(IWorkbenchActionConstants.M_FILE);
 	IMenuListener myMenuListener = new MyMenuListener();
 	if (menu != null) {
-	    menu.insertAfter("saveAs", new MyMenuContributionItem(
-		    menuSaveSelectionAsId));
+	    menu.insertAfter(MenuIds.SAVE_AS, new MyMenuContributionItem(
+		    MenuIds.SAVE_SELECTION_AS));
 	    menu.addMenuListener(myMenuListener);
 	}
 
 	menu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
 	if (menu != null) {
-	    menu.insertAfter("delete", new MyMenuContributionItem(menuTrimId));
+	    menu.insertAfter(MenuIds.DELETE, new MyMenuContributionItem(
+		    MenuIds.TRIM));
 	    menu.addMenuListener(myMenuListener);
 	}
 
 	menu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
 	if (menu != null) {
-	    menu.insertAfter("selectAll", new MyMenuContributionItem(
-		    menuSelectBlock));
+	    menu.insertAfter(MenuIds.SELECT_ALL, new MyMenuContributionItem(
+		    MenuIds.SELECT_BLOCK));
 	    menu.addMenuListener(myMenuListener);
 	}
 
@@ -183,8 +193,9 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
 	    // declared in org.eclipse.ui.workbench.text plugin.xml
 	    goToAction
 		    .setActionDefinitionId(ITextEditorActionDefinitionIds.LINE_GOTO);
-	    goToAction.setText("Go to &Location...\tCtrl+L");
-	    menu.appendToGroup("additions", goToAction);
+	    goToAction.setText(Texts.EDITOR_MENU_GOTO_LINE_LABEL);
+	    goToAction.setAccelerator(SWT.CTRL + 'L');
+	    menu.appendToGroup(MenuIds.ADDITIONS, goToAction);
 	}
     }
 
@@ -193,8 +204,8 @@ public class HexEditorActionBarContributor extends EditorActionBarContributor {
      */
     @Override
     public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-	statusLineManager
-		.add(new MyStatusLineContributionItem(statusLineItemId));
+	statusLineManager.add(new MyStatusLineContributionItem(
+		STATUS_LINE_ITEM_ID));
     }
 
     /**

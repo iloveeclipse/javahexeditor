@@ -19,21 +19,39 @@
  */
 package net.sourceforge.javahexeditor;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontData;
-
 /**
+ * Utility to issue log messages.
  * 
  * @author Peter Dell
+ * 
  */
-public final class Preferences {
-    // Property names
-    public static final String FONT_NAME = "font.name";
-    public static final String FONT_SIZE = "font.size";
-    public static final String FONT_STYLE = "font.style";
-    public static final String FONT_DATA = "font.data";
+public final class Log {
 
-    public static FontData getFontData() {
-	return new FontData("Courier New", 10, SWT.NORMAL);
+    /**
+     * Creation is private.
+     */
+    private Log() {
+
     }
+
+    public static void log(Object owner, String message, Object... parameters) {
+	if (owner == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'owner' must not be null.");
+	}
+	if (message == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'message' must not be null.");
+	}
+	String[] stringParameters = null;
+	if (parameters != null) {
+	    stringParameters = new String[parameters.length];
+	    for (int i = 0; i < parameters.length; i++) {
+		stringParameters[i] = String.valueOf(parameters[i]);
+	    }
+	}
+	System.out.println(String.valueOf(owner) + ":"
+		+ TextUtility.format(message, stringParameters));
+    }
+
 }

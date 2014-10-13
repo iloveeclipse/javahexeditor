@@ -20,9 +20,10 @@
 package net.sourceforge.javahexeditor;
 
 /**
+ * Utility to handle number conversions.
  * 
  * @author Peter Dell
- *
+ * 
  */
 public final class NumberUtility {
 

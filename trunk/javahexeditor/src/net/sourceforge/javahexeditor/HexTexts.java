@@ -26,8 +26,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
 import net.sourceforge.javahexeditor.BinaryContentFinder.Match;
@@ -67,7 +67,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 
@@ -239,8 +238,9 @@ public final class HexTexts extends Composite {
      */
     private void composeHeaderRow() {
 	StringBuilder rowChars = new StringBuilder();
-	for (int i = 0; i < maxScreenResolution / minCharSize / 3; ++i)
+	for (int i = 0; i < maxScreenResolution / minCharSize / 3; ++i) {
 	    rowChars.append(byteToHex[i & 0x0ff]).append(' ');
+	}
 	headerRow = rowChars.toString().toUpperCase();
     }
 
@@ -248,9 +248,8 @@ public final class HexTexts extends Composite {
 	return charset;
     }
 
-    public String getSystemCharset() {
+    private String getSystemCharset() {
 	return System.getProperty("file.encoding", "utf-8");
-	// return Charset.defaultCharset().toString();
     }
 
     public void setCharset(String name) {
@@ -488,7 +487,7 @@ public final class HexTexts extends Composite {
 
 	@Override
 	public void verifyKey(VerifyEvent e) {
-	    // System.out.println("int:"+(int)e.character+", char:"+e.character+", keycode:"+e.keyCode);
+	    // Log.log(this, "verifyKey={0}", e);
 	    if ((e.character == SWT.DEL || e.character == SWT.BS)
 		    && myInserting) {
 		if (!deleteSelected()) {
@@ -579,13 +578,18 @@ public final class HexTexts extends Composite {
 		try {
 		    myClipboard.dispose();
 		} catch (IOException ex) {
-		    MessageBox box = new MessageBox(parent.getShell(),
-			    SWT.ICON_WARNING | SWT.OK);
-		    box.setText("Inconsistent clipboard files");
-		    box.setMessage("Could not cleanup temporary clipboard files.\n"
-			    + "Clipboard files are stored in your user temp directory\n"
-			    + "with names 'javahexeditorClipboard' and 'javahexeditorPasted'");
-		    box.open();
+		    SWTUtility
+			    .showMessage(
+				    parent.getShell(),
+				    SWT.ICON_WARNING | SWT.OK,
+				    Texts.DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_TITLE,
+				    Texts.DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_MESSAGE,
+				    BinaryContentClipboard.CLIPBOARD_FOLDER_PATH,
+				    BinaryContentClipboard.CLIPBOARD_FILE_NAME,
+				    TextUtility
+					    .format(BinaryContentClipboard.CLIPBOARD_FILE_NAME_PASTED,
+						    "..."));
+
 		}
 	    }
 	});
@@ -1251,7 +1255,7 @@ public final class HexTexts extends Composite {
 
 	initFinder(findString, isHexString, searchForward, ignoreCase);
 	MyFinderRunnable finderRunnable = new MyFinderRunnable();
-	Manager.blockUntilFinished(finderRunnable);
+	SWTUtility.blockUntilFinished(finderRunnable);
 	Match match = finderRunnable.getMatch();
 	if (match.getException() != null) {
 	    return match;
@@ -1812,7 +1816,8 @@ public final class HexTexts extends Composite {
      *            consider the literal as an hex string (ie. "0fdA1"). Used for
      *            binary finds. Will replace full bytes only, odd number of hex
      *            characters will have a leading '0' added.
-     * @return An array with [0]=number of replacements, [1]=last replaced start position
+     * @return An array with [0]=number of replacements, [1]=last replaced start
+     *         position
      * @throws IOException
      */
     public long[] replaceAll(String findString, boolean isFindHexString,

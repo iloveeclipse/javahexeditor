@@ -273,11 +273,11 @@ public final class BinaryContentFinder {
     }
 
     private void initSearchUnicodeAscii() {
-	StringBuilder regex = new StringBuilder("\\Q"); // everything-quoted
-	// regular expression
+	// everything-quoted regular expression
+	StringBuilder regex = new StringBuilder("\\Q");
 
-	if (myLiteral.length() * 2 > MAX_SEQUENCE_SIZE) { // 16 bit Unicode
-							  // chars
+	// 16 bit Unicode chars
+	if (myLiteral.length() * 2 > MAX_SEQUENCE_SIZE) {
 	    myLiteral = myLiteral.subSequence(0, MAX_SEQUENCE_SIZE / 2);
 	}
 	myLiteralByteLength = myLiteral.length() * 2;

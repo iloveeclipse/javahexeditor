@@ -29,7 +29,7 @@ javahexeditor change log
 ------------------------
 
 ??/??/2014 version 0.4.9.
-	Separated Eclipse plugin from standalone application.
+	Separated Eclipse plugin from stand-alone application.
 	Included standard OSGI and SWT jars for location and UI widgets.
 	New build process created separate self-contained "JavaHexEditor.jar" file for Linux (32-bit), Windows (32-bit) and Windows (64-bit) 
 

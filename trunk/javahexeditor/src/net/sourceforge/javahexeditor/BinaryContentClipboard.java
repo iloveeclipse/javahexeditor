@@ -46,6 +46,10 @@ import org.eclipse.swt.widgets.Display;
  */
 final class BinaryContentClipboard {
 
+    public static String CLIPBOARD_FOLDER_PATH;
+    public static final String CLIPBOARD_FILE_NAME = "javahexeditorClipboard.tmp";
+    public static final String CLIPBOARD_FILE_NAME_PASTED = "javahexeditorPasted{0}.tmp";
+
     private static class FileByteArrayTransfer extends ByteArrayTransfer {
 	private static final String MYTYPENAME = "myFileByteArrayTypeName";
 	private static final int MYTYPEID = registerType(MYTYPENAME);
@@ -165,15 +169,17 @@ final class BinaryContentClipboard {
 	}
     }
 
-    private final File clipboardDir = new File(System.getProperty(
-	    "java.io.tmpdir", "."));
-    private final File clipboardFile = new File(clipboardDir,
-	    "javahexeditorClipboard.tmp");
+    private final File clipboardFile;
 
     // 4 Megs for byte[], 4 Megs for text
     private static final long maxClipboardDataInMemory = 4 * 1024 * 1024;
     private Clipboard myClipboard;
     private Map<File, Integer> myFilesReferencesCounter;
+
+    static {
+	File tempFolder = new File(System.getProperty("java.io.tmpdir", "."));
+	CLIPBOARD_FOLDER_PATH = tempFolder.getAbsolutePath();
+    }
 
     /**
      * Init system resources for the clipboard
@@ -181,6 +187,8 @@ final class BinaryContentClipboard {
      * @param display
      */
     public BinaryContentClipboard(Display display) {
+	clipboardFile = new File(new File(CLIPBOARD_FOLDER_PATH), CLIPBOARD_FILE_NAME);
+
 	myClipboard = new Clipboard(display);
 	myFilesReferencesCounter = new HashMap<File, Integer>();
     }
@@ -358,18 +366,20 @@ final class BinaryContentClipboard {
 	File lock = null;
 	if (clipboardFile.equals(lastPaste)) {
 	    for (int i = 0; i < 9999; ++i) {
-		StringBuilder name = new StringBuilder("javahexeditorPasted")
-			.append(i);
-		lastPaste = new File(clipboardDir, name.toString() + ".tmp");
-		lock = new File(clipboardDir, name.append(".lock").toString());
+		String fileName = TextUtility.format(CLIPBOARD_FILE_NAME_PASTED,
+			String.valueOf(i));
+		File clipboardDir = new File(CLIPBOARD_FOLDER_PATH);
+		lastPaste = new File(clipboardDir, fileName);
+		lock = new File(clipboardDir, fileName + ".lock");
 		if (!lock.exists()) {
 		    if (!lastPaste.exists() || lastPaste.delete()) {
 			break;
 		    }
 		}
 	    }
-	    if (lastPaste.exists() || (lock != null && lock.exists()))
+	    if (lastPaste.exists() || (lock != null && lock.exists())) {
 		return 0L;
+	    }
 	    clipboardFile.renameTo(lastPaste);
 	    myClipboard.setContents(new Object[] { lastPaste },
 		    new Transfer[] { FileByteArrayTransfer.getInstance() });
@@ -377,10 +387,11 @@ final class BinaryContentClipboard {
 	    lock = getLockFromFile(lastPaste);
 	}
 	try {
-	    if (insert)
+	    if (insert) {
 		content.insert(lastPaste, start);
-	    else
+	    } else {
 		content.overwrite(lastPaste, start);
+	    }
 	} catch (IOException e) {
 	    total = 0L;
 	}
@@ -474,8 +485,9 @@ final class BinaryContentClipboard {
 
     private boolean updateLock(File lock, int references) throws IOException {
 	RandomAccessFile file = new RandomAccessFile(lock, "rw");
-	if (file.length() >= 4)
+	if (file.length() >= 4) {
 	    references += file.readInt();
+	}
 	if (references > 0) {
 	    file.seek(0);
 	    file.writeInt(references);

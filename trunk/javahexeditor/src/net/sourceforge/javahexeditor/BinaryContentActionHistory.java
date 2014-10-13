@@ -370,7 +370,7 @@ final class BinaryContentActionHistory {
     private void newRangeToCurrentAction() {
 	Range newRange = null;
 	if (myCurrentActionType == TYPE_DELETE) {
-	    if (deletedList == null){
+	    if (deletedList == null) {
 		return;
 	    }
 
@@ -417,11 +417,6 @@ final class BinaryContentActionHistory {
 	myMergingSingles = isSingle;
     }
 
-    @Override
-    public String toString() {
-	return myActions.toString();
-    }
-
     /**
      * Undoes last action on BinaryContent.
      * 
@@ -449,4 +444,10 @@ final class BinaryContentActionHistory {
 	    ++newRangeLength;
 	}
     }
+
+    @Override
+    public String toString() {
+	return myActions.toString();
+    }
+
 }

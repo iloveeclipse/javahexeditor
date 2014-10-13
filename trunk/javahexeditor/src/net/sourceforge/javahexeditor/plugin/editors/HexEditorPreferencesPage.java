@@ -78,7 +78,7 @@ public class HexEditorPreferencesPage extends PreferencePage implements
 	    InstanceScope.INSTANCE.getNode(HexEditorPlugin.ID).flush();
 	} catch (BackingStoreException ex) {
 
-	    throw new RuntimeException("Cannot store preferences for plugin '"
+	    throw new RuntimeException( "Cannot store preferences for plugin '"
 		    + HexEditorPlugin.ID + "'", ex);
 	}
 

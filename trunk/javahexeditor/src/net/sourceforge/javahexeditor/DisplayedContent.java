@@ -48,18 +48,18 @@ final class DisplayedContent implements StyledTextContent {
      * @param numberOfColumns
      */
     DisplayedContent(int numberOfColumns, int numberOfLines) {
-	myData = new StringBuilder(numberOfColumns * numberOfLines * 2); // account
-	// for
-	// replacements
+	// reserve space and account for replacements
+	myData = new StringBuilder(numberOfColumns * numberOfLines * 2);
 	myTextListeners = new HashSet<TextChangeListener>();
 	setDimensions(numberOfColumns, numberOfLines);
     }
 
     @Override
     public void addTextChangeListener(TextChangeListener listener) {
-	if (listener == null)
-	    throw new IllegalArgumentException("Cannot add a null listener");
-
+	if (listener == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'listener' must not be null.");
+	}
 	myTextListeners.add(listener);
     }
 
@@ -89,7 +89,7 @@ final class DisplayedContent implements StyledTextContent {
 
     @Override
     public String getLineDelimiter() {
-	return "";
+	return Texts.EMPTY;
     }
 
     @Override
@@ -100,8 +100,9 @@ final class DisplayedContent implements StyledTextContent {
     @Override
     public String getTextRange(int start, int length) {
 	int dataLength = myData.length();
-	if (start > dataLength)
-	    return "";
+	if (start > dataLength) {
+	    return Texts.EMPTY;
+	}
 
 	return myData.substring(start, Math.min(dataLength, start + length));
     }
@@ -160,6 +161,7 @@ final class DisplayedContent implements StyledTextContent {
      * @param forward
      *            shifts lines either forward or backward
      */
+    @SuppressWarnings("boxing")
     void shiftLines(String text, boolean forward) {
 	if (text.length() == 0)
 	    return;
@@ -178,8 +180,8 @@ final class DisplayedContent implements StyledTextContent {
 	    listener.textChanging(event);
 	}
 	myData.insert(event.start, text);
-	// System.out.print("Event1:start:"+event.start+", newCCount:"+event.newCharCount+", newLCount:"+
-	// event.newLineCount+" ");System.out.flush();
+	Log.log(this, "Event 1: start={0}, newCharCount={1}, newLineCount={2}",
+		event.start, event.newCharCount, event.newLineCount);
 
 	TextChangedEvent changedEvent = new TextChangedEvent(this);
 	for (TextChangeListener listener : myTextListeners) {
@@ -205,8 +207,8 @@ final class DisplayedContent implements StyledTextContent {
 	} else {
 	    myData.delete(0, event.replaceCharCount);
 	}
-	// System.out.println("Event2:start:"+event.start+", replaceCCount:"+event.replaceCharCount+
-	// ", replaceLCount:"+event.replaceLineCount+", text:"+text);System.out.flush();
+	Log.log(this, "Event 2: start={0}, newCharCount={1}, newLineCount={2}",
+		event.start, event.newCharCount, event.newLineCount);
 
 	changedEvent = new TextChangedEvent(this);
 	for (TextChangeListener listener : myTextListeners) {

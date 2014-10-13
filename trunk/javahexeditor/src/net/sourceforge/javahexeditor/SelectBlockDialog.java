@@ -75,10 +75,7 @@ final class SelectBlockDialog extends Dialog {
 	    if (numberMatcher.matches()) {
 		result = Long.parseLong(newText, radix);
 	    }
-	    empty = false;
-	    if ("".equals(newText)) {
-		empty = true;
-	    }
+	    empty = newText.isEmpty();
 	    validateResults();
 	}
 
@@ -125,8 +122,8 @@ final class SelectBlockDialog extends Dialog {
 
     public SelectBlockDialog(Shell aShell) {
 	super(aShell);
-	lastStartText = "";
-	lastEndText = "";
+	lastStartText = Texts.EMPTY;
+	lastEndText = Texts.EMPTY;
     }
 
     /**
@@ -308,8 +305,7 @@ final class SelectBlockDialog extends Dialog {
 	if (shell == null || shell.isDisposed()) {
 	    createSShell();
 	}
-	shell.pack();
-	Manager.reduceDistance(getParent(), shell);
+	SWTUtility.reduceDistance(getParent(), shell);
 
 	if (lastHexButtonSelected) {
 	    hexRadioButton.setSelection(true);
@@ -356,12 +352,12 @@ final class SelectBlockDialog extends Dialog {
 	    if (startTextListener.isEmpty() || endTextListener.isEmpty()) {
 		statusLabel.setText(Texts.EMPTY);
 	    } else if ((result1 < 0) || (result2 < 0)) {
-		statusLabel.setText(Texts.DIALOG_ERROR_NOT_A_NUMBER);
+		statusLabel.setText(Texts.DIALOG_ERROR_NOT_A_NUMBER_MESSAGE);
 	    } else if (result2 <= result1) {
 		statusLabel
-			.setText(Texts.DIALOG_ERROR_END_SMALLER_THAN_OR_EQUAL_TO_START);
+			.setText(Texts.DIALOG_ERROR_END_SMALLER_THAN_OR_EQUAL_TO_START_MESSAGE);
 	    } else {
-		statusLabel.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE);
+		statusLabel.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE_MESSAGE);
 	    }
 	}
     }
