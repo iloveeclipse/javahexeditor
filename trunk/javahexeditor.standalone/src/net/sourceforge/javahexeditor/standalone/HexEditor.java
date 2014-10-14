@@ -24,12 +24,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.PreferencesManager;
 import net.sourceforge.javahexeditor.SWTUtility;
+import net.sourceforge.javahexeditor.standalone.HexEditorMenu.Actions;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -44,7 +47,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -54,8 +56,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
@@ -65,138 +65,14 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jordi, Peter Dell
  */
 public final class HexEditor {
-
-    private final class MySelectionAdapter extends SelectionAdapter {
-	public static final int ABOUT = 0;
-	public static final int PASTE = 1;
-	public static final int DELETE = 2;
-	public static final int SELECT_ALL = 3;
-	public static final int FIND = 4;
-	public static final int OPEN = 5;
-	public static final int SAVE = 6;
-	public static final int SAVE_AS = 7;
-	public static final int SAVE_SELECTION_AS = 8;
-	public static final int EXIT = 9;
-	public static final int CUT = 10;
-	public static final int COPY = 11;
-	public static final int GO_TO = 12;
-	public static final int GUIDELOCAL = 13;
-	public static final int GUIDEONLINE = 14;
-	public static final int NEW = 15;
-	public static final int PREFERENCES = 16;
-	public static final int REDO = 17;
-	public static final int TRIM = 18;
-	public static final int UNDO = 19;
-	public static final int SELECT_BLOCK = 20;
-
-	private int myAction;
-
-	MySelectionAdapter(int action) {
-	    myAction = action;
-	}
-
-	@Override
-	public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-	    switch (myAction) {
-	    case ABOUT:
-		MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION
-			| SWT.OK);
-		box.setText(Texts.ABOUT_DIALOG_TITLE);
-		box.setMessage(Texts.ABOUT_DIALOG_TEXT);
-		box.open();
-		break;
-	    case PASTE:
-		manager.doPaste();
-		break;
-	    case DELETE:
-		manager.doDelete();
-		break;
-	    case SELECT_ALL:
-		manager.doSelectAll();
-		break;
-	    case FIND:
-		manager.doFind();
-		break;
-	    case OPEN:
-		doOpen(null, false, null);
-		break;
-	    case SAVE:
-		doSave();
-		break;
-	    case SAVE_AS:
-		doSaveAs();
-		break;
-	    case SAVE_SELECTION_AS:
-		doSaveSelectionAs();
-		break;
-	    case EXIT:
-		shell.close();
-		shell.dispose();
-		break;
-	    case CUT:
-		manager.doCut();
-		break;
-	    case COPY:
-		manager.doCopy();
-		break;
-	    case GO_TO:
-		manager.doGoTo();
-		break;
-	    case GUIDELOCAL:
-		doOpenUserGuide(false);
-		break;
-	    case GUIDEONLINE:
-		doOpenUserGuide(true);
-		break;
-	    case NEW:
-		doOpen(null, true, null);
-		break;
-	    case PREFERENCES:
-		doPreferences();
-		break;
-	    case REDO:
-		manager.doRedo();
-		break;
-	    case TRIM:
-		manager.doTrim();
-		break;
-	    case UNDO:
-		manager.doUndo();
-		break;
-	    case SELECT_BLOCK:
-		manager.doSelectBlock();
-		break;
-	    default:
-		break;
-	    }
-	}
-    }
+    private static final String ICON_PATH = "icons/javahexeditor-16x16.png";
 
     Shell shell;
+    HexEditorMenu menu;
     Manager manager;
+
     private HexEditorPreferences preferences;
     private PreferencesManager preferencesManager;
-
-    private Menu menuBar;
-    MenuItem pushCut;
-    MenuItem pushCopy;
-    MenuItem pushDelete;
-    private MenuItem pushFind;
-    private MenuItem pushGoTo;
-    private MenuItem pushPaste;
-    // private MenuItem pushPreferences;
-    MenuItem pushRedo;
-    MenuItem pushSave;
-    private MenuItem pushSaveAs;
-    MenuItem pushSaveSelectionAs;
-    private MenuItem pushSelectBlock;
-    private MenuItem pushSelectAll;
-    MenuItem pushTrim;
-    MenuItem pushUndo;
-
-    private Menu fileSubMenu;
-    private Menu editSubMenu;
-    private Menu helpSubMenu;
 
     /**
      * Point of entry to the stand-alone version
@@ -205,8 +81,14 @@ public final class HexEditor {
      *            optional first String: name of a file to edit
      */
     public static void main(String[] args) {
-	HexEditor ui = new HexEditor();
-	ui.open(args);
+	HexEditor instance = new HexEditor();
+	instance.run(args);
+    }
+
+    /**
+     * Creation is private.
+     */
+    private HexEditor() {
     }
 
     /**
@@ -215,7 +97,7 @@ public final class HexEditor {
      * @param args
      *            The command line arguments, not <code>null</code>.
      */
-    private void open(String[] args) {
+    private void run(String[] args) {
 	if (args == null) {
 	    throw new IllegalArgumentException(
 		    "Parameter 'args' must not be null.");
@@ -229,7 +111,7 @@ public final class HexEditor {
 	}
 	Display display = Display.getDefault();
 	manager = new Manager();
-	preferences = new HexEditorPreferences();
+	preferences = new HexEditorPreferences(this);
 	preferences.load();
 
 	createShell();
@@ -237,49 +119,30 @@ public final class HexEditor {
 	shell.open();
 	if (file != null) {
 	    doOpen(file, false, null);
+	} else {
+	    doOpen(null, true, null);
 	}
 
-	String errorText;
-	String errorMessage;
 	while (!shell.isDisposed()) {
 	    try {
 		if (!display.readAndDispatch()) {
 		    display.sleep();
 		}
-	    } catch (OutOfMemoryError e) {
-		errorText = Texts.OUT_OF_MEMORY_ERROR;
-		errorMessage = Manager.APPLICATION_NAME
-			+ " has run out of memory.\n"
-			+ "Try saving the current data and repeating the last action.";
-		showErrorBox(errorText, errorMessage);
-	    } catch (RuntimeException e) {
-		errorText = Texts.FATAL_ERROR;
-		errorMessage = Manager.APPLICATION_NAME
-			+ " has crashed. The error cause is not "
-			+ "known.\nFollowing is the error stack trace.\n\n" + e;
-		Throwable t = e;
-		while (t != null) {
-		    for (int i = 0; i < t.getStackTrace().length; ++i) {
-			errorMessage += "\nat " + t.getStackTrace()[i];
-		    }
-		    t = t.getCause();
-		    if (t != null) {
-			errorMessage += "\nCaused by " + t;
-		    }
-		}
-		showErrorBox(errorText, errorMessage);
+	    } catch (OutOfMemoryError ex) {
+		SWTUtility.showErrorMessage(shell,
+			Texts.OUT_OF_MEMORY_ERROR_TITLE,
+			Texts.OUT_OF_MEMORY_ERROR_MESSAGE);
+	    } catch (RuntimeException ex) {
+		StringWriter writer = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(writer);
+		ex.printStackTrace(printWriter);
+		SWTUtility.showErrorMessage(shell, Texts.FATAL_ERROR_TITLE,
+			Texts.FATAL_ERROR_MESSAGE, writer.toString());
 		display.dispose();
-		throw e;
+		throw ex;
 	    }
 	}
 	display.dispose();
-    }
-
-    private void showErrorBox(String text, String message) {
-	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-	messageBox.setText(text);
-	messageBox.setMessage(message);
-	messageBox.open();
     }
 
     /**
@@ -287,175 +150,62 @@ public final class HexEditor {
      */
     private void createShell() {
 	shell = new Shell(Display.getDefault(), SWT.MODELESS | SWT.SHELL_TRIM);
-	InputStream stream = ClassLoader
-		.getSystemResourceAsStream("icons/hex.png");
-	if (stream != null) {
-	    try {
-		final Image hexIcon = new Image(shell.getDisplay(), stream);
-		shell.setImage(hexIcon);
-		shell.addDisposeListener(new DisposeListener() {
-		    @Override
-		    public void widgetDisposed(DisposeEvent e) {
-			hexIcon.dispose();
-		    }
-		});
-	    } catch (SWTException ex) {
-	    } finally {
-		try {
-		    stream.close();
-		} catch (IOException ex) {
+
+	InputStream stream = HexEditor.class.getClassLoader()
+		.getResourceAsStream(ICON_PATH);
+	if (stream == null) {
+	    throw new RuntimeException("Icon '" + ICON_PATH
+		    + "' not found in class path.");
+	}
+	try {
+	    final Image hexIcon = new Image(shell.getDisplay(), stream);
+	    shell.setImage(hexIcon);
+	    shell.addDisposeListener(new DisposeListener() {
+		@Override
+		public void widgetDisposed(DisposeEvent e) {
+		    hexIcon.dispose();
 		}
+	    });
+	} catch (SWTException ex) {
+	} finally {
+	    try {
+		stream.close();
+	    } catch (IOException ex) {
 	    }
 	}
+
 	shell.setText(Manager.APPLICATION_NAME);
 	shell.setLayout(new FillLayout());
-	menuBar = new Menu(shell, SWT.BAR);
-
-	MenuItem fileMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-	fileMenuItem.setText("&File");
-	MenuItem editMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-	editMenuItem.setText("&Edit");
-	MenuItem helpMenuItem = new MenuItem(menuBar, SWT.CASCADE);
-	helpMenuItem.setText("&Help");
-
-	// File menu
-	fileSubMenu = new Menu(fileMenuItem);
-	MenuItem pushNew = createMenuItem(fileSubMenu, "&New\tCtrl+N",
-		MySelectionAdapter.NEW);
-	pushNew.setAccelerator(SWT.CONTROL | 'N');
-	MenuItem pushOpen = createMenuItem(fileSubMenu,
-		"&Open File...\tCtrl+O", MySelectionAdapter.OPEN);
-	pushOpen.setAccelerator(SWT.CONTROL | 'O');
-	createMenuSeparator(fileSubMenu);
-	pushSave = createMenuItem(fileSubMenu, "&Save\tCtrl+S",
-		MySelectionAdapter.SAVE);
-	pushSave.setAccelerator(SWT.CONTROL | 'S');
-	pushSaveAs = createMenuItem(fileSubMenu, "Save &As...",
-		MySelectionAdapter.SAVE_AS);
-	pushSaveSelectionAs = createMenuItem(fileSubMenu,
-		"Save S&election As...", MySelectionAdapter.SAVE_SELECTION_AS);
-	createMenuSeparator(fileSubMenu);
-	createMenuItem(fileSubMenu, "E&xit", MySelectionAdapter.EXIT);
-	fileSubMenu.addMenuListener(new MenuAdapter() {
+	menu = new HexEditorMenu(this);
+	menu.fileSubMenu.addMenuListener(new MenuAdapter() {
 	    @Override
 	    public void menuShown(MenuEvent e) {
-		pushSaveSelectionAs.setEnabled(manager.isTextSelected());
+		dataToUI();
 	    }
 	});
-	fileMenuItem.setMenu(fileSubMenu);
-
-	// Edit menu
-	editSubMenu = new Menu(editMenuItem);
-	pushUndo = createMenuItem(editSubMenu, "&Undo\tCtrl+Z",
-		MySelectionAdapter.UNDO);
-
-	pushRedo = createMenuItem(editSubMenu, "Red&o\tCtrl+Y",
-		MySelectionAdapter.REDO);
-
-	createMenuSeparator(editSubMenu);
-	pushCut = createMenuItem(editSubMenu, "Cu&t\tCtrl+X",
-		MySelectionAdapter.CUT);
-
-	pushCopy = createMenuItem(editSubMenu, "&Copy\tCtrl+C",
-		MySelectionAdapter.COPY);
-
-	pushPaste = createMenuItem(editSubMenu, "&Paste\tCtrl+V",
-		MySelectionAdapter.PASTE);
-
-	createMenuSeparator(editSubMenu);
-	pushDelete = createMenuItem(editSubMenu, "&Delete\tDelete",
-		MySelectionAdapter.DELETE);
-
-	pushTrim = createMenuItem(editSubMenu, "T&rim", MySelectionAdapter.TRIM);
-
-	pushSelectAll = createMenuItem(editSubMenu, "&Select All\tCtrl+A",
-		MySelectionAdapter.SELECT_ALL);
-
-	pushSelectBlock = createMenuItem(editSubMenu,
-		"Select &Block...\tCtrl+E", MySelectionAdapter.SELECT_BLOCK);
-	pushSelectBlock.setAccelerator(SWT.CONTROL | 'E');
-
-	createMenuSeparator(editSubMenu);
-	pushGoTo = createMenuItem(editSubMenu, "&Go to Location...\tCtrl+L",
-		MySelectionAdapter.GO_TO);
-	pushGoTo.setAccelerator(SWT.CONTROL | 'L');
-
-	pushFind = createMenuItem(editSubMenu, Texts.FIND_MENU_ITEM_LABEL,
-		MySelectionAdapter.FIND);
-	pushFind.setAccelerator(SWT.CONTROL | 'F');
-
-	createMenuSeparator(editSubMenu);
-	createMenuItem(editSubMenu, "Font Pr&eferences...",
-		MySelectionAdapter.PREFERENCES);
-
-	editSubMenu.addMenuListener(new MenuAdapter() {
+	menu.editSubMenu.addMenuListener(new MenuAdapter() {
 	    @Override
 	    public void menuShown(MenuEvent e) {
-		boolean selected = manager.isTextSelected();
-		boolean lengthModifiable = selected
-			&& !manager.isOverwriteMode();
-		pushCopy.setEnabled(selected);
-		pushCut.setEnabled(lengthModifiable);
-		pushDelete.setEnabled(lengthModifiable);
-		pushTrim.setEnabled(lengthModifiable);
-		pushUndo.setEnabled(manager.canUndo());
-		pushRedo.setEnabled(manager.canRedo());
+		dataToUI();
+
 	    }
 	});
-	editMenuItem.setMenu(editSubMenu);
-
-	// Help menu
-	helpSubMenu = new Menu(helpMenuItem);
-	createMenuItem(helpSubMenu, "&User Guide (Online)...",
-		MySelectionAdapter.GUIDEONLINE);
-	createMenuItem(helpSubMenu, "User Guide (&Local)...",
-		MySelectionAdapter.GUIDELOCAL);
-	createMenuSeparator(helpSubMenu);
-	createMenuItem(helpSubMenu, "&About javahexeditor",
-		MySelectionAdapter.ABOUT);
-	helpMenuItem.setMenu(helpSubMenu);
-
-	shell.setMenuBar(menuBar);
+	shell.setMenuBar(menu.menuBar);
 	createComposite();
 	shell.addListener(SWT.Close, new Listener() {
 	    @Override
 	    public void handleEvent(Event e) {
-		if (!doClose())
+		if (!doClose()) {
 		    e.doit = false;
+		}
 	    }
 	});
 	manager.addListener(new Listener() {
 	    @Override
 	    public void handleEvent(Event event) {
-		refreshTitleBar();
-		pushSave.setEnabled(manager.isDirty());
+		dataToUI();
 	    }
 	});
-    }
-
-    private MenuItem createMenuItem(Menu menu, String text, int actionId) {
-	MenuItem result = new MenuItem(menu, SWT.PUSH);
-	result.setText(text);
-	result.addSelectionListener(new MySelectionAdapter(actionId));
-	return result;
-    }
-
-    void refreshTitleBar() {
-	StringBuilder title = new StringBuilder();
-	File contentFile = manager.getContentFile();
-	if (contentFile != null) {
-	    if (manager.isDirty()) {
-		title.append('*');
-	    }
-	    title.append(contentFile.getAbsolutePath()).append(" - ");
-	}
-	title.append(Manager.APPLICATION_NAME);
-	shell.setText(title.toString());
-    }
-
-    @SuppressWarnings("unused")
-    private void createMenuSeparator(Menu menu) {
-	new MenuItem(menu, SWT.SEPARATOR);
     }
 
     /**
@@ -504,11 +254,8 @@ public final class HexEditor {
 		File file = new File(((String[]) event.data)[0]);
 		if (!file.exists() || file.isDirectory() || !file.canRead()) {
 		    event.detail = DND.DROP_NONE;
-		    MessageBox box = new MessageBox(shell, SWT.ICON_WARNING
-			    | SWT.OK);
-		    box.setText("File error");
-		    box.setMessage("Cannot open the file " + file);
-		    box.open();
+		    SWTUtility.showErrorMessage(shell, Texts.OPEN_ERROR_TITLE,
+			    Texts.OPEN_ERROR_MESSAGE, file.getAbsolutePath());
 		} else {
 		    doOpen(file, false, null);
 		}
@@ -516,23 +263,121 @@ public final class HexEditor {
 	});
     }
 
-    private void showErrorBox(Shell shell, String title, String message) {
-	if (shell == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'shell' must not be null.");
+    void dataToUI() {
+	boolean selected = manager.isTextSelected();
+	boolean lengthModifiable = selected && !manager.isOverwriteMode();
+
+	// Title bar
+	StringBuilder title = new StringBuilder();
+	File contentFile = manager.getContentFile();
+	if (contentFile != null) {
+	    if (manager.isDirty()) {
+		title.append('*');
+	    }
+	    title.append(contentFile.getAbsolutePath()).append(" - ");
 	}
-	if (title == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'title' must not be null.");
+	title.append(Manager.APPLICATION_NAME);
+	shell.setText(title.toString());
+
+	// File menu
+	menu.saveMenuItem.setEnabled(manager.isDirty());
+	menu.saveAsMenuItem.setEnabled(manager.isValid());
+	menu.saveSelectionAsMenuItem.setEnabled(selected);
+
+	// Edit menu
+	menu.pushCopy.setEnabled(selected);
+	menu.pushCut.setEnabled(lengthModifiable);
+	menu.pushPaste.setEnabled(manager.isEditable());
+
+	menu.pushDelete.setEnabled(lengthModifiable);
+	menu.pushTrim.setEnabled(lengthModifiable);
+	menu.pushUndo.setEnabled(manager.canUndo());
+	menu.pushRedo.setEnabled(manager.canRedo());
+
+	menu.pushSelectAll.setEnabled(manager.isValid());
+	menu.pushSelectBlock.setEnabled(manager.isValid());
+
+	menu.pushGoTo.setEnabled(manager.isValid());
+	menu.pushFind.setEnabled(manager.isValid());
+    }
+
+    void performAction(int actionId) {
+	switch (actionId) {
+	case Actions.NEW:
+	    doOpen(null, true, null);
+	    break;
+	case Actions.OPEN:
+	    doOpen(null, false, null);
+	    break;
+	case Actions.SAVE:
+	    doSave();
+	    break;
+	case Actions.SAVE_AS:
+	    doSaveAs();
+	    break;
+	case Actions.SAVE_SELECTION_AS:
+	    doSaveSelectionAs();
+	    break;
+	case Actions.EXIT:
+	    shell.close();
+	    shell.dispose();
+	    break;
+
+	case Actions.UNDO:
+	    manager.doUndo();
+	    break;
+	case Actions.REDO:
+	    manager.doRedo();
+	    break;
+
+	case Actions.CUT:
+	    manager.doCut();
+	    break;
+	case Actions.COPY:
+	    manager.doCopy();
+	    break;
+	case Actions.PASTE:
+	    manager.doPaste();
+	    break;
+
+	case Actions.DELETE:
+	    manager.doDelete();
+	    break;
+	case Actions.TRIM:
+	    manager.doTrim();
+	    break;
+
+	case Actions.SELECT_ALL:
+	    manager.doSelectAll();
+	    break;
+	case Actions.SELECT_BLOCK:
+	    manager.doSelectBlock();
+	    break;
+
+	case Actions.GO_TO:
+	    manager.doGoTo();
+	    break;
+	case Actions.FIND:
+	    manager.doFind();
+	    break;
+
+	case Actions.PREFERENCES:
+	    doPreferences();
+	    break;
+
+	case Actions.HELP_CONTENTS:
+	    doOpenHelp(false);
+	    break;
+	case Actions.WEB_SITE:
+	    doOpenHelp(true);
+	    break;
+	case Actions.ABOUT:
+	    SWTUtility.showMessage(shell, SWT.ICON_INFORMATION | SWT.OK,
+		    Texts.ABOUT_DIALOG_TITLE, Texts.ABOUT_DIALOG_TEXT);
+	    break;
+	default:
+	    break;
 	}
-	if (message == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'message' must not be null.");
-	}
-	MessageBox messageBox = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-	messageBox.setText(title);
-	messageBox.setMessage(message);
-	messageBox.open();
     }
 
     void doOpen(File file, boolean newFile, String charset) {
@@ -540,16 +385,9 @@ public final class HexEditor {
 	    return;
 	}
 	manager.doOpen(file, newFile, charset);
-	pushFind.setEnabled(true);
-	pushGoTo.setEnabled(true);
-	pushPaste.setEnabled(true);
-	pushSelectAll.setEnabled(true);
-	pushSelectBlock.setEnabled(true);
-	pushSaveAs.setEnabled(true);
-
     }
 
-    boolean doSave() {
+    private boolean doSave() {
 	if (manager.getContentFile() == null) {
 	    return doSaveAs();
 	}
@@ -557,7 +395,8 @@ public final class HexEditor {
 	try {
 	    manager.saveFile();
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
+	    SWTUtility.showErrorMessage(shell, Texts.SAVE_ERROR_TITLE,
+		    Texts.SAVE_ERROR_MESSAGE, ex.getMessage());
 	    return false;
 	}
 
@@ -585,7 +424,7 @@ public final class HexEditor {
 	return true;
     }
 
-    boolean doSaveAs() {
+    private boolean doSaveAs() {
 	File file = manager.showSaveAsDialog(shell, false);
 	if (file == null) {
 	    return false;
@@ -594,14 +433,15 @@ public final class HexEditor {
 	try {
 	    manager.saveAsFile(file);
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
+	    SWTUtility.showErrorMessage(shell, Texts.SAVE_ERROR_TITLE,
+		    Texts.SAVE_ERROR_MESSAGE, ex.getMessage());
 	    return false;
 	}
 
 	return true;
     }
 
-    void doSaveSelectionAs() {
+    private void doSaveSelectionAs() {
 	File file = manager.showSaveAsDialog(shell, true);
 	if (file == null) {
 	    return;
@@ -610,12 +450,13 @@ public final class HexEditor {
 	try {
 	    manager.doSaveSelectionAs(file);
 	} catch (IOException ex) {
-	    showErrorBox(shell, Texts.SAVE_ERROR, ex.getMessage());
+	    SWTUtility.showErrorMessage(shell, Texts.SAVE_ERROR_TITLE,
+		    Texts.SAVE_ERROR_MESSAGE, ex.getMessage());
 	}
 
     }
 
-    void doPreferences() {
+    private void doPreferences() {
 	if (preferencesManager == null) {
 	    preferencesManager = new PreferencesManager(
 		    preferences.getFontData());
@@ -627,22 +468,22 @@ public final class HexEditor {
 	}
     }
 
-    void doOpenUserGuide(boolean online) {
-	final String fileName = "userGuide.html";
+    private void doOpenHelp(boolean online) {
+	final String resourceName = "/help/javahexeditor.html";
+	final String fileName = "javahexeditor.html";
 	URI uri;
 	if (online) {
 	    try {
-		uri = new URI("http://javahexeditor.sourceforge.net/"
-			+ fileName);
+		uri = new URI("http://javahexeditor.sourceforge.net");
 	    } catch (URISyntaxException ex) {
 		throw new RuntimeException(ex);
 	    }
 	} else {
 	    {
 		InputStream inStream = getClass().getResourceAsStream(
-			"/" + fileName);
+			resourceName);
 		if (inStream == null) {
-		    throw new RuntimeException("Help file '" + fileName
+		    throw new RuntimeException("Help file '" + resourceName
 			    + "' missing in classpath.");
 		}
 		File localFile = new File(System.getProperty("java.io.tmpdir"),
@@ -672,8 +513,9 @@ public final class HexEditor {
 	try {
 	    Desktop.getDesktop().browse(uri);
 	} catch (IOException ex) {
-	    SWTUtility.showErrorMessage(Texts.OPEN_USER_GUIDE_ERROR + " "
-		    + uri.toString() + ":" + ex.getMessage());
+	    SWTUtility.showErrorMessage(shell,
+		    Texts.OPEN_USER_GUIDE_ERROR_MESSAGE, uri.toString(),
+		    ex.getMessage());
 	}
 
     }

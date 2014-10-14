@@ -12,7 +12,7 @@
   <supportUrl>http://javahexeditor.sourceforge.net</supportUrl>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <icon>C:\Users\D025328\Documents\Eclipse\workspace.ext\net.sourceforge.javahexeditor\icons\hex-16x16.ico</icon>
+  <icon>C:\Users\D025328\Documents\Eclipse\workspace.ext\net.sourceforge.javahexeditor.standalone\icons\javahexeditor.ico</icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
