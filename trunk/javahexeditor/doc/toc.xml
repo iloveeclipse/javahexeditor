@@ -2,8 +2,8 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="javahexeditor User Guide">
-   <topic label="Latest Online Version" href="http://javahexeditor.sourceforge.net">
+   <topic label="Web Site" href="http://javahexeditor.sourceforge.net">
    </topic>
-   <topic label="Current Local Version" href="userGuide.html">
+   <topic label="User Guide" href="doc/javahexeditor.html">
    </topic>
 </toc>
