@@ -19,6 +19,9 @@
  */
 package net.sourceforge.javahexeditor;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Utility to handle number conversions.
  * 
@@ -26,6 +29,8 @@ package net.sourceforge.javahexeditor;
  * 
  */
 public final class NumberUtility {
+    static final Pattern PATTERN_DEC_DIGITS = Pattern.compile("[0-9]+");
+    static final Pattern PATTERN_HEX_DIGITS = Pattern.compile("[0-9a-fA-F]+");
 
     private static String hexPrefix;
 
@@ -68,5 +73,23 @@ public final class NumberUtility {
     public static String getDecimalAndHexRangeString(long from, long to) {
 	return getDecimalString(from) + " - " + getDecimalString(to) + " ("
 		+ getHexString(from) + " - " + getHexString(to) + ")";
+    }
+
+    public static long parseString(boolean hex, String newText) {
+	int radix = 10;
+	Matcher numberMatcher;
+	if (hex) {
+	    if (newText.startsWith(hexPrefix)) {
+		newText = newText.substring(hexPrefix.length());
+	    }
+	    numberMatcher = PATTERN_HEX_DIGITS.matcher(newText);
+	    radix = 16;
+	} else {
+	    numberMatcher = PATTERN_DEC_DIGITS.matcher(newText);
+	}
+	if (numberMatcher.matches()) {
+	    return Long.parseLong(newText, radix);
+	}
+	return -1;
     }
 }

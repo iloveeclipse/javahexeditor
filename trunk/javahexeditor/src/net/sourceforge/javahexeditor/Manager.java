@@ -145,8 +145,9 @@ public final class Manager {
      *            the listener to be notified of changes
      */
     public void addListener(Listener listener) {
-	if (listener == null)
+	if (listener == null) {
 	    return;
+	}
 
 	if (hexTexts == null) {
 	    if (listOfStatusChangedListeners == null)
@@ -197,17 +198,25 @@ public final class Manager {
 		((long) event.height) << 32 | (event.y & 0x0ffffffffL) };
     }
 
+    public boolean isValid() {
+	return hexTexts != null && hexTexts.isValid();
+    }
+
+    public boolean isEditable() {
+	return hexTexts != null && hexTexts.isEditable();
+    }
+
     /**
-     * Tells whether the last action can be redone
+     * Determines if the last action can be redone
      * 
-     * @return true: an action ca be redone
+     * @return true: an action can be redone
      */
     public boolean canRedo() {
 	return hexTexts != null && hexTexts.canRedo();
     }
 
     /**
-     * Tells whether the last action can be undone
+     * Determines if the last action can be undone
      * 
      * @return true: an action ca be undone
      */
@@ -313,22 +322,21 @@ public final class Manager {
 	    selectBlockDialog = new SelectBlockDialog(textsParent.getShell());
 	}
 	long start = selectBlockDialog.open(hexTexts.getSelection(),
-		content.length() - 1L);
+		content.length());
 	long end = selectBlockDialog.getFinalEndResult();
 	if ((start >= 0L) && (end >= 0L) && (start != end)) {
 	    hexTexts.selectBlock(start, end);
 	}
     }
 
-    @SuppressWarnings("null")
-    public void doOpen(File forceThisFile, boolean newFile, String charset) {
-
-	if (forceThisFile == null && !newFile) {
-	    String fileName = new FileDialog(shell, SWT.OPEN).open();
-	    if (fileName == null) {
+    public void doOpen(File forceThisFile, boolean createNewFile, String charset) {
+	String filePath = "";
+	if (forceThisFile == null && !createNewFile) {
+	    filePath = new FileDialog(shell, SWT.OPEN).open();
+	    if (filePath == null) {
 		return;
 	    }
-	    forceThisFile = new File(fileName);
+	    forceThisFile = new File(filePath);
 	}
 	if (forceThisFile != null) {
 	    try {
@@ -336,28 +344,33 @@ public final class Manager {
 	    } catch (IOException e) {
 		// use non-canonical one then
 	    }
+	    filePath = forceThisFile.getAbsolutePath();
 	}
 
 	try {
 	    openFile(forceThisFile, charset);
 	} catch (IOException ex) {
-	    SWTUtility.showMessage(shell, SWT.ICON_ERROR | SWT.OK,
-		    Texts.FILE_READ_ERROR_TITLE, Texts.FILE_READ_ERROR_MESSAGE,
-		    forceThisFile.getAbsolutePath(), ex.getMessage());
+	    SWTUtility.showErrorMessage(shell, Texts.FILE_READ_ERROR_TITLE,
+		    Texts.FILE_READ_ERROR_MESSAGE, filePath, ex.getMessage());
 	}
 
 	hexTexts.setFocus();
-	if (newFile) {
+	if (createNewFile) {
 	    hexTexts.setInsertMode(true);
 	}
+    }
+
+    public boolean canPaste() {
+	return isEditable() && hexTexts.canPaste();
     }
 
     /**
      * Pastes clipboard into editor
      */
     public void doPaste() {
-	if (hexTexts == null)
+	if (hexTexts == null) {
 	    return;
+	}
 
 	hexTexts.paste();
     }
@@ -374,7 +387,7 @@ public final class Manager {
     public void doSaveSelectionAs(File file) throws IOException {
 	if (isFileBeingRead(file)) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_MESSAGE_CANNOT_BE_OVERWRITTEN,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN,
 		    file.getAbsolutePath()));
 	}
 
@@ -383,7 +396,7 @@ public final class Manager {
 	    content.get(file, selection.start, selection.getLength());
 	} catch (IOException ex) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_MESSAGE_COULD_NOT_SAVE_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE,
 		    file.getAbsolutePath(), ex.getMessage()));
 
 	}
@@ -552,7 +565,7 @@ public final class Manager {
 
 	if (isFileBeingRead(file)) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_MESSAGE_CANNOT_BE_OVERWRITTEN,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN,
 		    file.getAbsolutePath()));
 	}
 
@@ -563,7 +576,7 @@ public final class Manager {
 	    contentFile = null;
 	} catch (IOException ex) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_MESSAGE_COULD_NOT_SAVE_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE,
 		    file.getAbsolutePath(), ex.getMessage()));
 	}
 	try {
@@ -571,7 +584,7 @@ public final class Manager {
 	    contentFile = file;
 	} catch (IOException ex) {
 	    TextUtility.format(
-		    Texts.MANAGER_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
 		    file.getAbsolutePath(), ex.getMessage());
 	}
 	hexTexts.setContentProvider(content);
@@ -585,7 +598,7 @@ public final class Manager {
      */
     public void saveFile() throws IOException {
 	boolean successful = false;
-	String errorMessage = Texts.MANAGER_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
+	String errorMessage = Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
 	File tempFile = null;
 	// It can happen that in two successive "Save File"'s the first one
 	// didn't get the temp file deleted due to limitations in the OS
@@ -602,14 +615,14 @@ public final class Manager {
 	if (tempFile != null) {
 	    successful = false;
 	    try {
-		errorMessage = TextUtility.format(
-			Texts.MANAGER_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE,
-			tempFile.getAbsolutePath());
+		errorMessage = TextUtility
+			.format(Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE,
+				tempFile.getAbsolutePath());
 		content.get(tempFile);
 		content.dispose();
 		content = new BinaryContent();
 		errorMessage = TextUtility.format(
-			Texts.MANAGER_MESSAGE_COULD_OVERWRITE_FILE,
+			Texts.MANAGER_SAVE_MESSAGE_COULD_OVERWRITE_FILE,
 			contentFile.getAbsolutePath(),
 			tempFile.getAbsolutePath());
 
@@ -618,7 +631,7 @@ public final class Manager {
 		if (tempFile.renameTo(contentFile)) {
 		    // renaming anyway
 		    errorMessage = TextUtility
-			    .format(Texts.MANAGER_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
+			    .format(Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
 				    contentFile.getAbsolutePath());
 		    content = new BinaryContent(contentFile);
 		    successful = true;
@@ -721,9 +734,9 @@ public final class Manager {
     public File showSaveAsDialog(Shell aShell, boolean selection) {
 	FileDialog dialog = new FileDialog(aShell, SWT.SAVE);
 	if (selection) {
-	    dialog.setText(Texts.SAVE_DIALOG_TITLE_SAVE_SELECTION_AS);
+	    dialog.setText(Texts.MANAGER_SAVE_DIALOG_TITLE_SAVE_SELECTION_AS);
 	} else {
-	    dialog.setText(Texts.SAVE_DIALOG_TITLE_SAVE_AS);
+	    dialog.setText(Texts.MANAGER_SAVE_DIALOG_TITLE_SAVE_AS);
 	}
 	String filePath = dialog.open();
 	if (filePath == null) {
@@ -733,8 +746,9 @@ public final class Manager {
 	File file = new File(filePath);
 	if (file.exists()) {
 	    if (SWTUtility.showMessage(aShell, SWT.ICON_WARNING | SWT.YES
-		    | SWT.NO, Texts.SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS,
-		    Texts.SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS,
+		    | SWT.NO,
+		    Texts.MANAGER_SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS,
+		    Texts.MANAGER_SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS,
 		    file.getAbsolutePath()) != SWT.YES) {
 		return null;
 	    }

@@ -19,9 +19,6 @@
  */
 package net.sourceforge.javahexeditor;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
 
 import org.eclipse.swt.SWT;
@@ -63,18 +60,7 @@ final class SelectBlockDialog extends Dialog {
 	@Override
 	public void modifyText(ModifyEvent e) {
 	    String newText = ((Text) e.widget).getText();
-	    int radix = 10;
-	    Matcher numberMatcher = null;
-	    if (hexRadioButton.getSelection()) {
-		numberMatcher = patternHexDigits.matcher(newText);
-		radix = 16;
-	    } else {
-		numberMatcher = patternDecDigits.matcher(newText);
-	    }
-	    result = -1;
-	    if (numberMatcher.matches()) {
-		result = Long.parseLong(newText, radix);
-	    }
+	    result=NumberUtility.parseString(hexRadioButton.getSelection(), newText);
 	    empty = newText.isEmpty();
 	    validateResults();
 	}
@@ -87,9 +73,6 @@ final class SelectBlockDialog extends Dialog {
 	    return empty;
 	}
     }
-
-    static final Pattern patternDecDigits = Pattern.compile("[0-9]+");
-    static final Pattern patternHexDigits = Pattern.compile("[0-9a-fA-F]+");
 
     Shell shell;
     private Composite compositeRadio;
@@ -178,12 +161,12 @@ final class SelectBlockDialog extends Dialog {
 	// selected. In that case automatic conversion is the wrong thing to do
 	// and very annoying.
 	hexRadioButton = new Button(compositeRadio, SWT.RADIO);
-	hexRadioButton.setText("Hex");
+	hexRadioButton.setText(Texts.SELECTION_BLOCK_DIALOG_HEX_LABEL);
 	hexRadioButton.addSelectionListener(defaultSelectionAdapter);
 	hexRadioButton.addSelectionListener(hexTextSelectionAdapter);
 
 	decRadioButton = new Button(compositeRadio, SWT.RADIO);
-	decRadioButton.setText("Dec");
+	decRadioButton.setText(Texts.SELECTION_BLOCK_DIALOG_DEC_LABEL);
 	decRadioButton.addSelectionListener(defaultSelectionAdapter);
 	// decRadioButton.addSelectionListener(decTextSelectionAdapter);
 	hexRadioButton.addSelectionListener(hexTextSelectionAdapter);
@@ -244,7 +227,7 @@ final class SelectBlockDialog extends Dialog {
 	compositeButtons.setLayoutData(formData);
 	compositeButtons.setLayout(rowLayout1);
 	button = new Button(compositeButtons, SWT.NONE);
-	button.setText("Select");
+	button.setText(Texts.SELECTION_BLOCK_DIALOG_SELECT_BUTTON_LABEL);
 	button.addSelectionListener(defaultSelectionAdapter);
 	button.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 	    @Override
@@ -268,12 +251,12 @@ final class SelectBlockDialog extends Dialog {
     }
 
     /**
-     * This method initializes sShell
+     * This method initializes the shell.
      * 
      */
-    private void createSShell() {
+    private void createShell() {
 	shell = new Shell(getParent(), SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
-	shell.setText("Select block");
+	shell.setText(Texts.SELECTION_BLOCK_DIALOG_TITLE);
 	FormLayout formLayout = new FormLayout();
 	formLayout.marginHeight = 4;
 	formLayout.marginWidth = 3;
@@ -303,7 +286,7 @@ final class SelectBlockDialog extends Dialog {
 	finalStartResult = -1L;
 	finalEndResult = -1L;
 	if (shell == null || shell.isDisposed()) {
-	    createSShell();
+	    createShell();
 	}
 	SWTUtility.reduceDistance(getParent(), shell);
 
@@ -312,8 +295,11 @@ final class SelectBlockDialog extends Dialog {
 	} else {
 	    decRadioButton.setSelection(true);
 	}
-	label.setText("Enter start and end number, 0 to " + limit
-		+ " (0x0 to 0x" + Long.toHexString(limit).toUpperCase() + ")");
+	label.setText(TextUtility.format(
+		Texts.SELECTION_BLOCK_DIALOG_RANGE_LABEL,
+		NumberUtility.getDecimalString(limit),
+		NumberUtility.getHexString(0),
+		NumberUtility.getHexString(limit)));
 	if (rangeSelection.getLength() > 0) {
 	    if (lastHexButtonSelected) {
 		lastStartText = NumberUtility
@@ -357,7 +343,8 @@ final class SelectBlockDialog extends Dialog {
 		statusLabel
 			.setText(Texts.DIALOG_ERROR_END_SMALLER_THAN_OR_EQUAL_TO_START_MESSAGE);
 	    } else {
-		statusLabel.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE_MESSAGE);
+		statusLabel
+			.setText(Texts.DIALOG_ERROR_LOCATION_OUT_OF_RANGE_MESSAGE);
 	    }
 	}
     }

@@ -81,8 +81,6 @@ import org.osgi.framework.BundleException;
 
 public final class HexEditor extends EditorPart implements ISelectionProvider {
 
-    private static final String OUTLINE_ID = "net.sourceforge.javahexeditor.outline";
-
     private static class MyAction extends Action {
 	private Manager manager;
 	private String myId;
@@ -121,7 +119,13 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 	}
     }
 
+    // Public id from the contributions.
     public static final String ID = "net.sourceforge.javahexeditor";
+
+    // Private ids from the contributions.
+    private static final String OUTLINE_ELEMENT_ATTRIBUTE_CLASS = "class";
+    private static final String OUTLINE_ELEMENT_NAME = "outline";
+    private static final String OUTLINE_ID = "net.sourceforge.javahexeditor.outline";
 
     Manager manager;
     private IContentOutlinePage outlinePage;
@@ -348,8 +352,9 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 		.getConfigurationElements();
 	String className = null;
 	for (int i = 0; i < elements.length; ++i) {
-	    if ("outline".equals(elements[i].getName())) {
-		className = elements[i].getAttribute("class");
+	    if (OUTLINE_ELEMENT_NAME.equals(elements[i].getName())) {
+		className = elements[i]
+			.getAttribute(OUTLINE_ELEMENT_ATTRIBUTE_CLASS);
 		break;
 	    }
 	}

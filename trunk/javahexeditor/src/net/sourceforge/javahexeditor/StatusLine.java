@@ -185,8 +185,9 @@ final class StatusLine extends Composite {
      *            value to display
      */
     private void updateValue(byte value) {
-	if (isDisposed() || positionLabel.isDisposed())
+	if (isDisposed() || positionLabel.isDisposed()) {
 	    return;
+	}
 
 	int unsignedValue = value & 0xff;
 	String binaryText = "0000000" + Integer.toBinaryString(unsignedValue);

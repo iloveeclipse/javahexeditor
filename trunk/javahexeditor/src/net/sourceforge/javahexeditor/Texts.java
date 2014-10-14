@@ -26,39 +26,27 @@ public final class Texts extends NLS {
     public static final String EMPTY = "";
 
     public static String FILE_READ_ERROR_TITLE = "File Read Error";
-    public static final String FILE_READ_ERROR_MESSAGE = "The file {0}\n cannot be opened for reading: {1}";
-
-    public static String SAVE_DIALOG_TITLE_SAVE_SELECTION_AS = "Save Selection As";
-    public static String SAVE_DIALOG_TITLE_SAVE_AS = "Save As";
-    public static String SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS = "File already exists";
-    public static String SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS = "The file {0} already exists.\nOverwrite file?";
+    public static String FILE_READ_ERROR_MESSAGE = "The file {0}\n cannot be opened for reading: {1}";
 
     public static String BUTTON_OK_LABEL = "OK";
-    public static String BUTTON_DEFAULT_LABEL = "Default";
+    public static String BUTTON_RESET_LABEL = "Reset";
     public static String BUTTON_CANCEL_LABEL = "Cancel";
     public static String BUTTON_CLOSE_LABEL = "Close";
-
-    public static String PREFERENCES_MANAGER_DIALOG_TITLE = "Font preferences";
-    public static String PREFERENCES_MANAGER_BOLD = "Bold";
-    public static String PREFERENCES_MANAGER_BOLD_ITALIC = "Bold Italic";
-    public static String PREFERENCES_MANAGER_ITALIC = "Italic";
-    public static String PREFERENCES_MANAGER_REGULAR = "Regular";
-    public static String PREFERENCES_MANAGER_SAMPLE_TEXT = "ca fe ba be 00 00 01 2d";
 
     public static String DIALOG_ERROR_NOT_A_NUMBER_MESSAGE = "Not a number";
     public static String DIALOG_ERROR_LOCATION_OUT_OF_RANGE_MESSAGE = "Location out of range";
     public static String DIALOG_ERROR_END_SMALLER_THAN_OR_EQUAL_TO_START_MESSAGE = "End smaller than or equal to start";
-    public static String DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_TITLE = "Inconsistent clipboard files";
-    public static String DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_MESSAGE = "Could not cleanup temporary clipboard files.\nClipboard files are stored in your temporary directory '{0}' as '{1}' and '{2}'";
 
-    public static String GOTO_DIALOG_MESSAGE_ENTER_LOCATION = "Enter location number, {0}:";
+    // Editor
+    public static String EDITOR_MESSAGE_SAVING_FILE_PLEASE_WAIT = "Saving file, please wait";
+    public static String EDITOR_MESSAGE_FILE_SAVED = "{0} saved";
 
-    public static String GOTO_DIALOG_SHOW_LOCATION_BUTTON_LABEL = "Show location";
-    public static String GOTO_DIALOG_GOTO_LOCATION_BUTTON_LABEL = "Go to location";
-    public static String GOTO_DIALOG_GOTO_LOCATION_SHELL_LABEL = "Go to location";
-    public static String GOTO_DIALOG_HEX = "Hex";
-    public static String GOTO_DIALOG_DECIMAL = "Decimal";
+    public static String EDITOR_MENU_SAVE_SELECTION_AS_LABEL = "Save Selection As...";
+    public static String EDITOR_MENU_TRIM_LABEL = "Trim";
+    public static String EDITOR_MENU_SELECT_BLOCK_LABEL = "Select &Block...\tCtrl+E";
+    public static String EDITOR_MENU_GOTO_LINE_LABEL = "Go to &Location...\tCtrl+L";
 
+    // Find Replace Dialog
     public static String FIND_REPLACE_DIALOG_TITLE = "Find/Replace";
     public static String FIND_REPLACE_DIALOG_FIND_GROUP_LABEL = "Find";
     public static String FIND_REPLACE_DIALOG_REPLACE_GROUP_LABEL = "Replace With";
@@ -83,25 +71,57 @@ public final class Texts extends NLS {
     public static String FIND_REPLACE_DIALOG_MESSAGE_NOT_FOUND = "'{0}' not found";
     public static String FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_FINDING = "Error file finding '{0}': {1}";
 
-    public static String FIND_REPLACE_DIALOG_MESSAGE_ONE_REPLACEMENT = "1 occurance of '{0}' replaced with '{1}' at position {2}";
-    public static String FIND_REPLACE_DIALOG_MESSAGE_MANY_REPLACEMENTS = "{0} occurances of '{1}' replaced with '{2}'";
+    public static String FIND_REPLACE_DIALOG_MESSAGE_ONE_REPLACEMENT = "1 occurrence of '{0}' replaced with '{1}' at position {2}";
+    public static String FIND_REPLACE_DIALOG_MESSAGE_MANY_REPLACEMENTS = "{0} occurrences of '{1}' replaced with '{2}'";
     public static String FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_REPLACING = "Error file replacing '{0}' with '{1}': {2}";
 
-    public static String MANAGER_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE = "Could not write on temp file '{0}'";
-    public static String MANAGER_MESSAGE_COULD_NOT_SAVE_FILE = "Could save file '{0}': {1}";
-    public static String MANAGER_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE = "Could not read from saved file '{0}': {1}. Try reopening the editor";
-    public static String MANAGER_MESSAGE_COULD_OVERWRITE_FILE = "Could not overwrite file '{0}', a temporary copy can be found in file '{1}'";
-    public static String MANAGER_MESSAGE_CANNOT_BE_OVERWRITTEN = "{0} is currently being used and cannot be overwritten";
-    public static String MANAGER_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME="Could not create temporary file with a unique name";
-    
-    public static String EDITOR_MESSAGE_SAVING_FILE_PLEASE_WAIT = "Saving file, please wait";
-    public static String EDITOR_MESSAGE_FILE_SAVED = "{0} saved";
+    // GoTo Dialog
+    public static String GOTO_DIALOG_MESSAGE_ENTER_LOCATION = "Enter location number, {0}:";
+    public static String GOTO_DIALOG_SHOW_LOCATION_BUTTON_LABEL = "Show location";
+    public static String GOTO_DIALOG_GOTO_LOCATION_BUTTON_LABEL = "Go to location";
+    public static String GOTO_DIALOG_GOTO_LOCATION_SHELL_LABEL = "Go to location";
+    public static String GOTO_DIALOG_HEX = "Hex";
+    public static String GOTO_DIALOG_DECIMAL = "Decimal";
 
-    public static String EDITOR_MENU_SAVE_SELECTION_AS_LABEL = "Save Selection As...";
-    public static String EDITOR_MENU_TRIM_LABEL = "Trim";
-    public static String EDITOR_MENU_SELECT_BLOCK_LABEL = "Select &Block...\tCtrl+E";
-    public static String EDITOR_MENU_GOTO_LINE_LABEL = "Go to &Location...\tCtrl+L";
+    // Hex Texts
+    public static String HEX_TEXTS_TITLE_INCONSISTENT_CLIPBOARD_FILES = "Inconsistent clipboard files";
+    public static String HEX_TEXTS_MESSAGE_INCONSISTENT_CLIPBOARD_FILES = "Could not cleanup temporary clipboard files.\nClipboard files are stored in your temporary directory '{0}' as '{1}' and '{2}'";
 
+    // Manager
+    public static String MANAGER_SAVE_DIALOG_TITLE_SAVE_SELECTION_AS = "Save Selection As";
+    public static String MANAGER_SAVE_DIALOG_TITLE_SAVE_AS = "Save As";
+    public static String MANAGER_SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS = "File already exists";
+    public static String MANAGER_SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS = "The file {0} already exists.\nOverwrite file?";
+
+    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE = "Could write to temp file '{0}'";
+    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE = "Could save file '{0}': {1}";
+    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE = "Could not read from saved file '{0}': {1}. Try reopening the editor";
+    public static String MANAGER_SAVE_MESSAGE_COULD_OVERWRITE_FILE = "Could not overwrite file '{0}', a temporary copy can be found in file '{1}'";
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN = "{0} is currently being used and cannot be overwritten";
+    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME = "Could not create temporary file with a unique name";
+
+    // Preferences Manager
+    public static String PREFERENCES_MANAGER_DIALOG_TITLE = "Font preferences";
+
+    public static String PREFERENCES_MANAGER_SAMPLE_TEXT = "ca fe ba be 00 00 01 2d";
+    public static String PREFERENCES_MANAGER_FONT_SELECTION_TITLE = "Font Selection";
+    public static String PREFERENCES_MANAGER_FONT_NAME = "Name";
+    public static String PREFERENCES_MANAGER_FONT_STYLE = "Style";
+    public static String PREFERENCES_MANAGER_FONT_STYLE_BOLD = "Bold";
+    public static String PREFERENCES_MANAGER_FONT_STYLE_BOLD_ITALIC = "Bold Italic";
+    public static String PREFERENCES_MANAGER_FONT_STYLE_ITALIC = "Italic";
+    public static String PREFERENCES_MANAGER_FONT_STYLE_REGULAR = "Regular";
+    public static String PREFERENCES_MANAGER_FONT_SIZE = "Size";
+    public static String PREFERENCES_MANAGER_DEFAULT_FONT_NAME = "Default Font";
+
+    // Selection Block Dialog
+    public static String SELECTION_BLOCK_DIALOG_TITLE = "Select Block";
+    public static String SELECTION_BLOCK_DIALOG_DEC_LABEL = "Decimal";
+    public static String SELECTION_BLOCK_DIALOG_HEX_LABEL = "Hex";
+    public static String SELECTION_BLOCK_DIALOG_SELECT_BUTTON_LABEL = "Select";
+    public static String SELECTION_BLOCK_DIALOG_RANGE_LABEL = "Enter start and end number, 0 to {0} ({1} to {2}):";
+
+    // Status Line
     public static String STATUS_LINE_MESSAGE_SELECTION = "Selection: {0}";
     public static String STATUS_LINE_MESSAGE_OFFSET = "Offset: {0}";
     public static String STATUS_LINE_MESSAGE_VALUE = "Value: {0} = {1} = {2}";

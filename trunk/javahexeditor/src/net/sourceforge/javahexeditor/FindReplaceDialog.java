@@ -72,7 +72,7 @@ final class FindReplaceDialog extends Dialog {
     SelectionAdapter defaultSelectionAdapter = new SelectionAdapter() {
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-	    if (lastIgnoreCase != ignoreCasecheckBox.getSelection()
+	    if (lastIgnoreCase != ignoreCaseCheckBox.getSelection()
 		    || lastForward != forwardRadioButton.getSelection()
 		    || lastFindHexButtonSelected != findGroup.hexRadioButton
 			    .getSelection()
@@ -104,7 +104,7 @@ final class FindReplaceDialog extends Dialog {
     Button forwardRadioButton;
     Button backwardRadioButton;
     private Composite ignoreCaseComposite;
-    Button ignoreCasecheckBox;
+    Button ignoreCaseCheckBox;
     private Composite findReplaceButtonsComposite;
     private Button findButton;
     private Button replaceFindButton;
@@ -353,7 +353,7 @@ final class FindReplaceDialog extends Dialog {
 	if (selectionLength > 0L
 		&& selectionLength <= BinaryContentFinder.MAX_SEQUENCE_SIZE) {
 	    findGroup.refreshHexOrText(true);
-	    ignoreCasecheckBox.setEnabled(false);
+	    ignoreCaseCheckBox.setEnabled(false);
 	    StringBuilder selectedText = new StringBuilder();
 	    byte[] selection = new byte[(int) selectionLength];
 	    try {
@@ -369,13 +369,13 @@ final class FindReplaceDialog extends Dialog {
 	    findGroup.selectText();
 	} else {
 	    findGroup.refreshHexOrText(lastFindHexButtonSelected);
-	    ignoreCasecheckBox.setEnabled(!lastFindHexButtonSelected);
+	    ignoreCaseCheckBox.setEnabled(!lastFindHexButtonSelected);
 	}
 
 	replaceGroup.refreshHexOrText(lastReplaceHexButtonSelected);
 	replaceGroup.refreshCombo();
 
-	ignoreCasecheckBox.setSelection(lastIgnoreCase);
+	ignoreCaseCheckBox.setSelection(lastIgnoreCase);
 	if (lastForward) {
 	    forwardRadioButton.setSelection(true);
 	} else {
@@ -467,10 +467,10 @@ final class FindReplaceDialog extends Dialog {
 	fillLayout.marginWidth = 10;
 	ignoreCaseComposite = new Composite(shell, SWT.NONE);
 	ignoreCaseComposite.setLayout(fillLayout);
-	ignoreCasecheckBox = new Button(ignoreCaseComposite, SWT.CHECK);
-	ignoreCasecheckBox
+	ignoreCaseCheckBox = new Button(ignoreCaseComposite, SWT.CHECK);
+	ignoreCaseCheckBox
 		.setText(Texts.FIND_REPLACE_DIALOG_IGNORE_CASE_CHECKBOX_LABEL);
-	ignoreCasecheckBox.addSelectionListener(defaultSelectionAdapter);
+	ignoreCaseCheckBox.addSelectionListener(defaultSelectionAdapter);
 	FormData formData = new FormData();
 	formData.top = new FormAttachment(replaceGroup.group);
 	formData.left = new FormAttachment(directionGroup);
@@ -526,7 +526,7 @@ final class FindReplaceDialog extends Dialog {
 	SelectionAdapter hexTextSelectionAdapter = new SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(SelectionEvent e) {
-		ignoreCasecheckBox
+		ignoreCaseCheckBox
 			.setEnabled(e.widget == findGroup.textRadioButton);
 	    }
 	};
@@ -642,7 +642,7 @@ final class FindReplaceDialog extends Dialog {
 	    Match match = myTarget.findAndSelect(findLiteral,
 		    findGroup.hexRadioButton.getSelection(),
 		    forwardRadioButton.getSelection(),
-		    ignoreCasecheckBox.getSelection());
+		    ignoreCaseCheckBox.getSelection());
 	    if (match.isFound()) {
 		message = TextUtility.format(
 			Texts.FIND_REPLACE_DIALOG_MESSAGE_FOUND, findLiteral,
@@ -681,7 +681,7 @@ final class FindReplaceDialog extends Dialog {
 		long[] result = myTarget.replaceAll(findLiteral,
 			findGroup.hexRadioButton.getSelection(),
 			forwardRadioButton.getSelection(),
-			ignoreCasecheckBox.getSelection(), replaceLiteral,
+			ignoreCaseCheckBox.getSelection(), replaceLiteral,
 			replaceGroup.hexRadioButton.getSelection());
 		long replacements = result[0];
 		long startPosition = result[1];
@@ -719,7 +719,7 @@ final class FindReplaceDialog extends Dialog {
 	forwardRadioButton.setEnabled(!searching);
 	backwardRadioButton.setEnabled(!searching);
 
-	ignoreCasecheckBox.setEnabled(!searching);
+	ignoreCaseCheckBox.setEnabled(!searching);
 
 	findButton.setEnabled(!searching);
 	replaceFindButton.setEnabled(!searching);
@@ -761,7 +761,7 @@ final class FindReplaceDialog extends Dialog {
 	replaceGroup.rememberText();
 	findGroup.rememberText();
 	lastForward = forwardRadioButton.getSelection();
-	lastIgnoreCase = ignoreCasecheckBox.getSelection();
+	lastIgnoreCase = ignoreCaseCheckBox.getSelection();
 	feedbackLabel.setText(Texts.FIND_REPLACE_DIALOG_MESSAGE_SEARCHING);
 	enableDisableControls();
 	activateProgressBar();

@@ -72,8 +72,8 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * A binary file editor, composed of two synchronized displays: an hexadecimal
- * and a basic ascii char display. The file size has no effect on the memory
- * footprint of the editor. It has binary, ascii and unicode find functionality.
+ * and a basic ASCII char display. The file size has no effect on the memory
+ * footprint of the editor. It has binary, ASCII and unicode find functionality.
  * Use addListener(SWT.Modify, Listener) to listen to changes of the 'dirty',
  * 'overwrite/insert', 'selection' and 'canUndo/canRedo' status.
  * 
@@ -582,8 +582,8 @@ public final class HexTexts extends Composite {
 			    .showMessage(
 				    parent.getShell(),
 				    SWT.ICON_WARNING | SWT.OK,
-				    Texts.DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_TITLE,
-				    Texts.DIALOG_ERROR_INCONSISTENT_CLIPBOARD_FILES_MESSAGE,
+				    Texts.HEX_TEXTS_TITLE_INCONSISTENT_CLIPBOARD_FILES,
+				    Texts.HEX_TEXTS_MESSAGE_INCONSISTENT_CLIPBOARD_FILES,
 				    BinaryContentClipboard.CLIPBOARD_FOLDER_PATH,
 				    BinaryContentClipboard.CLIPBOARD_FILE_NAME,
 				    TextUtility
@@ -874,6 +874,14 @@ public final class HexTexts extends Composite {
 		    myContent.dispose();
 	    }
 	});
+    }
+
+    public boolean isValid() {
+	return myContent != null;
+    }
+
+    public boolean isEditable() {
+	return myContent != null;
     }
 
     /**
@@ -1552,6 +1560,10 @@ public final class HexTexts extends Composite {
 	}
     }
 
+    public boolean canPaste(){
+	return myClipboard.hasContents();
+    }
+    
     /**
      * Pastes the clipboard content. The result depends on which insertion mode
      * is currently active: Insert mode replaces the selection with the
@@ -1953,7 +1965,7 @@ public final class HexTexts extends Composite {
      *            the content to be displayed
      */
     public void setContentProvider(BinaryContent aContent) {
-	boolean firstContent = myContent == null;
+	boolean firstContent = (myContent == null);
 	myContent = aContent;
 	myFinder = null;
 	if (myContent != null) {
