@@ -15,10 +15,16 @@ import org.eclipse.swt.graphics.FontData;
 class HexEditorPreferences {
     public final String PROPERTIES_FILE = "javahexeditor.properties";
 
+    private HexEditor hexEditor;
     private FontData fontData;
 
-    public HexEditorPreferences() {
-	fontData = Preferences.getFontData();
+    public HexEditorPreferences(HexEditor hexEditor) {
+	if (hexEditor == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'hexEditor' must not be null.");
+	}
+	this.hexEditor = hexEditor;
+	fontData = Preferences.getDefaultFontData();
     }
 
     /**
@@ -98,10 +104,9 @@ class HexEditorPreferences {
 	    properties.store(stream, null);
 	    stream.close();
 	} catch (IOException ex) {
-	    SWTUtility
-		    .showErrorMessage(Texts.COULD_NOT_WRITE_FILE
-			    + propertiesFile.getAbsolutePath() + ": "
-			    + ex.getMessage());
+	    SWTUtility.showErrorMessage(hexEditor.shell,
+		    Texts.PREFERENCES_COULD_NOT_WRITE_FILE_ERROR_MESSAGE,
+		    propertiesFile.getAbsolutePath(), ex.getMessage());
 
 	}
     }
