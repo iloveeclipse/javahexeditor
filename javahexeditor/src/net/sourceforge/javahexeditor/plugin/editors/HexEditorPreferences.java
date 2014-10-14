@@ -44,7 +44,7 @@ public final class HexEditorPreferences {
 	if (name != null && !name.isEmpty() && size > 0) {
 	    fontData = new FontData(name, size, style);
 	} else {
-	    fontData = Preferences.getFontData();
+	    fontData = Preferences.getDefaultFontData();
 	}
 
 	return fontData;

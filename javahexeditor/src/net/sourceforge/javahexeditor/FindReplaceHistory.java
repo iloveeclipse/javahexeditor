@@ -30,8 +30,8 @@ import java.util.List;
 public final class FindReplaceHistory {
 
     /**
-     * An entry ha a string value and a flag indicated wether the text is to be
-     * interpreted as text or as hex value(s).
+     * An entry has a string value and a flag indicating whether the text is to
+     * be interpreted as text or as hex value(s).
      */
     public static final class Entry {
 	private String stringValue;
@@ -67,7 +67,7 @@ public final class FindReplaceHistory {
     /**
      * Gets the list of previous find operations
      * 
-     * @return The modifiable list of previous find operationss, may be empty,
+     * @return The modifiable list of previous find operations, may be empty,
      *         not <code>null</code>.
      */
     public List<Entry> getFindList() {
@@ -76,10 +76,10 @@ public final class FindReplaceHistory {
     }
 
     /**
-     * Gets the list of previous replace operationss
+     * Gets the list of previous replace operations
      * 
-     * @return The modifiable list of previous replace operationss, may be
-     *         empty, not <code>null</code>.
+     * @return The modifiable list of previous replace operations, may be empty,
+     *         not <code>null</code>.
      */
     public List<Entry> getReplaceList() {
 

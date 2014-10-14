@@ -19,9 +19,6 @@
  */
 package net.sourceforge.javahexeditor;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -48,9 +45,6 @@ import org.eclipse.swt.widgets.Text;
  * @author Jordi
  */
 final class GoToDialog extends Dialog {
-
-    static final Pattern patternDecDigits = Pattern.compile("[0-9]+");
-    static final Pattern patternHexDigits = Pattern.compile("[0-9a-fA-F]+");
 
     Shell shell;
     private Composite composite;
@@ -231,17 +225,8 @@ final class GoToDialog extends Dialog {
 	    @Override
 	    public void modifyText(ModifyEvent e) {
 		String newText = text.getText();
-		int radix = 10;
-		Matcher numberMatcher;
-		if (hexRadioButton.getSelection()) {
-		    numberMatcher = patternHexDigits.matcher(newText);
-		    radix = 16;
-		} else {
-		    numberMatcher = patternDecDigits.matcher(newText);
-		}
-		tempResult = -1;
-		if (numberMatcher.matches())
-		    tempResult = Long.parseLong(newText, radix);
+		tempResult = NumberUtility.parseString(
+			hexRadioButton.getSelection(), newText);
 
 		if (tempResult >= 0L && tempResult <= limit) {
 		    showButton.setEnabled(true);
@@ -305,7 +290,8 @@ final class GoToDialog extends Dialog {
 	    decRadioButton.setSelection(true);
 	}
 	label.setText(TextUtility.format(
-		Texts.GOTO_DIALOG_MESSAGE_ENTER_LOCATION, NumberUtility.getDecimalAndHexRangeString(0, this.limit)));
+		Texts.GOTO_DIALOG_MESSAGE_ENTER_LOCATION,
+		NumberUtility.getDecimalAndHexRangeString(0, this.limit)));
 	text.setText(lastLocationText);
 	text.selectAll();
 	text.setFocus();

@@ -99,17 +99,10 @@ public final class SWTUtility {
 	messageBox.setMessage(TextUtility.format(message, parameters));
 	return messageBox.open();
     }
-
-    public static void showErrorMessage(String message) {
-	if (message == null) {
-	    throw new IllegalArgumentException(
-		    "Parameter 'string' must not be null.");
-	}
-	Shell shell = Display.getCurrent().getActiveShell();
-	MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
-	messageBox.setText(shell.getText());
-	messageBox.setMessage(message);
-	messageBox.open();
-
+    
+    public static int showErrorMessage(Shell shell, String title,
+	    String message, String... parameters) {
+	return showMessage(shell, SWT.ERROR|SWT.OK, title, message, parameters);
+	
     }
 }

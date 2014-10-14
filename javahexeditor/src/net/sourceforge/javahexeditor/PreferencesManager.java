@@ -37,14 +37,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -78,14 +76,12 @@ public final class PreferencesManager {
     FontData sampleFontData;
 
     // Visual components
-    private Button buttonCancel;
-    private Button buttonDefault;
-    private Button buttonOk;
+    private Button resetButton;
+    private Button okButton;
+    private Button cancelButton;
     private Composite composite;
-    private Composite compositeOkCancel;
+    private Composite buttonBar;
     private Composite parent;
-    private Group group;
-    private Label label;
     Text text;
     Text text1;
     Text text2;
@@ -101,11 +97,13 @@ public final class PreferencesManager {
 
     public static int fontStyleToInt(String styleString) {
 	int style = SWT.NORMAL;
-	if (Texts.PREFERENCES_MANAGER_BOLD.equals(styleString))
+	if (Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD.equals(styleString))
 	    style = SWT.BOLD;
-	else if (Texts.PREFERENCES_MANAGER_ITALIC.equals(styleString))
+	else if (Texts.PREFERENCES_MANAGER_FONT_STYLE_ITALIC
+		.equals(styleString))
 	    style = SWT.ITALIC;
-	else if (Texts.PREFERENCES_MANAGER_BOLD_ITALIC.equals(styleString))
+	else if (Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD_ITALIC
+		.equals(styleString))
 	    style = SWT.BOLD | SWT.ITALIC;
 
 	return style;
@@ -114,13 +112,13 @@ public final class PreferencesManager {
     public static String fontStyleToString(int style) {
 	switch (style) {
 	case SWT.BOLD:
-	    return Texts.PREFERENCES_MANAGER_BOLD;
+	    return Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD;
 	case SWT.ITALIC:
-	    return Texts.PREFERENCES_MANAGER_ITALIC;
+	    return Texts.PREFERENCES_MANAGER_FONT_STYLE_ITALIC;
 	case SWT.BOLD | SWT.ITALIC:
-	    return Texts.PREFERENCES_MANAGER_BOLD_ITALIC;
+	    return Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD_ITALIC;
 	default:
-	    return Texts.PREFERENCES_MANAGER_REGULAR;
+	    return Texts.PREFERENCES_MANAGER_FONT_STYLE_REGULAR;
 	}
     }
 
@@ -134,47 +132,38 @@ public final class PreferencesManager {
      */
     private void createComposite() {
 	composite = new Composite(parent, SWT.NONE);
-	composite.setLayout(new FillLayout());
-
-	group = new Group(composite, SWT.NONE);
-	group.setText("Font selection");
-	group.setVisible(true);
 	GridLayout gridLayout = new GridLayout();
 	gridLayout.numColumns = 3;
-	group.setLayout(gridLayout);
+	composite.setLayout(gridLayout);
 
-	label = new Label(group, SWT.NONE);
-	label.setText("Available fixed char width fonts:");
-	label.setVisible(true);
 	GridData gridData = new GridData();
 	gridData.horizontalSpan = 3;
-	label.setLayoutData(gridData);
-	label1 = new Label(group, SWT.NONE);
-	label1.setText("Name");
-	label2 = new Label(group, SWT.NONE);
-	label2.setText("Style");
-	label3 = new Label(group, SWT.NONE);
-	label3.setText("Size");
+	label1 = new Label(composite, SWT.NONE);
+	label1.setText(Texts.PREFERENCES_MANAGER_FONT_NAME);
+	label2 = new Label(composite, SWT.NONE);
+	label2.setText(Texts.PREFERENCES_MANAGER_FONT_STYLE);
+	label3 = new Label(composite, SWT.NONE);
+	label3.setText(Texts.PREFERENCES_MANAGER_FONT_SIZE);
 
-	text = new Text(group, SWT.SINGLE | SWT.BORDER);
+	text = new Text(composite, SWT.SINGLE | SWT.BORDER);
 	GridData gridData4 = new GridData();
 	gridData4.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 	text.setLayoutData(gridData4);
-	text1 = new Text(group, SWT.BORDER);
+	text1 = new Text(composite, SWT.BORDER);
 	GridData gridData5 = new GridData();
 	gridData5.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
 	text1.setLayoutData(gridData5);
 	text1.setEnabled(false);
-	text2 = new Text(group, SWT.BORDER);
+	text2 = new Text(composite, SWT.BORDER);
 	GridData gridData6 = new GridData();
 	gridData6.horizontalAlignment = org.eclipse.swt.layout.GridData.FILL;
-	GC gc = new GC(group);
+	GC gc = new GC(composite);
 	int averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
 	gc.dispose();
 	gridData6.widthHint = averageCharWidth * 6;
 	text2.setLayoutData(gridData6);
 
-	list = new org.eclipse.swt.widgets.List(group, SWT.SINGLE
+	list = new org.eclipse.swt.widgets.List(composite, SWT.SINGLE
 		| SWT.V_SCROLL | SWT.BORDER);
 	GridData gridData52 = new GridData();
 	gridData52.heightHint = itemsDisplayed * list.getItemHeight();
@@ -189,13 +178,15 @@ public final class PreferencesManager {
 	    }
 	});
 
-	list1 = new org.eclipse.swt.widgets.List(group, SWT.SINGLE | SWT.BORDER);
+	list1 = new org.eclipse.swt.widgets.List(composite, SWT.SINGLE
+		| SWT.BORDER);
 	GridData gridData21 = new GridData();
 	gridData21.verticalAlignment = org.eclipse.swt.layout.GridData.FILL;
-	String[] texts = new String[] { Texts.PREFERENCES_MANAGER_REGULAR,
-		Texts.PREFERENCES_MANAGER_BOLD,
-		Texts.PREFERENCES_MANAGER_ITALIC,
-		Texts.PREFERENCES_MANAGER_BOLD_ITALIC };
+	String[] texts = new String[] {
+		Texts.PREFERENCES_MANAGER_FONT_STYLE_REGULAR,
+		Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD,
+		Texts.PREFERENCES_MANAGER_FONT_STYLE_ITALIC,
+		Texts.PREFERENCES_MANAGER_FONT_STYLE_BOLD_ITALIC };
 	int maxLenght = 0;
 	for (String text : texts) {
 	    maxLenght = Math.max(maxLenght, text.length());
@@ -211,7 +202,7 @@ public final class PreferencesManager {
 	    }
 	});
 
-	list2 = new org.eclipse.swt.widgets.List(group, SWT.SINGLE
+	list2 = new org.eclipse.swt.widgets.List(composite, SWT.SINGLE
 		| SWT.V_SCROLL | SWT.BORDER);
 	GridData gridData7 = new GridData();
 	gridData7.widthHint = gridData6.widthHint;
@@ -224,7 +215,7 @@ public final class PreferencesManager {
 		updateAndRefreshSample();
 	    }
 	});
-	sampleText = new Text(group, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
+	sampleText = new Text(composite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL
 		| SWT.READ_ONLY | SWT.BORDER);
 	sampleText.setText(Texts.PREFERENCES_MANAGER_SAMPLE_TEXT);
 	sampleText.setEditable(false);
@@ -253,12 +244,22 @@ public final class PreferencesManager {
 	rowLayout1.marginHeight = 10;
 	rowLayout1.marginWidth = 10;
 	rowLayout1.pack = false;
-	compositeOkCancel = new Composite(dialog, SWT.NONE);
-	compositeOkCancel.setLayout(rowLayout1);
-	compositeOkCancel.setLayoutData(gridData2);
-	buttonOk = new Button(compositeOkCancel, SWT.NONE);
-	buttonOk.setText(Texts.BUTTON_OK_LABEL);
-	buttonOk.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+	buttonBar = new Composite(dialog, SWT.NONE);
+	buttonBar.setLayout(rowLayout1);
+	buttonBar.setLayoutData(gridData2);
+
+	resetButton = new Button(buttonBar, SWT.NONE);
+	resetButton.setText(Texts.BUTTON_RESET_LABEL);
+	resetButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		setFontData(null);
+	    }
+	});
+
+	okButton = new Button(buttonBar, SWT.NONE);
+	okButton.setText(Texts.BUTTON_OK_LABEL);
+	okButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 	    @Override
 	    public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 		initialFontData = sampleFontData;
@@ -266,10 +267,10 @@ public final class PreferencesManager {
 		dialog.close();
 	    }
 	});
-	dialog.setDefaultButton(buttonOk);
-	buttonCancel = new Button(compositeOkCancel, SWT.NONE);
-	buttonCancel.setText(Texts.BUTTON_CANCEL_LABEL);
-	buttonCancel
+	dialog.setDefaultButton(okButton);
+	cancelButton = new Button(buttonBar, SWT.NONE);
+	cancelButton.setText(Texts.BUTTON_CANCEL_LABEL);
+	cancelButton
 		.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 		    @Override
 		    public void widgetSelected(
@@ -289,26 +290,13 @@ public final class PreferencesManager {
 	dialog.setLayout(gridLayout1);
 	dialog.setText(Texts.PREFERENCES_MANAGER_DIALOG_TITLE);
 	createPreferencesPart(dialog);
-	buttonDefault = new Button(dialog, SWT.CENTER);
-	buttonDefault.setText(Texts.BUTTON_DEFAULT_LABEL);
-	GridData gridData = new GridData();
-	gridData.horizontalIndent = 3;
-	buttonDefault.setLayoutData(gridData);
-	buttonDefault
-		.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-		    @Override
-		    public void widgetSelected(
-			    org.eclipse.swt.events.SelectionEvent e) {
-			setFontData(null);
-		    }
-		});
 	createCompositeOkCancel();
     }
 
     /**
      * Creates the part containing all preferences-editing widgets, that is, OK
      * and cancel buttons are left out so we can call this method from both
-     * standalone and plugin.
+     * stand-alone and plugin.
      * 
      * @param parent
      *            composite where preferences will be drawn
@@ -487,7 +475,7 @@ public final class PreferencesManager {
 
 	if (fontsSorted == null
 		|| !fontsSorted.containsKey(sampleFontData.getName())) {
-	    text.setText("default font");
+	    text.setText(Texts.PREFERENCES_MANAGER_DEFAULT_FONT_NAME);
 	} else {
 	    text.setText(sampleFontData.getName());
 	}
