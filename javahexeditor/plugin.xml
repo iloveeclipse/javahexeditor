@@ -11,9 +11,9 @@
             class="net.sourceforge.javahexeditor.plugin.editors.HexEditor"
             contributorClass="net.sourceforge.javahexeditor.plugin.editors.HexEditorActionBarContributor"
             extensions="a,bin,cab,class,com,dat,data,drv,dll,exe,hex,iso,jar,lib,o,out,part,pdf,png,ram,res,rom,sys,txt,zip"
-            icon="icons/hex-16x16.png"
+            icon="src/icons/javahexeditor-16x16.png"
             id="net.sourceforge.javahexeditor"
-            name="Hex Editor">
+            name="%editor.name">
          <contentTypeBinding
                contentTypeId="javahexeditor.binaryFile">
          </contentTypeBinding>
@@ -25,7 +25,7 @@
             category="org.eclipse.ui.preferencePages.Editors"
             class="net.sourceforge.javahexeditor.plugin.editors.HexEditorPreferencesPage"
             id="net.sourceforge.javahexeditor.plugin.editors.PreferencesPage"
-            name="Java Hex Editor"/>
+            name="%preferences-page.name"/>
    </extension>
    <extension
          id="javahexeditorHelpExtensionId"
@@ -39,17 +39,17 @@
          point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="false"
-            id="javahexeditor.objectContribution1"
+            id="javahexeditor.objectContribution"
             objectClass="org.eclipse.core.runtime.IAdaptable">
          <action
                class="net.sourceforge.javahexeditor.plugin.actions.FileOpenAction"
                enablesFor="+"
-               icon="icons/hex-16x16.png"
+               icon="src/icons/javahexeditor-16x16.png"
                id="javahexeditor.fileopen.menu"
-               label="Open with Hex Editor"
+               label="%action.label"
                menubarPath="additions"
                style="push"
-               tooltip="Open the Hex Editor for selected files">
+               tooltip="%action.tooltip">
          </action>
       </objectContribution>
    </extension>
@@ -58,49 +58,49 @@
       <content-type
             file-extensions="bin"
             id="javahexeditor.binaryFile"
-            name="Binary File (Java Hex Editor)"
+            name="%content-type.binary.name"
             priority="high">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="jar,cab,zip,rar,7z"
             id="javahexeditor.archiveFile"
-            name="Archive"
+            name="%content-type.archive.name"
             priority="normal">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="exe,elf,out,com,abs"
             id="javahexeditor.executableFile"
-            name="Executable"
+            name="%content-type.executable.name"
             priority="high">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="o,obj"
             id="javahexeditor.objectFile"
-            name="Object"
+            name="%content-type.object.name"
             priority="normal">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="dll,dylib,so"
             id="javahexeditor.sharedLibFile"
-            name="Shared Library"
+            name="%content-type.shared-library.name"
             priority="normal">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="a,lib"
             id="javahexeditor.staticLibFile"
-            name="Static Library"
+            name="%content-type.static-library.name"
             priority="normal">
       </content-type>
       <content-type
             base-type="javahexeditor.binaryFile"
             file-extensions="class,dat,data,drv,hex,iso,part,pdf,png,ram,res,rom,sys,txt"
             id="javahexeditor.miscFile"
-            name="Miscellaneous"
+            name="%content-type.miscellaneous.name"
             priority="low">
       </content-type>
    </extension>
