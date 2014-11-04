@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.sourceforge.javahexeditor"
-      label="Java Hex Editor Feature"
+      label="Java Hex Editor"
       version="0.4.9"
       provider-name="pestatije, anb0s, peterdell"
       plugin="net.sourceforge.javahexeditor">
 
    <description url="http://javahexeditor.sourceforge.net">
-      A Java Hex Editor Eclipse plugin.
-Support for very large files.
-Hex, ASCII and Unicode find.
-Overwrite/insert modes.
-Binary and text cut/copy/paste.
-Undo/redo.
+      A Java Hex Editor Eclipse plugin. Support for very large files. Hex, ASCII and Unicode find. Overwrite/insert modes. Binary and text cut/copy/paste. Undo/redo.
    </description>
 
    <license url="http://www.gnu.org/licenses/gpl-2.0.txt">
