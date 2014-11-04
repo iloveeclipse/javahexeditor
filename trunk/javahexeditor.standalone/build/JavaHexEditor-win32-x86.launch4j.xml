@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch4jConfig>
-  <dontWrapJar>true</dontWrapJar>
+  <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>.\JavaHexEditor.jar</jar>
+  <jar>C:\Users\D025328\Documents\Eclipse\workspace.ext\net.sourceforge.javahexeditor.standalone\out\win32-x86\JavaHexEditor.jar</jar>
   <outfile>C:\Users\D025328\Documents\Eclipse\workspace.ext\net.sourceforge.javahexeditor.standalone\out\win32-x86\JavaHexEditor.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
@@ -21,4 +21,16 @@
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>32</runtimeBits>
   </jre>
+  <versionInfo>
+    <fileVersion>0.4.9.0</fileVersion>
+    <txtFileVersion>beta</txtFileVersion>
+    <fileDescription>Java Hex Editor - Windows 32-bit (win32-x86_64)</fileDescription>
+    <copyright>(C) 2006 - 2014 Jordi Bergenthal and Peter Dell</copyright>
+    <productVersion>0.4.9.0</productVersion>
+    <txtProductVersion>beta</txtProductVersion>
+    <productName>Java Hex Editor</productName>
+    <companyName></companyName>
+    <internalName>JavaHexEditor-win32-x86.launch4j.xml</internalName>
+    <originalFilename>JavaHexEditor.exe</originalFilename>
+  </versionInfo>
 </launch4jConfig>

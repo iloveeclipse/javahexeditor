@@ -6,6 +6,7 @@
 
 		<mkdir dir="../out" />
 		<mkdir dir="../out/linux-x86" />
+		<mkdir dir="../out/linux-x86_64" />
 		<mkdir dir="../out/win32-x86" />
 		<mkdir dir="../out/win32-x86_64" />
 
@@ -24,6 +25,23 @@
 			<fileset dir="../bin" />
 			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
 			<zipfileset dir="../lib/linux-x86" includes="swt.jar" />
+		</jar>
+
+		<delete file="../out/linux-x86_64/JavaHexEditor.jar" />
+		<jar destfile="../out/linux-x86_64/JavaHexEditor.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
+				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
+			</manifest>
+			<zipfileset src="../lib/jar-in-jar-loader.zip" />
+			<fileset dir="../../net.sourceforge.javahexeditor/bin">
+				<exclude name="net/sourceforge/javahexeditor/test/**" />
+			</fileset>
+			<fileset dir="../bin" />
+			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
+			<zipfileset dir="../lib/linux-x86_64" includes="swt.jar" />
 		</jar>
 
 		<delete file="../out/win32-x86/JavaHexEditor.jar" />
@@ -63,6 +81,7 @@
 
 		<!-- Create exe wrappers/scripts -->
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86/JavaHexEditor.sh" />
+		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86_64/JavaHexEditor.sh" />
 		<exec executable="C:\Program Files (x86)\Launch4j\launch4jc.exe">
 			<arg value="./JavaHexEditor-win32-x86.launch4j.xml" />
 		</exec>
@@ -77,14 +96,17 @@
 		<!-- Create zip files for upload -->
 		<delete file="../out/linux-x86/javahexeditor-linux-x86.zip" />
 		<zip destfile="../out/javahexeditor-linux-x86.zip" basedir="../out/linux-x86" />
-		<delete file="../out/linux-x86/javahexeditor-win32-x86.zip" />
+		<delete file="../out/linux-x86_64/javahexeditor-linux-x86_64.zip" />
+		<zip destfile="../out/javahexeditor-linux-x86_64.zip" basedir="../out/linux-x86_64" />
+		<delete file="../out/win32-x86/javahexeditor-win32-x86.zip" />
 		<zip destfile="../out/javahexeditor-win32-x86.zip" basedir="../out/win32-x86" />
-		<delete file="../out/linux-x86/javahexeditor-win32-x86_64.zip" />
+		<delete file="../out/win32-x86_64/javahexeditor-win32-x86_64.zip" />
 		<zip destfile="../out/javahexeditor-win32-x86_64.zip" basedir="../out/win32-x86_64" />
-		
-		
+
 		<delete dir="../out/linux-x86" />
+		<delete dir="../out/linux-x86_64" />
 		<delete dir="../out/win32-x86" />
 		<delete dir="../out/win32-x86_64" />
+
 	</target>
 </project>
