@@ -75,12 +75,13 @@ final class Texts extends NLS {
     public static String OPEN_USER_GUIDE_ERROR_MESSAGE = "Error while opening user guide '{0}': {1}";
 
     public static String ABOUT_DIALOG_TITLE = "About javahexeditor";
-    public static String ABOUT_DIALOG_TEXT = "javahexeditor, copyright (c) 2006 - 2014 Jordi Bergenthal.\n"
+    public static String ABOUT_DIALOG_TEXT = "javahexeditor - build 2014-11-05\n"
+	    + "Copyright (c) 2006 - 2014 Jordi Bergenthal.\n"
 	    + "Released under the terms of the GNU General Public License.\n"
 	    + "Visit http://javahexeditor.sourceforge.net\n"
 	    + "\nContributions:\n"
 	    + "Andre Bossert\t\tMenus, dialogs, status bar.\n"
 	    + "Alexander Kuramshin\tCharset encoding.\n"
 	    + "Peter Dell\t\t\tRefactoring, localization.\n"
-	    + "Paul Fisher\t\t\tIcons.";
+	    + "Paul Fisher\t\tIcons.";
 }

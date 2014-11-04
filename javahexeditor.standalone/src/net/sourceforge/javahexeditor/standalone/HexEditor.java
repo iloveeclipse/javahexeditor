@@ -411,8 +411,8 @@ public final class HexEditor {
 
 	MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES
 		| SWT.NO | SWT.CANCEL);
-	box.setText("Modified file");
-	box.setMessage("The current file has been modified.\nSave changes?");
+	box.setText("Modified File"); // TODO LNS
+	box.setMessage("The current file has been modified.\nSave changes?"); // TODO NLS/Wording
 	int result = box.open();
 	if (result == SWT.CANCEL) {
 	    return false;
