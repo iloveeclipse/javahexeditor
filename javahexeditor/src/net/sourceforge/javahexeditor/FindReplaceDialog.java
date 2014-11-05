@@ -35,6 +35,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -105,16 +106,16 @@ final class FindReplaceDialog extends Dialog {
     Button backwardRadioButton;
     private Composite ignoreCaseComposite;
     Button ignoreCaseCheckBox;
-    private Composite findReplaceButtonsComposite;
-    private Button findButton;
-    private Button replaceFindButton;
-    private Button replaceButton;
-    private Button replaceAllButton;
+
     private Composite feedbackComposite;
     Label feedbackLabel;
     Composite progressComposite;
     ProgressBar progressBar;
     private Button progressBarStopButton;
+
+    private Button findButton;
+    private Button replaceButton;
+    private Button replaceAllButton;
     private Button closeButton;
 
     /**
@@ -153,7 +154,7 @@ final class FindReplaceDialog extends Dialog {
 	    textCombo.setLayoutData(new GridData(width, SWT.DEFAULT));
 	    textCombo.addVerifyListener(new VerifyListener() {
 		@Override
-		public void verifyText(org.eclipse.swt.events.VerifyEvent e) {
+		public void verifyText(VerifyEvent e) {
 		    if (e.keyCode == 0)
 			return; // a list selection
 		    if (hexRadioButton.getSelection()) {
@@ -177,7 +178,7 @@ final class FindReplaceDialog extends Dialog {
 		public void modifyText(ModifyEvent e) {
 		    feedbackLabel.setText(Texts.EMPTY);
 		    if (TextHexInputGroup.this == findGroup) {
-			enableDisableControls();
+			dataToUI();
 		    }
 		}
 	    });
@@ -198,8 +199,7 @@ final class FindReplaceDialog extends Dialog {
 	    hexRadioButton.addSelectionListener(defaultSelectionAdapter);
 	    hexRadioButton.addSelectionListener(new SelectionAdapter() {
 		@Override
-		public void widgetSelected(
-			org.eclipse.swt.events.SelectionEvent e) {
+		public void widgetSelected(SelectionEvent e) {
 		    Matcher numberMatcher = patternHexDigits.matcher(textCombo
 			    .getText());
 		    if (!numberMatcher.matches())
@@ -386,76 +386,8 @@ final class FindReplaceDialog extends Dialog {
 
 	lastFocused = findGroup;
 	lastFocused.textCombo.setFocus();
-	enableDisableControls();
+	dataToUI();
 	shell.open();
-    }
-
-    /**
-     * This method initializes find/replace buttons composite
-     */
-    private void createFindReplaceButtonsComposite() {
-	GridLayout gridLayout = new GridLayout();
-	gridLayout.marginHeight = 5;
-	gridLayout.marginWidth = 0;
-	gridLayout.numColumns = 2;
-	gridLayout.makeColumnsEqualWidth = true;
-	findReplaceButtonsComposite = new Composite(shell, SWT.NONE);
-	FormData formData = new FormData();
-	formData.top = new FormAttachment(directionGroup);
-	formData.left = new FormAttachment(0);
-	formData.right = new FormAttachment(100);
-	findReplaceButtonsComposite.setLayoutData(formData);
-	findReplaceButtonsComposite.setLayout(gridLayout);
-
-	findButton = new Button(findReplaceButtonsComposite, SWT.NONE);
-	findButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-		false));
-	findButton.setText(Texts.FIND_REPLACE_DIALOG_FIND_BUTTON_LABEL);
-	findButton.addSelectionListener(defaultSelectionAdapter);
-	findButton.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		doFind();
-	    }
-	});
-	replaceFindButton = new Button(findReplaceButtonsComposite, SWT.NONE);
-	replaceFindButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING,
-		true, false));
-	replaceFindButton
-		.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_FIND_BUTTON_LABEL);
-	replaceFindButton.addSelectionListener(defaultSelectionAdapter);
-	replaceFindButton
-		.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
-		    @Override
-		    public void widgetSelected(
-			    org.eclipse.swt.events.SelectionEvent e) {
-			doReplaceFind();
-		    }
-		});
-	replaceButton = new Button(findReplaceButtonsComposite, SWT.NONE);
-	replaceButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true,
-		false));
-	replaceButton.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_BUTTON_LABEL);
-	replaceButton.addSelectionListener(defaultSelectionAdapter);
-	replaceButton.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		doReplace();
-	    }
-	});
-	replaceAllButton = new Button(findReplaceButtonsComposite, SWT.NONE);
-	replaceAllButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING,
-		true, false));
-	replaceAllButton
-		.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_ALL_BUTTON_LABEL);
-	replaceAllButton.addSelectionListener(defaultSelectionAdapter);
-	replaceAllButton.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		doReplaceAll();
-	    }
-	});
-	shell.setDefaultButton(findButton);
     }
 
     /**
@@ -471,25 +403,20 @@ final class FindReplaceDialog extends Dialog {
 	ignoreCaseCheckBox
 		.setText(Texts.FIND_REPLACE_DIALOG_IGNORE_CASE_CHECKBOX_LABEL);
 	ignoreCaseCheckBox.addSelectionListener(defaultSelectionAdapter);
-	FormData formData = new FormData();
-	formData.top = new FormAttachment(replaceGroup.group);
-	formData.left = new FormAttachment(directionGroup);
-	ignoreCaseComposite.setLayoutData(formData);
     }
 
     /**
      * This method initializes group1
      */
     private void createDirectionGroup() {
-	RowLayout rowLayout = new RowLayout();
-	rowLayout.fill = true;
-	rowLayout.type = org.eclipse.swt.SWT.VERTICAL;
 	directionGroup = new Group(shell, SWT.NONE);
 	directionGroup.setText(Texts.FIND_REPLACE_DIALOG_DIRECTION_GROUP_LABEL);
-	FormData formData = new FormData();
-	formData.top = new FormAttachment(replaceGroup.group);
-	directionGroup.setLayoutData(formData);
+
+	RowLayout rowLayout = new RowLayout();
+	rowLayout.fill = true;
+	rowLayout.type = org.eclipse.swt.SWT.HORIZONTAL;
 	directionGroup.setLayout(rowLayout);
+
 	forwardRadioButton = new Button(directionGroup, SWT.RADIO);
 	forwardRadioButton
 		.setText(Texts.FIND_REPLACE_DIALOG_DIRECTION_FORWARD_RADIO_LABEL);
@@ -498,6 +425,111 @@ final class FindReplaceDialog extends Dialog {
 	backwardRadioButton
 		.setText(Texts.FIND_REPLACE_DIALOG_DIRECTION_BACKWARD_RADIO_LABEL);
 	backwardRadioButton.addSelectionListener(defaultSelectionAdapter);
+    }
+
+    private void createFeedbackComposite() {
+	feedbackComposite = new Composite(shell, SWT.NONE);
+	FormLayout formLayout2 = new FormLayout();
+	// formLayout2.spacing = 5;
+	feedbackComposite.setLayout(formLayout2);
+
+	feedbackLabel = new Label(feedbackComposite, SWT.LEFT);
+	FormData feedbackLabelData = new FormData();
+	feedbackLabelData.top = new FormAttachment(0);
+	feedbackLabelData.left = new FormAttachment(0);
+	feedbackLabelData.right = new FormAttachment(100);
+	feedbackLabel.setLayoutData(feedbackLabelData);
+    }
+
+    private void createProgressComposite() {
+	progressComposite = new Composite(shell, SWT.NONE);
+	FormLayout formLayout3 = new FormLayout();
+	formLayout3.spacing = 5;
+	progressComposite.setLayout(formLayout3);
+	// FormData formData4 = new FormData();
+	// formData4.top = new FormAttachment(feedbackLabel);
+	// formData4.top = new FormAttachment(feedbackComposite);
+	// formData4.bottom = new FormAttachment(100);
+	// formData4.left = new FormAttachment(0);
+	// formData4.right = new FormAttachment(100);
+
+	progressBar = new ProgressBar(progressComposite, SWT.NONE);
+	FormData formData5 = new FormData();
+	formData5.bottom = new FormAttachment(100);
+	formData5.left = new FormAttachment(0);
+	formData5.height = progressBar.computeSize(SWT.DEFAULT, SWT.DEFAULT,
+		false).y;
+	progressBar.setLayoutData(formData5);
+
+	progressBarStopButton = new Button(progressComposite, SWT.NONE);
+	progressBarStopButton
+		.setText(Texts.FIND_REPLACE_DIALOG_STOP_SEARCHING_BUTTON_LABEL);
+	FormData formData6 = new FormData();
+	formData6.right = new FormAttachment(100);
+	progressBarStopButton.setLayoutData(formData6);
+	formData5.right = new FormAttachment(progressBarStopButton);
+	progressBarStopButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		myTarget.stopSearching();
+	    }
+	});
+	// progressComposite.setVisible(false);
+    }
+
+    private void createButtonBarComposite() {
+
+	Composite buttonBar = new Composite(shell, SWT.NONE);
+	FormData buttonBarData = new FormData();
+	buttonBarData.top = new FormAttachment(feedbackComposite);
+	buttonBarData.bottom = new FormAttachment(100);
+	buttonBarData.left = new FormAttachment(0);
+	buttonBarData.right = new FormAttachment(100);
+	// buttonBar.setLayoutData(buttonBarData);
+
+	buttonBar.setLayout(new RowLayout());
+	findButton = new Button(buttonBar, SWT.NONE);
+	findButton.setText(Texts.FIND_REPLACE_DIALOG_FIND_BUTTON_LABEL);
+	findButton.addSelectionListener(defaultSelectionAdapter);
+	findButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		doFind();
+	    }
+	});
+
+	replaceButton = new Button(buttonBar, SWT.NONE);
+	replaceButton.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_BUTTON_LABEL);
+	replaceButton.addSelectionListener(defaultSelectionAdapter);
+	replaceButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		doReplace();
+	    }
+	});
+	replaceAllButton = new Button(buttonBar, SWT.NONE);
+	replaceAllButton
+		.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_ALL_BUTTON_LABEL);
+	replaceAllButton.addSelectionListener(defaultSelectionAdapter);
+	replaceAllButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		doReplaceAll();
+	    }
+	});
+
+	closeButton = new Button(buttonBar, SWT.NONE);
+	closeButton.setText(Texts.BUTTON_CLOSE_LABEL);
+
+	FormData formData1 = new FormData();
+	formData1.right = new FormAttachment(100);
+	formData1.bottom = new FormAttachment(100);
+	closeButton.addSelectionListener(new SelectionAdapter() {
+	    @Override
+	    public void widgetSelected(SelectionEvent e) {
+		shell.close();
+	    }
+	});
     }
 
     /**
@@ -510,11 +542,12 @@ final class FindReplaceDialog extends Dialog {
 	formLayout.marginHeight = 5;
 	formLayout.marginWidth = 5;
 	formLayout.spacing = 5;
-	shell.setLayout(formLayout);
+	// shell.setLayout(formLayout);
+	shell.setLayout(new RowLayout(SWT.VERTICAL));
 	shell.addShellListener(new ShellAdapter() {
 	    @Override
 	    public void shellActivated(ShellEvent e) {
-		enableDisableControls();
+		dataToUI();
 	    }
 	});
 
@@ -541,76 +574,15 @@ final class FindReplaceDialog extends Dialog {
 		.setText(Texts.FIND_REPLACE_DIALOG_REPLACE_GROUP_LABEL);
 	FormData formData = new FormData();
 	formData.top = new FormAttachment(findGroup.group);
-	replaceGroup.group.setLayoutData(formData);
+	// replaceGroup.group.setLayoutData(formData);
 
 	createDirectionGroup();
 	createIgnoreCaseComposite();
-	createFindReplaceButtonsComposite();
+	createFeedbackComposite();
+	createProgressComposite();
+	createButtonBarComposite();
 
-	feedbackComposite = new Composite(shell, SWT.NONE);
-	FormData formData2 = new FormData();
-	formData2.top = new FormAttachment(findReplaceButtonsComposite);
-	formData2.left = new FormAttachment(0);
-	formData2.bottom = new FormAttachment(100);
-	feedbackComposite.setLayoutData(formData2);
-	FormLayout formLayout2 = new FormLayout();
-	// formLayout2.spacing = 5;
-	feedbackComposite.setLayout(formLayout2);
-
-	feedbackLabel = new Label(feedbackComposite, SWT.LEFT);
-	FormData formData3 = new FormData();
-	formData3.top = new FormAttachment(0);
-	formData3.left = new FormAttachment(0);
-	formData3.right = new FormAttachment(100);
-	feedbackLabel.setLayoutData(formData3);
-
-	progressComposite = new Composite(feedbackComposite, SWT.NONE);
-	FormLayout formLayout3 = new FormLayout();
-	formLayout3.spacing = 5;
-	progressComposite.setLayout(formLayout3);
-	FormData formData4 = new FormData();
-	formData4.top = new FormAttachment(feedbackLabel);
-	formData4.bottom = new FormAttachment(100);
-	formData4.left = new FormAttachment(0);
-	formData4.right = new FormAttachment(100);
-	progressComposite.setLayoutData(formData4);
-
-	progressBar = new ProgressBar(progressComposite, SWT.NONE);
-	FormData formData5 = new FormData();
-	formData5.bottom = new FormAttachment(100);
-	formData5.left = new FormAttachment(0);
-	formData5.height = progressBar.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-		false).y;
-	progressBar.setLayoutData(formData5);
-
-	progressBarStopButton = new Button(progressComposite, SWT.NONE);
-	progressBarStopButton.setText(Texts.BUTTON_CANCEL_LABEL);
-	FormData formData6 = new FormData();
-	formData6.right = new FormAttachment(100);
-	progressBarStopButton.setLayoutData(formData6);
-	formData5.right = new FormAttachment(progressBarStopButton);
-	progressBarStopButton.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		myTarget.stopSearching();
-	    }
-	});
-	progressComposite.setVisible(false);
-
-	closeButton = new Button(shell, SWT.NONE);
-	closeButton.setText(Texts.BUTTON_CLOSE_LABEL);
-	FormData formData1 = new FormData();
-	formData1.right = new FormAttachment(100);
-	formData1.bottom = new FormAttachment(100);
-	closeButton.setLayoutData(formData1);
-	closeButton.addSelectionListener(new SelectionAdapter() {
-	    @Override
-	    public void widgetSelected(SelectionEvent e) {
-		shell.close();
-	    }
-	});
-
-	formData2.right = new FormAttachment(closeButton);
+	shell.setDefaultButton(findButton);
 
 	shell.addListener(SWT.Close, new Listener() {
 	    @Override
@@ -618,17 +590,6 @@ final class FindReplaceDialog extends Dialog {
 		myTarget.stopSearching();
 	    }
 	});
-    }
-
-    void doReplace() {
-	replace();
-	enableDisableControls();
-	feedbackLabel.setText(Texts.EMPTY);
-    }
-
-    void doReplaceFind() {
-	replace();
-	doFind();
     }
 
     void doFind() {
@@ -664,6 +625,11 @@ final class FindReplaceDialog extends Dialog {
 	    message = Texts.FIND_REPLACE_DIALOG_MESSAGE_SPECIFY_VALUE_TO_FIND;
 	}
 	endOfRun(message);
+    }
+
+    void doReplace() {
+	replace();
+	doFind();
     }
 
     void doReplaceAll() {
@@ -711,7 +677,7 @@ final class FindReplaceDialog extends Dialog {
 	endOfRun(message);
     }
 
-    void enableDisableControls() {
+    void dataToUI() {
 	findGroup.setEnabled(!searching);
 	replaceGroup.setEnabled(!searching);
 
@@ -722,7 +688,6 @@ final class FindReplaceDialog extends Dialog {
 	ignoreCaseCheckBox.setEnabled(!searching);
 
 	findButton.setEnabled(!searching);
-	replaceFindButton.setEnabled(!searching);
 	replaceButton.setEnabled(!searching);
 	replaceAllButton.setEnabled(!searching);
 
@@ -732,14 +697,13 @@ final class FindReplaceDialog extends Dialog {
 	}
 
 	boolean somethingToFind = findGroup.textCombo.getText().length() > 0;
-	findButton.setEnabled(somethingToFind);
-	replaceAllButton.setEnabled(somethingToFind);
 	long selectionLength = 0L;
 	if (myTarget != null) {
 	    selectionLength = myTarget.getSelection().getLength();
 	}
-	replaceFindButton.setEnabled(selectionLength > 0L && somethingToFind);
-	replaceButton.setEnabled(selectionLength > 0L);
+	findButton.setEnabled(somethingToFind);
+	replaceButton.setEnabled(selectionLength > 0L && somethingToFind);
+	replaceAllButton.setEnabled(somethingToFind);
     }
 
     private void endOfRun(String message) {
@@ -750,7 +714,7 @@ final class FindReplaceDialog extends Dialog {
 
 	progressComposite.setVisible(false);
 	feedbackLabel.setText(message);
-	enableDisableControls();
+	dataToUI();
     }
 
     private void prepareToRun() {
@@ -763,7 +727,7 @@ final class FindReplaceDialog extends Dialog {
 	lastForward = forwardRadioButton.getSelection();
 	lastIgnoreCase = ignoreCaseCheckBox.getSelection();
 	feedbackLabel.setText(Texts.FIND_REPLACE_DIALOG_MESSAGE_SEARCHING);
-	enableDisableControls();
+	dataToUI();
 	activateProgressBar();
     }
 

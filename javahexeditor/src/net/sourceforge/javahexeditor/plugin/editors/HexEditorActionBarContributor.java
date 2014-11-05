@@ -46,7 +46,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  * 
  * @author Jordi
  */
-public final class HexEditorActionBarContributor extends EditorActionBarContributor {
+public final class HexEditorActionBarContributor extends
+	EditorActionBarContributor {
 
     private final class MyMenuContributionItem extends ContributionItem {
 	MenuItem myMenuItem;
@@ -76,7 +77,10 @@ public final class HexEditorActionBarContributor extends EditorActionBarContribu
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
 		    @Override
 		    public void widgetSelected(SelectionEvent e) {
-			activeEditor.getManager().doTrim();
+			Manager manager = activeEditor.getManager();
+			if (manager.isValid()) {
+			    activeEditor.getManager().doTrim();
+			}
 		    }
 		});
 	    } else if (MenuIds.SELECT_BLOCK.equals(getId())) {
@@ -86,7 +90,10 @@ public final class HexEditorActionBarContributor extends EditorActionBarContribu
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
 		    @Override
 		    public void widgetSelected(SelectionEvent e) {
-			activeEditor.getManager().doSelectBlock();
+			Manager manager = activeEditor.getManager();
+			if (manager.isValid()) {
+			    manager.doSelectBlock();
+			}
 		    }
 		});
 	    }
