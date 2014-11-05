@@ -237,8 +237,8 @@ public final class PreferencesManager {
     }
 
     private void createCompositeOkCancel() {
-	GridData gridData2 = new GridData();
-	gridData2.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
+	GridData gridData = new GridData();
+	gridData.horizontalAlignment = org.eclipse.swt.layout.GridData.END;
 	RowLayout rowLayout1 = new RowLayout();
 	rowLayout1.type = org.eclipse.swt.SWT.HORIZONTAL;
 	rowLayout1.marginHeight = 10;
@@ -246,7 +246,7 @@ public final class PreferencesManager {
 	rowLayout1.pack = false;
 	buttonBar = new Composite(dialog, SWT.NONE);
 	buttonBar.setLayout(rowLayout1);
-	buttonBar.setLayoutData(gridData2);
+	buttonBar.setLayoutData(gridData);
 
 	resetButton = new Button(buttonBar, SWT.NONE);
 	resetButton.setText(Texts.BUTTON_RESET_LABEL);
@@ -259,9 +259,9 @@ public final class PreferencesManager {
 
 	okButton = new Button(buttonBar, SWT.NONE);
 	okButton.setText(Texts.BUTTON_OK_LABEL);
-	okButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+	okButton.addSelectionListener(new SelectionAdapter() {
 	    @Override
-	    public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+	    public void widgetSelected(SelectionEvent e) {
 		initialFontData = sampleFontData;
 		dialogResult = SWT.OK;
 		dialog.close();
@@ -271,10 +271,10 @@ public final class PreferencesManager {
 	cancelButton = new Button(buttonBar, SWT.NONE);
 	cancelButton.setText(Texts.BUTTON_CANCEL_LABEL);
 	cancelButton
-		.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+		.addSelectionListener(new SelectionAdapter() {
 		    @Override
 		    public void widgetSelected(
-			    org.eclipse.swt.events.SelectionEvent e) {
+			    SelectionEvent e) {
 			sampleFontData = initialFontData;
 			dialogResult = SWT.CANCEL;
 			dialog.close();

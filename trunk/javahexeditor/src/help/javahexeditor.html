@@ -9,7 +9,7 @@
 	<body>
 		<div class="content" style="float:left; width:20%">
 			<a href="http://sourceforge.net">
-				<img src="http://sflogo.sourceforge.net/sflogo.php?group_id=165536&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net Logo"/>
+				<img src="https://sourceforge.net/p/javahexeditor/icon" alt="Java Hex Editor Logo"/>
 			</a>
 			<ul class="menu">
 				<li class="leaf">
@@ -29,202 +29,124 @@
 				<em>javahexeditor</em>
 				User Guide
 			</h1>
-			<br/>
-			<b>Introduction</b>
+			<h2>Introduction</h2>
 			<p>
 				<em>javahexeditor</em>
 				is a
-				<a href="http://java.sun.com" target="_blank">java</a>
 				<a href="http://en.wikipedia.org/wiki/Hex_editor" target="_blank">hex editor</a>
+				writte in
+				<a href="http://java.sun.com" target="_blank">Java</a>
 				.
-				It is released as a standalone application using
+				It is available as a stand-alone application using
 				<a href="http://www.eclipse.org/swt" target="_blank">SWT</a>
 				widgets and as
 				<a href="http://www.eclipse.org" target="_blank">Eclipse</a>
-				plugin. It has support for very large files;
-				hex, Ascii and Unicode find; overwrite/insert modes; binary and text cut/copy/paste; undo/redo.
+				plugin. It offers:
 			</p>
-			<br/>
-			<b>Installation Notes</b>
+			<ul>
+				<li>Support for very large files</li>
+				<li> Hex, ASCII and Unicode find</li>
+				<li>Overwrite/insert modes</li>
+				<li>Binary and text cut/copy/paste</li>
+				<li>Undo/redo</li>
+			</ul>
+			<h2>Download and Installation</h2>
 			<p>
-				There are three different possible ways to run
+				There are different different possible ways to run
 				<em>javahexeditor</em>
-				:
-				<br/>
-				1- Precompiled in a 32-bit Windows operating system.
-				<br/>
-				2- Standalone java application.
-				<br/>
-				3- Plugin for Eclipse.
-				<br/>
 			</p>
+			<ul>
+				<li>
+					For Windows users there is a
+					<a href="http://sourceforge.net/projects/javahexeditor/files/javahexeditor/current/javahexeditor-win32-x86.zip/download">32-bit</a>
+					version and a
+					<a href="http://sourceforge.net/projects/javahexeditor/files/javahexeditor/current/javahexeditor-win32-x86_64.zip/download">64-bit version</a>
+					in the form of a single executable file named "JavaHexEditor.exe".
+				</li>
+				<li>
+					For Linux users there is a
+					<a href="http://sourceforge.net/projects/javahexeditor/files/javahexeditor/current/javahexeditor-win32-x86.zip/download">32-bit</a>
+					version and a
+					<a href="http://sourceforge.net/projects/javahexeditor/files/javahexeditor/current/javahexeditor-win32-x86_64.zip/download">64-bit version</a>
+					in the form of a shell start script "JavaHexEditor.sh" and a single "JavaHexEditor.jar".
+				</li>
+				<li>
+					For Eclipse 3.x or 4.x users there is a plugin available via the update site
+					<a href="http://javahexeditor.sourceforge.net/update" target="_blank">http://javahexeditor.sourceforge.net/update</a>
+				</li>
+			</ul>
+
+			<h2>Usage</h2>
+
+			<h3>Eclipse Editor</h3>
+
+			Any file currently in the workspace (but not part of a jar file) with one of the extensions listed below can be opened with
+			<em>javahexeditor</em>
+			by right clicking on the file name, expanding the "Open With" menu item, and selecting
+			<em>javahexeditor</em>
+			:
 			<br/>
-			<p>
-				Requirements for
-				<em>javahexeditor</em>
-				precompiled:
-				<br/>
-				- 32-bit Windows operating system.
-				<br/>
-				<br/>
-				Installation of
-				<em>javahexeditor</em>
-				precompiled:
-				<br/>
-				- Not needed, just double-click on
-				<code>javahexeditor-win32_x.y.z.exe</code>
-				<br/>
+			<code>a, bin, cab,
+				class, com, dat, data, drv, dll, exe, hex, iso, jar, lib, o, out,
+				part, pdf, png, ram, res, rom, sys, txt, zip
+			</code>
+			.
+			<br/>
+			Other file extensions can be added in the preferences
+			dialog via "Window / Preferences... / General / Editors / File Associations".
+
+			<h3>Standalone Editor</h3>
+
+			<p>The standlone editor comes with its own main window and menu bar. All important menu items are bound to a standard keyboard shortcut. The keyboard shortcut is displayed in the respective menu item. You can use the "File / Open File..." (CTRL-O) menu
+				item to open a file or drag the file you want to open and drop it inside the editor area.
+				To start editing a new file from scratch use the "File / New" (CTRL-N) menu item.
 			</p>
-			<br/>
-			<p>
-				Requirements for
-				<em>javahexeditor</em>
-				standalone:
-				<br/>
-				- Java 1.4 or later (
-				<a href="http://java.sun.com">java.sun.com</a>
-				).
-				<br/>
-				- SWT 3.1 or 3.4 (
-				<a href="http://www.eclipse.org/swt">www.eclipse.org/swt</a>
-				).
-				Versions 3.2 or 3.3 might work as well.
-				<br/>
-				<br/>
-				Installation of
-				<em>javahexeditor</em>
-				standalone:
-				<br/>
-				- Create a new empty directory (folder).
-				<br/>
-				- Unjar (unzip) the
-				<code>net.sourceforge.javahexeditor_x.y.z.jar</code>
-				file
-				contents into the directory.
-				<br/>
-				- Unzip the SWT zip file (
-				<code>swt-3.x-win32-win32-x86.zip</code>
-				in Windows,
-				<code>swt-3.x-gtk-linux-x86.zip</code>
-				in Linux) into the same directory.
-				<br/>
-				- Windows users: Double-click on
-				<code>gowin32.bat</code>
-				<br/>
-				&nbsp;&nbsp;Linux users: open a terminal (console),
-				<code>cd</code>
-				to the directory, make
-				<code>golinux</code>
-				runnable (
-				<code>chmod +x golinux</code>
-				), and run it (
-				<code>./golinux</code>
-				)
-				<br/>
+			<p>You can also specify the file to editor as command line parameter for the "JavaHexEditor.exe" executable or the "JavaHexEditor.sh" shell start script.
 			</p>
-			<br/>
-			<p>
-				Requirements for
-				<em>javahexeditor</em>
-				Eclipse plugin:
-				<br/>
-				- Eclipse 3.1 or 3.4 (
-				<a href="http://www.eclipse.org">www.eclipse.org</a>
-				).
-				Versions 3.2 or 3.3 might work as well.
-				<br/>
-				<br/>
-				Installation of
-				<em>javahexeditor</em>
-				Eclipse plugin:
-				<br/>
-				- Copy the
-				<code>net.sourceforge.javahexeditor_x.y.z.jar</code>
-				file into the
-				plugins directory in your Eclipse installation.
-				<br/>
-				- Restart Eclipse.
-				<br/>
-				- Any file currently in the workspace (but not part of a jar file)
-				and with one of the extensions listed below can be opened with
-				<em>javahexeditor</em>
-				by right clicking on the file name, expanding the
-				'Open With' menu option, and selecting
-				<em>javahexeditor</em>
-				.
-				<br/>
-				- File extensions defined for use by
-				<em>javahexeditor</em>
-				:
-				<code>a, bin, cab,
-					class, com, dat, data, drv, dll, exe, hex, iso, jar, lib, o, out,
-					part, pdf, png, ram, res, rom, sys, txt, zip
-				</code>
-				.
-				<br/>
-				- Other file extensions can be added in the following preferences
-				dialog: Window -&gt; Preferences... -&gt; General (+) Editors (+) File
-				Associations
-				<br/>
-			</p>
-			<br/>
-			<b>Open files</b>
-			<p>Use the File -&gt; Open File... menu option.</p>
-			<p>Drag the file you want to open and drop it inside the editor area.</p>
-			<p>To start editing a new file from scratch use the File -&gt; New menu option.</p>
-			<p>
-				Specify the file to edit as a command parameter:
-				<em>javahexeditor</em>
-				reads just the first
-				parameter and interprets it as the file to open. One way this would be done is:
-				<br/>
-				(linux):
-				<code>java -cp .:swt.jar -Djava.library.path=. net.sourceforge.javahexeditor.Manager file.bin</code>
-				<br/>
-				(win32):
-				<code>java -cp .;swt.jar -Djava.library.path=. net.sourceforge.javahexeditor.Manager
-					file.bin
-				</code>
-			</p>
-			<br/>
-			<b>Browsing</b>
+			<h3>Browsing the File Content</h3>
 			<p>You can move around the file as you would in any other text editor. To change from hex to text,
 				or vice versa, press the [Tab] key, or click the mouse in the appropriate area.
 			</p>
 			<p>
-				To locate a specific position within the file use the Goto dialog (Edit -&gt; Go to Location... or
-				[Ctrl] L). This is especially useful when editing very big files and the scrollbar is not accurate
+				To locate a specific position within the file use the Goto dialog. The dialog can be opened via the menu item "Edit / Go to Location.." (CTRL-L).
+				This kind of positioning is especially useful when editing very big files and the scroll bar is not
+				accurate
 				enough.
 			</p>
 			<p>
-				To select text move the cursor to the selection start and then press the [Shift] key when changing the cursor to the selection end.
+				To select text move the cursor to the selection start and then press the SHIFT key when changing the cursor to the selection end.
 			</p>
-			<br/>
-			<b>Modifying</b>
-			<p>There are two modify modes: insert and overwrite. You can switch between insert/overwite modes
-				with the [Insert] key in your keyboard (as in some text editors, for instance).
+
+			<h3>Editing the File Content</h3>
+			<p>There are two modify modes: insert and overwrite. You can switch between insert/overwrite modes
+				with the INSERT key in your keyboard (as in some text editors, for instance).
 			</p>
 			<p>You can insert/delete/trim bytes in insert mode only. In overwrite mode the file length never
 				changes and you cannot paste things bigger than the space left in the file.
 			</p>
 			<p>
-				You can insert another file(s) by copying it (in explorer, for instance,
-				select the file and then Edit -&gt; Copy), and pasting it (in
-				<em>javahexeditor</em>,
-				Edit -&gt; Paste).
-			</p>
-			<p>
-				Copying to a text editor has a limit of 4MBytes. Binary copying (from
+				You can insert other files by copying by copying them to the clipboard.
+				This can be achieve for example via "Edit / Copy" (CTRL-C) in Windows and
+				p and pasting it in
+				<em>javahexeditor</em>
+				via "Edit / Past" (CTRL-V).
+				Copying to a text editor has a limit of 4 MB. Binary copying (from
 				<em>javahexeditor</em>
 				to
 				<em>javahexeditor</em>
-				) is limited by disk space only.
+				) is limited by the free disk space only.
 			</p>
 			<p>
 				Modified text is displayed in blue, so it is easier to see the changes made to the file.
 			</p>
-			<br/>
-			<br/>
-		</div>
+
+			<h2>Screen Shots</h2>
+			<div style="text-align: center;">
+				<img src="http://javahexeditor.sourceforge.net/images/screenshot-01.png" alt="Find and Replace Dialog"/>
+				<br/>
+			</div>
+			<div style="text-align: center;">
+				<img src="http://javahexeditor.sourceforge.net/images/screenshot-02.png" alt="Block Selection Dialog"/>
+			</div>
 	</body>
 </html>

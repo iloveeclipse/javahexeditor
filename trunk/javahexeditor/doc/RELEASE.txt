@@ -1,7 +1,8 @@
 
-javahexeditor, a java hex editor
-Copyright (C) 2006 - 2014 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net
-The official javahexeditor site is sourceforge.net/projects/javahexeditor
+javahexeditor - Java Hex Editor
+
+Copyright (C) 2006 - 2014 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net.
+The official javahexeditor project site is sourceforge.net/projects/javahexeditor.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,7 +32,7 @@ javahexeditor change log
 ??/??/2014 version 0.4.9.
 	Separated Eclipse plugin from stand-alone application.
 	Included standard OSGI and SWT jars for location and UI widgets.
-	New build process created separate self-contained "JavaHexEditor.jar" file for Linux (32-bit), Windows (32-bit) and Windows (64-bit) 
+	New build process creates separate self-contained "JavaHexEditor.jar" file for Linux (32-bit), Windows (32-bit) and Windows (64-bit) 
 
 29/12/2009 version 0.4.2.
 	Moved precompiled to swt 3.5.1, gcc 4.4.0.
@@ -55,7 +56,7 @@ javahexeditor change log
 	Bugfix: precompiled saving files bigger than 2 megs error.
 	Bugfix: undo restores unchanged text to black color.
 	Bugfix: plugin doesn't activate menu options after "Select All".
-	Added user guide in standalone.
+	Added user guide in stand-alone.
 
 16/9/2008, version 0.2.9.
 	Enable [Alt Gr] input.
@@ -74,7 +75,7 @@ javahexeditor change log
 	Bugfix: crash when opening a file with no read access.
 	Enabled drag-select.
 	Precompiled accepts command parameter in the same way as
-	standalone.
+	stand-alone.
 
 11/6/2008, version 0.2.5.
 	Bugfix: searching for a new literal leaks previous Finder object.
@@ -100,7 +101,7 @@ javahexeditor change log
 	Bugfix: file drop-open not working in linux.
 
 1/1/2008, version 0.2.0.
-	Added file drop-open to standalone.
+	Added file drop-open to stand-alone.
 	Bugfix: clear finder cache if user modifies data.
 	Added undo/redo deletes.
 	Bugfix: plugin actions were enabled/disabled when showing menu
@@ -151,7 +152,7 @@ javahexeditor change log
 	Added 'go to' option.
 	Bugfix: in Eclipse, an error was shown when javahexeditor was the
 	first editor being opened.
-	Bugfix: standalone crashed when clicking inside the text area and
+	Bugfix: stand-alone crashed when clicking inside the text area and
 	dragging the mouse past the bottom.
 	Defined default button for find dialog.
 
@@ -168,7 +169,7 @@ javahexeditor change log
 	
 18/6/2006, version 0.0.6.
 	Added pasting of text and files.
-	Added standalone release.
+	Added stand-alone release.
 
 11/6/2006, version 0.0.5.
 	Added single and block delete.
@@ -192,7 +193,6 @@ javahexeditor change log
 6/5/2006, version 0.0.1. First beta release.
 	First version that can be called a java hex editor. Released as an Eclipse
 	plugin.
-	Basic file viewing/browsing, hex unicode and ascii find, hex overwriting,
+	Basic file viewing/browsing, hex unicode and ASCII find, hex overwriting,
 	and file saving.
 	Support for very big files.
-
