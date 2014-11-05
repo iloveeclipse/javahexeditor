@@ -44,11 +44,16 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Manager of the javahexeditor application, either in its stand alone or
+ * Manager of the javahexeditor application, either in its stand-alone or
  * Eclipse plugin version. Manages creation of widgets, and executes menu
- * actions, like File->Save. Call createEditorPart() before any menu actions.
+ * actions, like "File->Save". Call {@link #createEditorPart} before any menu
+ * actions.
  * 
  * @author Jordi
+ * 
+ *         TODO Maintain German localization files<br/>
+ *         TODO Correct key binding in Eclipse mode (CTRL-E etc.)<br/>
+ * 
  */
 public final class Manager {
 
@@ -66,7 +71,7 @@ public final class Manager {
     // Visual controls
     private Shell shell;
     private Composite textsParent;
-    private HexTexts hexTexts;
+    HexTexts hexTexts;
     private StatusLine statusLine;
 
     private FindReplaceDialog findDialog;
@@ -102,6 +107,7 @@ public final class Manager {
 		if (font != null && !font.isDisposed()) {
 		    font.dispose();
 		}
+		hexTexts = null;
 	    }
 	});
 	if (fontData != null) {
@@ -474,8 +480,9 @@ public final class Manager {
      * @return if changes have been performed
      */
     public boolean isDirty() {
-	if (content == null)
+	if (content == null) {
 	    return false;
+	}
 
 	return content.isDirty();
     }
@@ -602,12 +609,14 @@ public final class Manager {
 	File tempFile = null;
 	// It can happen that in two successive "Save File"'s the first one
 	// didn't get the temp file deleted due to limitations in the OS
-	// (windows). With this loop it's possible to save many times
+	// (Windows). With this loop it's possible to save many times
 	for (int tries = 9999; tries >= 0 && !successful; --tries) {
 	    try {
-		// + "99" is to avoid IllegalArgumentException
-		tempFile = File.createTempFile(contentFile.getName() + "99", ""
-			+ tries, contentFile.getParentFile());
+		// + "-9" is to avoid IllegalArgumentException, because the
+		// prefix must be at least 3 characters long.
+		tempFile = File.createTempFile(contentFile.getName() + "-9"
+			+ tries, ".tmp", contentFile.getParentFile());
+		successful = true;
 	    } catch (IOException e1) {
 		e1.printStackTrace();
 	    }
