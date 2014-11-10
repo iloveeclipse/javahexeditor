@@ -27,6 +27,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sourceforge.javahexeditor.BinaryContentFinder.Match;
+import net.sourceforge.javahexeditor.common.NumberUtility;
+import net.sourceforge.javahexeditor.common.SWTUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -65,6 +68,8 @@ import org.eclipse.swt.widgets.Shell;
  * again.
  * 
  * @author Jordi
+ * 
+ * TODO: Fix layout/visiblity and enabling<br/>
  */
 final class FindReplaceDialog extends Dialog {
 

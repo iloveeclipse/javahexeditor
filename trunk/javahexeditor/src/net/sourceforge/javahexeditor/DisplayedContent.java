@@ -22,6 +22,8 @@ package net.sourceforge.javahexeditor;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sourceforge.javahexeditor.common.Log;
+
 import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.TextChangedEvent;

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package net.sourceforge.javahexeditor;
+package net.sourceforge.javahexeditor.common;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
