@@ -18,7 +18,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-package net.sourceforge.javahexeditor;
+package net.sourceforge.javahexeditor.common;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
@@ -26,6 +26,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * Utility class to handle SWT widgets.
+ * 
+ * @author Peter Dell
+ */
 public final class SWTUtility {
 
     /**
@@ -99,10 +104,11 @@ public final class SWTUtility {
 	messageBox.setMessage(TextUtility.format(message, parameters));
 	return messageBox.open();
     }
-    
+
     public static int showErrorMessage(Shell shell, String title,
 	    String message, String... parameters) {
-	return showMessage(shell, SWT.ERROR|SWT.OK, title, message, parameters);
-	
+	return showMessage(shell, SWT.ERROR | SWT.OK, title, message,
+		parameters);
+
     }
 }

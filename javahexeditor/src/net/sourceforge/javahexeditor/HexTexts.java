@@ -31,6 +31,8 @@ import java.util.List;
 
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
 import net.sourceforge.javahexeditor.BinaryContentFinder.Match;
+import net.sourceforge.javahexeditor.common.SWTUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;

@@ -17,13 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package net.sourceforge.javahexeditor;
+package net.sourceforge.javahexeditor.common;
+
 
 /**
- * Utility to issue log messages.
+ * Utility class to issue log messages.
  * 
  * @author Peter Dell
- * 
  */
 public final class Log {
 
@@ -32,6 +32,18 @@ public final class Log {
      */
     private Log() {
 
+    }
+
+    public static void logError(String message, Object[] parameters,
+	    Throwable th) {
+	if (message == null) {
+	    throw new IllegalArgumentException(
+		    "Parameter 'message' must not be null.");
+	}
+	log("ERROR: ", message, parameters);
+	if (th != null) {
+	    th.printStackTrace(System.out);
+	}
     }
 
     public static void log(Object owner, String message, Object... parameters) {

@@ -28,11 +28,11 @@ import java.util.Set;
 
 import net.sourceforge.javahexeditor.BinaryContent;
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
-import net.sourceforge.javahexeditor.Log;
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.Preferences;
-import net.sourceforge.javahexeditor.TextUtility;
 import net.sourceforge.javahexeditor.Texts;
+import net.sourceforge.javahexeditor.common.Log;
+import net.sourceforge.javahexeditor.common.TextUtility;
 import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
 
 import org.eclipse.core.resources.IFile;

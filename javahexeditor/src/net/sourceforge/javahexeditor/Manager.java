@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
+import net.sourceforge.javahexeditor.common.ResourceUtility;
+import net.sourceforge.javahexeditor.common.SWTUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -52,12 +55,17 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jordi
  * 
  *         TODO Maintain German localization files<br/>
+ *         TODO <br/>
  *         TODO Correct key binding in Eclipse mode (CTRL-E etc.)<br/>
  * 
  */
 public final class Manager {
 
     public static final String APPLICATION_NAME = "javahexeditor";
+
+    // Path to the text files containing the OS and date time of the build.
+    private static final String OS_PATH = "net/sourceforge/javahexeditor/Manager.os";
+    private static final String VERSION_PATH = "net/sourceforge/javahexeditor/Manager.version";
 
     private BinaryContent content;
     private File contentFile;
@@ -77,6 +85,33 @@ public final class Manager {
     private FindReplaceDialog findDialog;
     private GoToDialog goToDialog;
     private SelectBlockDialog selectBlockDialog;
+
+    /**
+     * Gets the build OS .
+     * 
+     * @return The build OS, may be empty and not <code>null</code>.
+     */
+    public String getBuildOS() {
+	String os = ResourceUtility.loadResourceAsString(OS_PATH);
+	if (os == null) {
+	    os = "";
+	}
+	return os;
+    }
+
+    /**
+     * Gets the build version in the format "OS YYYY-MM-DD HH:MM:SS".
+     * 
+     * @return The build version, not empty and not <code>null</code>.
+     */
+    public String getBuildVersion() {
+
+	String version = ResourceUtility.loadResourceAsString(VERSION_PATH);
+	if (version == null) {
+	    version = "????-??-?? ??:??:??";
+	}
+	return version;
+    }
 
     /**
      * Creates editor part of parent application. Can only be called once per

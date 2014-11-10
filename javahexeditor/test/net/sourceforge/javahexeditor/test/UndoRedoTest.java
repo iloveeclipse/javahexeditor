@@ -859,11 +859,14 @@ public final class UndoRedoTest extends TestCase {
 	     * ((Long)rangesModified.get(0)).longValue()); assertEquals(1L,
 	     * ((Long)rangesModified.get(0)).longValue());
 	     */
-	    // TODO
-	    System.out.println(rangesModified);
-	    System.out.println(data.get(0) + " " + data.get(1) + " "
-		    + data.get(2) + " " + data.get(3) + " " + data.get(4) + " "
-		    + data.get(5) + " " + data.get(6) + " " + data.get(7));
+	    assertEquals((byte) 126, data.get(0));
+	    assertEquals((byte) 127, data.get(1));
+	    assertEquals((byte) -128, data.get(2));
+	    assertEquals((byte) -127, data.get(3));
+	    assertEquals((byte) -126, data.get(4));
+	    assertEquals((byte) -125, data.get(5));
+	    assertEquals((byte) -124, data.get(6));
+	    assertEquals((byte) -123, data.get(7));
 	} catch (IOException e) {
 	    throw new RuntimeException(e);
 	}

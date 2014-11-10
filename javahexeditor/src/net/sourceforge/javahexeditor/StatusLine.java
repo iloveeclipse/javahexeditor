@@ -20,6 +20,8 @@
 package net.sourceforge.javahexeditor;
 
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
+import net.sourceforge.javahexeditor.common.NumberUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
