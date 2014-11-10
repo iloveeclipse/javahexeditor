@@ -4,12 +4,27 @@
 	<!--ANT 1.7 is required                                        -->
 	<target name="create_run_jars">
 
+		<!-- Create ".version" file in "bin" folder -->
+		<exec executable="C:\jac\bin\wbin\date.exe">
+			<arg value="+%Y-%m-%d %H:%M:%S" />
+			<redirector output="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.version" />
+		</exec>
+
+		<!-- Copy built-in documentation to web site folder for upload -->
+		<!-- The destination folders are excluded from source code versioning -->
+		<copy file="../../net.sourceforge.javahexeditor/src/help/index.html" todir="../../net.sourceforge.javahexeditor.site" overwrite="true" />
+		<mkdir dir="../../net.sourceforge.javahexeditor.site/images" />
+		<copy todir="../../net.sourceforge.javahexeditor.site/images" overwrite="true">
+			<fileset dir="../../net.sourceforge.javahexeditor/src/images" />
+		</copy>
+
 		<mkdir dir="../out" />
 		<mkdir dir="../out/linux-x86" />
 		<mkdir dir="../out/linux-x86_64" />
 		<mkdir dir="../out/win32-x86" />
 		<mkdir dir="../out/win32-x86_64" />
 
+		<echo message="Linux x86 (32-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
 		<delete file="../out/linux-x86/JavaHexEditor.jar" />
 		<jar destfile="../out/linux-x86/JavaHexEditor.jar">
 			<manifest>
@@ -27,6 +42,7 @@
 			<zipfileset dir="../lib/linux-x86" includes="swt.jar" />
 		</jar>
 
+		<echo message="Linux x86 (64-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
 		<delete file="../out/linux-x86_64/JavaHexEditor.jar" />
 		<jar destfile="../out/linux-x86_64/JavaHexEditor.jar">
 			<manifest>
@@ -44,6 +60,7 @@
 			<zipfileset dir="../lib/linux-x86_64" includes="swt.jar" />
 		</jar>
 
+		<echo message="Windows x86 (32-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
 		<delete file="../out/win32-x86/JavaHexEditor.jar" />
 		<jar destfile="../out/win32-x86/JavaHexEditor.jar">
 			<manifest>
@@ -61,6 +78,7 @@
 			<zipfileset dir="../lib/win32-x86" includes="swt.jar" />
 		</jar>
 
+		<echo message="Windows x86 (64-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
 		<delete file="../out/win32-x86_64/JavaHexEditor.jar" />
 		<jar destfile="../out/win32-x86_64/JavaHexEditor.jar">
 			<manifest>
@@ -107,6 +125,5 @@
 		<delete dir="../out/linux-x86_64" />
 		<delete dir="../out/win32-x86" />
 		<delete dir="../out/win32-x86_64" />
-
 	</target>
 </project>
