@@ -21,17 +21,17 @@ package net.sourceforge.javahexeditor.standalone;
 
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 
+import net.sourceforge.javahexeditor.HelpResources;
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.PreferencesManager;
-import net.sourceforge.javahexeditor.SWTUtility;
+import net.sourceforge.javahexeditor.common.SWTUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
 import net.sourceforge.javahexeditor.standalone.HexEditorMenu.Actions;
 
 import org.eclipse.swt.SWT;
@@ -65,7 +65,8 @@ import org.eclipse.swt.widgets.Shell;
  * @author Jordi, Peter Dell
  */
 public final class HexEditor {
-    private static final String ICON_PATH = "icons/javahexeditor-16x16.png";
+
+    private static final String ICON_PATH = "images/javahexeditor-16x16.png";
 
     Shell shell;
     HexEditorMenu menu;
@@ -372,8 +373,13 @@ public final class HexEditor {
 	    doOpenHelp(true);
 	    break;
 	case Actions.ABOUT:
-	    SWTUtility.showMessage(shell, SWT.ICON_INFORMATION | SWT.OK,
-		    Texts.ABOUT_DIALOG_TITLE, Texts.ABOUT_DIALOG_TEXT);
+
+	    SWTUtility.showMessage(
+		    shell,
+		    SWT.ICON_INFORMATION | SWT.OK,
+		    Texts.ABOUT_DIALOG_TITLE,
+		    TextUtility.format(Texts.ABOUT_DIALOG_TEXT,
+			    manager.getBuildOS(), manager.getBuildVersion()));
 	    break;
 	default:
 	    break;
@@ -411,8 +417,9 @@ public final class HexEditor {
 
 	MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES
 		| SWT.NO | SWT.CANCEL);
-	box.setText("Modified File"); // TODO LNS
-	box.setMessage("The current file has been modified.\nSave changes?"); // TODO NLS/Wording
+	box.setText("Modified File"); // TODO NLS
+	box.setMessage("The current file has been modified.\nSave changes?"); // TODO
+									      // NLS/Wording
 	int result = box.open();
 	if (result == SWT.CANCEL) {
 	    return false;
@@ -469,51 +476,11 @@ public final class HexEditor {
     }
 
     private void doOpenHelp(boolean online) {
-	final String resourceName = "/help/javahexeditor.html";
-	final String fileName = "javahexeditor.html";
-	URI uri;
-	if (online) {
-	    try {
-		uri = new URI("http://javahexeditor.sourceforge.net");
-	    } catch (URISyntaxException ex) {
-		throw new RuntimeException(ex);
-	    }
-	} else {
-	    {
-		InputStream inStream = getClass().getResourceAsStream(
-			resourceName);
-		if (inStream == null) {
-		    throw new RuntimeException("Help file '" + resourceName
-			    + "' missing in classpath.");
-		}
-		File localFile = new File(System.getProperty("java.io.tmpdir"),
-			fileName);
-		try {
-		    FileOutputStream outStream = new FileOutputStream(localFile);
-		    byte[] buffer = new byte[512];
-		    int read = 0;
-		    try {
-			while ((read = inStream.read(buffer)) > 0) {
-			    outStream.write(buffer, 0, read);
-			}
-		    } finally {
-			outStream.close();
-		    }
-		} catch (IOException ignore) {
-		    // Open browser anyway
-		}
-		try {
-		    inStream.close();
-		} catch (IOException ignore) {
-		    // Open browser anyway
-		}
-		uri = localFile.toURI();
-	    }
-	}
+	URI uri = HelpResources.getHelpResourceURI(online);
 	try {
 	    Desktop.getDesktop().browse(uri);
 	} catch (IOException ex) {
-	    SWTUtility.showErrorMessage(shell,
+	    SWTUtility.showErrorMessage(shell, shell.getText(),
 		    Texts.OPEN_USER_GUIDE_ERROR_MESSAGE, uri.toString(),
 		    ex.getMessage());
 	}

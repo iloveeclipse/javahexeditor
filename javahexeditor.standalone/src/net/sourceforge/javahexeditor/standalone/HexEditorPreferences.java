@@ -8,7 +8,7 @@ import java.util.Properties;
 
 import net.sourceforge.javahexeditor.Preferences;
 import net.sourceforge.javahexeditor.PreferencesManager;
-import net.sourceforge.javahexeditor.SWTUtility;
+import net.sourceforge.javahexeditor.common.SWTUtility;
 
 import org.eclipse.swt.graphics.FontData;
 

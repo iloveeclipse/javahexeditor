@@ -22,6 +22,7 @@ package net.sourceforge.javahexeditor.standalone;
 
 import org.eclipse.osgi.util.NLS;
 
+// TODO Separate NLS properties files
 final class Texts extends NLS {
     public static final String EMPTY = "";
 
@@ -75,8 +76,8 @@ final class Texts extends NLS {
     public static String OPEN_USER_GUIDE_ERROR_MESSAGE = "Error while opening user guide '{0}': {1}";
 
     public static String ABOUT_DIALOG_TITLE = "About javahexeditor";
-    public static String ABOUT_DIALOG_TEXT = "javahexeditor - build 2014-11-05\n"
-	    + "Copyright (c) 2006 - 2014 Jordi Bergenthal.\n"
+    public static String ABOUT_DIALOG_TEXT = "javahexeditor - {0}\n"
+	    + "Build {1}\n" + "Copyright (c) 2006 - 2014 Jordi Bergenthal.\n"
 	    + "Released under the terms of the GNU General Public License.\n"
 	    + "Visit http://javahexeditor.sourceforge.net\n"
 	    + "\nContributions:\n"
