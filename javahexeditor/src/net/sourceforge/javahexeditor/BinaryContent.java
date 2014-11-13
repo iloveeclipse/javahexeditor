@@ -98,7 +98,7 @@ public final class BinaryContent {
 	long length = -1L;
 	boolean dirty = true;
 	long dataOffset;
-	Object data;
+	Object data; // ByteBuffer or RandomAccessFile
 	File file; // used when data is a RandomAccessFile since we cannot get a
 		   // File from it
 
@@ -171,8 +171,9 @@ public final class BinaryContent {
 	}
     }
 
-    public static final long mappedFileBufferLength = 2048 * 1024; // for mapped file
-    
+    public static final long mappedFileBufferLength = 2048 * 1024; // for mapped
+								   // file
+
     // I/O
 
     BinaryContentActionHistory actions; // undo/redo actions history
@@ -205,8 +206,9 @@ public final class BinaryContent {
      */
     public BinaryContent(File aFile) throws IOException {
 	this();
-	if (aFile == null || aFile.length() < 1L)
+	if (aFile == null || aFile.length() < 1L) {
 	    return;
+	}
 
 	myRanges.add(new Range(0L, aFile, false));
     }
@@ -291,8 +293,8 @@ public final class BinaryContent {
 	    length = length() - position;
 	if (actions != null) {
 	    lastUpperNibblePosition = -1L;
-	    actions.eventPreModify(BinaryContentActionHistory.TYPE_DELETE, position,
-		    length == 1L);
+	    actions.eventPreModify(BinaryContentActionHistory.TYPE_DELETE,
+		    position, length == 1L);
 	}
 	if (myChanges != null && myChangesInserted
 		&& myChangesPosition <= position
@@ -649,9 +651,9 @@ public final class BinaryContent {
 		    // to access past the 2Gb barrier there is no choice but use
 		    // plain ByteBuffers in gcj
 		    bufferFromMap = false;
-		    if (buffer == null){
+		    if (buffer == null) {
 			buffer = ByteBuffer
-				.allocateDirect((int) mappedFileBufferLength);		
+				.allocateDirect((int) mappedFileBufferLength);
 		    }
 		    buffer.position(0);
 		    buffer.limit(partLength);
@@ -765,7 +767,8 @@ public final class BinaryContent {
 	dirtySize = true;
 	lastUpperNibblePosition = position;
 	if (actions != null)
-	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT, position, true);
+	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT,
+		    position, true);
 	updateChanges(position, true);
 	myChanges.set((int) (position - myChangesPosition), new Integer(
 		source & 0x0ff));
@@ -790,7 +793,8 @@ public final class BinaryContent {
 	dirtySize = true;
 	lastUpperNibblePosition = -1L;
 	if (actions != null)
-	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT, position, false);
+	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT,
+		    position, false);
 	commitChanges();
 	Range newRange = new Range(position, source, true);
 	insertRange(newRange);
@@ -822,7 +826,8 @@ public final class BinaryContent {
 	dirtySize = true;
 	lastUpperNibblePosition = -1L;
 	if (actions != null)
-	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT, position, false);
+	    actions.eventPreModify(BinaryContentActionHistory.TYPE_INSERT,
+		    position, false);
 	commitChanges();
 	insertRange(newRange);
 	if (actions != null)
@@ -942,7 +947,8 @@ public final class BinaryContent {
 		    && length == 4) {
 		actionsOn(false);
 	    } else {
-		actions.eventPreModify(BinaryContentActionHistory.TYPE_OVERWRITE, position,
+		actions.eventPreModify(
+			BinaryContentActionHistory.TYPE_OVERWRITE, position,
 			true);
 	    }
 	}

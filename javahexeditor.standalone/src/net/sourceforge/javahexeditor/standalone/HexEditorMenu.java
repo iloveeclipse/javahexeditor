@@ -69,7 +69,7 @@ public final class HexEditorMenu {
     public final MenuItem pushUndo;
 
     public final MenuItem helpContentsMenuItem;
-    
+
     public HexEditorMenu(HexEditor hexEditor) {
 	this.hexEditor = hexEditor;
 	menuBar = new Menu(hexEditor.shell, SWT.BAR);
@@ -90,8 +90,9 @@ public final class HexEditorMenu {
 	saveMenuItem.setAccelerator(SWT.CONTROL | 'S');
 	saveAsMenuItem = createMenuItem(fileSubMenu,
 		Texts.HEX_EDITOR_SAVE_AS_MENU_ITEM_LABEL, Actions.SAVE_AS);
-	saveSelectionAsMenuItem = createMenuItem(fileSubMenu,
-		Texts.HEX_EDITOR_SAVE_SELECTION_AS_MENU_ITEM_LABEL,
+	saveSelectionAsMenuItem = createMenuItem(
+		fileSubMenu,
+		net.sourceforge.javahexeditor.Texts.EDITOR_SAVE_SELECTION_AS_MENU_ITEM_LABEL,
 		Actions.SAVE_SELECTION_AS);
 	createMenuSeparator(fileSubMenu);
 	createMenuItem(fileSubMenu, Texts.HEX_EDITOR_EXIT_MENU_ITEM_LABEL,
@@ -123,20 +124,25 @@ public final class HexEditorMenu {
 	pushDelete = createMenuItem(editSubMenu,
 		Texts.HEX_EDITOR_DELETE_MENU_ITEM_LABEL, Actions.DELETE);
 
-	pushTrim = createMenuItem(editSubMenu,
-		Texts.HEX_EDITOR_TRIM_MENU_ITEM_LABEL, Actions.TRIM);
+	pushTrim = createMenuItem(
+		editSubMenu,
+		net.sourceforge.javahexeditor.Texts.EDITOR_TRIM_MENU_ITEM_LABEL,
+		Actions.TRIM);
 
 	pushSelectAll = createMenuItem(editSubMenu,
 		Texts.HEX_EDITOR_SELECT_ALL_MENU_ITEM_LABEL, Actions.SELECT_ALL);
 
-	pushSelectBlock = createMenuItem(editSubMenu,
-		Texts.HEX_EDITOR_SELECT_BLOCK_MENU_ITEM_LABEL,
+	pushSelectBlock = createMenuItem(
+		editSubMenu,
+		net.sourceforge.javahexeditor.Texts.EDITOR_SELECT_BLOCK_MENU_ITEM_LABEL,
 		Actions.SELECT_BLOCK);
 	pushSelectBlock.setAccelerator(SWT.CONTROL | 'E');
 
 	createMenuSeparator(editSubMenu);
-	pushGoTo = createMenuItem(editSubMenu,
-		Texts.HEX_EDITOR_GO_TO_MENU_ITEM_LABEL, Actions.GO_TO);
+	pushGoTo = createMenuItem(
+		editSubMenu,
+		net.sourceforge.javahexeditor.Texts.EDITOR_GO_TO_MENU_ITEM_LABEL,
+		Actions.GO_TO);
 	pushGoTo.setAccelerator(SWT.CONTROL | 'L');
 
 	pushFind = createMenuItem(editSubMenu,
@@ -154,12 +160,12 @@ public final class HexEditorMenu {
 	MenuItem helpMenuItem = new MenuItem(menuBar, SWT.CASCADE);
 	helpMenuItem.setText(Texts.HEX_EDITOR_HELP_MENU_ITEM_LABEL);
 	helpSubMenu = new Menu(helpMenuItem);
-	helpContentsMenuItem=createMenuItem(helpSubMenu,
-		Texts.HEX_EDITOR_HELP_CONTENTS_MENU_ITEM_LABEL, Actions.HELP_CONTENTS);
+	helpContentsMenuItem = createMenuItem(helpSubMenu,
+		Texts.HEX_EDITOR_HELP_CONTENTS_MENU_ITEM_LABEL,
+		Actions.HELP_CONTENTS);
 	helpContentsMenuItem.setAccelerator(SWT.F1);
 
-	createMenuItem(helpSubMenu,
-		Texts.HEX_EDITOR_WEB_SITE_MENU_ITEM_LABEL,
+	createMenuItem(helpSubMenu, Texts.HEX_EDITOR_WEB_SITE_MENU_ITEM_LABEL,
 		Actions.WEB_SITE);
 	createMenuSeparator(helpSubMenu);
 	createMenuItem(helpSubMenu, Texts.HEX_EDITOR_ABOUT_MENU_ITEM_LABEL,

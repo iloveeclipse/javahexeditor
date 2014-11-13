@@ -174,7 +174,7 @@ final class StatusLine extends Composite {
 	    return;
 	}
 
-	String text = TextUtility.format(Texts.STATUS_LINE_MESSAGE_OFFSET,
+	String text = TextUtility.format(Texts.STATUS_LINE_MESSAGE_POSITION,
 		NumberUtility.getDecimalAndHexString(position));
 
 	positionLabel.setText(text);

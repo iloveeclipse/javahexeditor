@@ -25,9 +25,6 @@ import org.eclipse.osgi.util.NLS;
 public final class Texts extends NLS {
     public static final String EMPTY = "";
 
-    public static String FILE_READ_ERROR_TITLE;
-    public static String FILE_READ_ERROR_MESSAGE;
-
     public static String BUTTON_OK_LABEL;
     public static String BUTTON_RESET_LABEL;
     public static String BUTTON_CANCEL_LABEL;
@@ -41,10 +38,10 @@ public final class Texts extends NLS {
     public static String EDITOR_MESSAGE_SAVING_FILE_PLEASE_WAIT;
     public static String EDITOR_MESSAGE_FILE_SAVED;
 
-    public static String EDITOR_MENU_SAVE_SELECTION_AS_LABEL;
-    public static String EDITOR_MENU_TRIM_LABEL;
-    public static String EDITOR_MENU_SELECT_BLOCK_LABEL;
-    public static String EDITOR_MENU_GOTO_LINE_LABEL;
+    public static String EDITOR_SAVE_SELECTION_AS_MENU_ITEM_LABEL;
+    public static String EDITOR_TRIM_MENU_ITEM_LABEL;
+    public static String EDITOR_SELECT_BLOCK_MENU_ITEM_LABEL;
+    public static String EDITOR_GO_TO_MENU_ITEM_LABEL;
 
     // Find Replace Dialog
     public static String FIND_REPLACE_DIALOG_TITLE;
@@ -68,7 +65,7 @@ public final class Texts extends NLS {
 
     public static String FIND_REPLACE_DIALOG_MESSAGE_FOUND;
     public static String FIND_REPLACE_DIALOG_MESSAGE_NOT_FOUND;
-    public static String FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_FINDING;
+    public static String FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_SEARCHING;
 
     public static String FIND_REPLACE_DIALOG_MESSAGE_ONE_REPLACEMENT;
     public static String FIND_REPLACE_DIALOG_MESSAGE_MANY_REPLACEMENTS;
@@ -92,12 +89,12 @@ public final class Texts extends NLS {
     public static String MANAGER_SAVE_DIALOG_TITLE_FILE_ALREADY_EXISTS;
     public static String MANAGER_SAVE_DIALOG_MESSAGE_FILE_ALREADY_EXISTS;
 
-    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE;
-    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE;
-    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE;
-    public static String MANAGER_SAVE_MESSAGE_COULD_OVERWRITE_FILE;
-    public static String MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN;
-    public static String MANAGER_SAVE_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_WRITE_ON_TEMP_FILE;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_SAVE_FILE;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_READ_FROM_SAVED_FILE;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE_IN_USE;
+    public static String MANAGER_SAVE_MESSAGE_CANNOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
 
     // Preferences Manager
     public static String PREFERENCES_MANAGER_DIALOG_TITLE;
@@ -122,7 +119,7 @@ public final class Texts extends NLS {
 
     // Status Line
     public static String STATUS_LINE_MESSAGE_SELECTION;
-    public static String STATUS_LINE_MESSAGE_OFFSET;
+    public static String STATUS_LINE_MESSAGE_POSITION;
     public static String STATUS_LINE_MESSAGE_VALUE;
 
     public static String STATUS_LINE_MODE_INSERT;

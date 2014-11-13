@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.javahexeditor.BinaryContent.Range;
+import net.sourceforge.javahexeditor.common.Log;
 
 /**
  * Keeps track of actions performed on a BinaryContent so they can be undone and
@@ -317,11 +318,12 @@ final class BinaryContentActionHistory {
 	for (Iterator<Range> j = ranges.iterator(); j.hasNext();) {
 	    Range range = j.next();
 	    if (range.data instanceof RandomAccessFile) {
+		RandomAccessFile randomAccessFile = (RandomAccessFile) range.data;
 		try {
-		    ((RandomAccessFile) range.data).close();
-		} catch (IOException e) {
-		    // TODO log in plugin log
-		    // ok, leave this file alone and close the rest
+		    randomAccessFile.close();
+		} catch (IOException ex) {
+		    Log.logError("Cannot close random access file '{0}'",
+			    new Object[] { range.file.getAbsolutePath() }, ex);
 		}
 	    }
 	}
