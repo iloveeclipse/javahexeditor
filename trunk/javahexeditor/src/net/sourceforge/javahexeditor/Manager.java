@@ -54,9 +54,7 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * @author Jordi
  * 
- *         TODO Maintain German localization files<br/>
- *         TODO <br/>
- *         TODO Correct key binding in Eclipse mode (CTRL-E etc.)<br/>
+ *         TODO MacOS X build & SWT<br/>
  * 
  */
 public final class Manager {
@@ -370,7 +368,8 @@ public final class Manager {
 	}
     }
 
-    public void doOpen(File forceThisFile, boolean createNewFile, String charset) {
+    public void doOpen(File forceThisFile, boolean createNewFile, String charset)
+	    throws IOException {
 	String filePath = "";
 	if (forceThisFile == null && !createNewFile) {
 	    filePath = new FileDialog(shell, SWT.OPEN).open();
@@ -391,8 +390,7 @@ public final class Manager {
 	try {
 	    openFile(forceThisFile, charset);
 	} catch (IOException ex) {
-	    SWTUtility.showErrorMessage(shell, Texts.FILE_READ_ERROR_TITLE,
-		    Texts.FILE_READ_ERROR_MESSAGE, filePath, ex.getMessage());
+	    throw ex;
 	}
 
 	hexTexts.setFocus();
@@ -428,7 +426,7 @@ public final class Manager {
     public void doSaveSelectionAs(File file) throws IOException {
 	if (isFileBeingRead(file)) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE_IN_USE,
 		    file.getAbsolutePath()));
 	}
 
@@ -437,7 +435,7 @@ public final class Manager {
 	    content.get(file, selection.start, selection.getLength());
 	} catch (IOException ex) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_SAVE_FILE,
 		    file.getAbsolutePath(), ex.getMessage()));
 
 	}
@@ -607,7 +605,7 @@ public final class Manager {
 
 	if (isFileBeingRead(file)) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_BE_OVERWRITTEN,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE_IN_USE,
 		    file.getAbsolutePath()));
 	}
 
@@ -618,7 +616,7 @@ public final class Manager {
 	    contentFile = null;
 	} catch (IOException ex) {
 	    throw new IOException(TextUtility.format(
-		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_SAVE_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_SAVE_FILE,
 		    file.getAbsolutePath(), ex.getMessage()));
 	}
 	try {
@@ -626,7 +624,7 @@ public final class Manager {
 	    contentFile = file;
 	} catch (IOException ex) {
 	    TextUtility.format(
-		    Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
+		    Texts.MANAGER_SAVE_MESSAGE_CANNOT_READ_FROM_SAVED_FILE,
 		    file.getAbsolutePath(), ex.getMessage());
 	}
 	hexTexts.setContentProvider(content);
@@ -640,7 +638,7 @@ public final class Manager {
      */
     public void saveFile() throws IOException {
 	boolean successful = false;
-	String errorMessage = Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
+	String errorMessage = Texts.MANAGER_SAVE_MESSAGE_CANNOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
 	File tempFile = null;
 	// It can happen that in two successive "Save File"'s the first one
 	// didn't get the temp file deleted due to limitations in the OS
@@ -659,14 +657,14 @@ public final class Manager {
 	if (tempFile != null) {
 	    successful = false;
 	    try {
-		errorMessage = TextUtility
-			.format(Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_WRITE_ON_TEMP_FILE,
-				tempFile.getAbsolutePath());
+		errorMessage = TextUtility.format(
+			Texts.MANAGER_SAVE_MESSAGE_CANNOT_WRITE_ON_TEMP_FILE,
+			tempFile.getAbsolutePath());
 		content.get(tempFile);
 		content.dispose();
 		content = new BinaryContent();
 		errorMessage = TextUtility.format(
-			Texts.MANAGER_SAVE_MESSAGE_COULD_OVERWRITE_FILE,
+			Texts.MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE,
 			contentFile.getAbsolutePath(),
 			tempFile.getAbsolutePath());
 
@@ -675,7 +673,7 @@ public final class Manager {
 		if (tempFile.renameTo(contentFile)) {
 		    // renaming anyway
 		    errorMessage = TextUtility
-			    .format(Texts.MANAGER_SAVE_MESSAGE_COULD_NOT_READ_FROM_SAVED_FILE,
+			    .format(Texts.MANAGER_SAVE_MESSAGE_CANNOT_READ_FROM_SAVED_FILE,
 				    contentFile.getAbsolutePath());
 		    content = new BinaryContent(contentFile);
 		    successful = true;

@@ -62,6 +62,8 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * Stand-alone wrapper for the Hex Editor.
  * 
+ * TODO: Verify German menu texts and accelerators <br/>
+ * 
  * @author Jordi, Peter Dell
  */
 public final class HexEditor {
@@ -256,7 +258,8 @@ public final class HexEditor {
 		if (!file.exists() || file.isDirectory() || !file.canRead()) {
 		    event.detail = DND.DROP_NONE;
 		    SWTUtility.showErrorMessage(shell, Texts.OPEN_ERROR_TITLE,
-			    Texts.OPEN_ERROR_MESSAGE, file.getAbsolutePath());
+			    Texts.OPEN_ERROR_MESSAGE_CANNOT_OPEN_DROPPED_FILE,
+			    file.getAbsolutePath());
 		} else {
 		    doOpen(file, false, null);
 		}
@@ -390,7 +393,13 @@ public final class HexEditor {
 	if (!doClose()) {
 	    return;
 	}
-	manager.doOpen(file, newFile, charset);
+	try {
+	    manager.doOpen(file, newFile, charset);
+	} catch (IOException ex) {
+	    SWTUtility.showErrorMessage(shell, Texts.OPEN_ERROR_TITLE,
+		    Texts.OPEN_ERROR_MESSAGE, ex.getMessage());
+	}
+
     }
 
     private boolean doSave() {
@@ -417,9 +426,9 @@ public final class HexEditor {
 
 	MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES
 		| SWT.NO | SWT.CANCEL);
-	box.setText("Modified File"); // TODO NLS
-	box.setMessage("The current file has been modified.\nSave changes?"); // TODO
-									      // NLS/Wording
+	box.setText(Texts.SAVE_ON_CLOSE_TITLE);
+	box.setMessage(Texts.SAVE_ON_CLOSE_MESSAGE);
+									     
 	int result = box.open();
 	if (result == SWT.CANCEL) {
 	    return false;

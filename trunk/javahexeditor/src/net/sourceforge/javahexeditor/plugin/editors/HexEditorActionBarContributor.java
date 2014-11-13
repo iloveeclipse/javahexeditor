@@ -62,7 +62,8 @@ public final class HexEditorActionBarContributor extends
 		    .getManager().isTextSelected();
 	    myMenuItem = new MenuItem(parent, SWT.PUSH, index);
 	    if (MenuIds.SAVE_SELECTION_AS.equals(getId())) {
-		myMenuItem.setText(Texts.EDITOR_MENU_SAVE_SELECTION_AS_LABEL);
+		myMenuItem
+			.setText(Texts.EDITOR_SAVE_SELECTION_AS_MENU_ITEM_LABEL);
 		myMenuItem.setEnabled(textSelected);
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
 		    @Override
@@ -71,7 +72,7 @@ public final class HexEditorActionBarContributor extends
 		    }
 		});
 	    } else if (MenuIds.TRIM.equals(getId())) {
-		myMenuItem.setText(Texts.EDITOR_MENU_TRIM_LABEL);
+		myMenuItem.setText(Texts.EDITOR_TRIM_MENU_ITEM_LABEL);
 		myMenuItem.setEnabled(textSelected
 			&& !activeEditor.getManager().isOverwriteMode());
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -84,7 +85,8 @@ public final class HexEditorActionBarContributor extends
 		    }
 		});
 	    } else if (MenuIds.SELECT_BLOCK.equals(getId())) {
-		myMenuItem.setText(Texts.EDITOR_MENU_SELECT_BLOCK_LABEL);
+		myMenuItem.setText(Texts.EDITOR_SELECT_BLOCK_MENU_ITEM_LABEL);
+		// TODO This only works after the "Edit" menu was shown once
 		myMenuItem.setAccelerator(SWT.CONTROL | 'E');
 		myMenuItem.setEnabled(true);
 		myMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -200,8 +202,10 @@ public final class HexEditorActionBarContributor extends
 	    // declared in org.eclipse.ui.workbench.text plugin.xml
 	    goToAction
 		    .setActionDefinitionId(ITextEditorActionDefinitionIds.LINE_GOTO);
-	    goToAction.setText(Texts.EDITOR_MENU_GOTO_LINE_LABEL);
-	    goToAction.setAccelerator(SWT.CTRL + 'L');
+	    goToAction.setText(Texts.EDITOR_GO_TO_MENU_ITEM_LABEL);
+	    // TODO This only works after the "Navigate" menu was shown once
+	    // Eclipse standard even has the correct accelerator.
+//	    goToAction.setAccelerator(SWT.CTRL + 'L');
 	    menu.appendToGroup(MenuIds.ADDITIONS, goToAction);
 	}
     }

@@ -621,7 +621,7 @@ final class FindReplaceDialog extends Dialog {
 			    findLiteral);
 		} else {
 		    message = TextUtility
-			    .format(Texts.FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_FINDING,
+			    .format(Texts.FIND_REPLACE_DIALOG_MESSAGE_ERROR_WHILE_SEARCHING,
 				    findLiteral, match.getException()
 					    .getLocalizedMessage());
 		}

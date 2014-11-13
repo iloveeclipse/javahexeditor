@@ -105,7 +105,7 @@ class HexEditorPreferences {
 	    stream.close();
 	} catch (IOException ex) {
 	    SWTUtility.showErrorMessage(hexEditor.shell,
-		    Texts.PREFERENCES_COULD_NOT_WRITE_FILE_ERROR_MESSAGE,
+		    Texts.PREFERENCES_MESSAGE_CANNOT_NOT_WRITE_FILE,
 		    propertiesFile.getAbsolutePath(), ex.getMessage());
 
 	}
