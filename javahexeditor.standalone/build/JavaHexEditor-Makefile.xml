@@ -19,83 +19,31 @@
 		</copy>
 
 		<mkdir dir="../out" />
-		<mkdir dir="../out/linux-x86" />
-		<mkdir dir="../out/linux-x86_64" />
-		<mkdir dir="../out/win32-x86" />
-		<mkdir dir="../out/win32-x86_64" />
 
-		<echo message="Linux x86 (32-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
-		<delete file="../out/linux-x86/JavaHexEditor.jar" />
-		<jar destfile="../out/linux-x86/JavaHexEditor.jar">
-			<manifest>
-				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
-				<attribute name="Class-Path" value="." />
-				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
-				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
-			</manifest>
-			<zipfileset src="../lib/jar-in-jar-loader.zip" />
-			<fileset dir="../../net.sourceforge.javahexeditor/bin">
-				<exclude name="net/sourceforge/javahexeditor/test/**" />
-			</fileset>
-			<fileset dir="../bin" />
-			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
-			<zipfileset dir="../lib/linux-x86" includes="swt.jar" />
-		</jar>
-
-		<echo message="Linux x86 (64-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
-		<delete file="../out/linux-x86_64/JavaHexEditor.jar" />
-		<jar destfile="../out/linux-x86_64/JavaHexEditor.jar">
-			<manifest>
-				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
-				<attribute name="Class-Path" value="." />
-				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
-				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
-			</manifest>
-			<zipfileset src="../lib/jar-in-jar-loader.zip" />
-			<fileset dir="../../net.sourceforge.javahexeditor/bin">
-				<exclude name="net/sourceforge/javahexeditor/test/**" />
-			</fileset>
-			<fileset dir="../bin" />
-			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
-			<zipfileset dir="../lib/linux-x86_64" includes="swt.jar" />
-		</jar>
-
-		<echo message="Windows x86 (32-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
-		<delete file="../out/win32-x86/JavaHexEditor.jar" />
-		<jar destfile="../out/win32-x86/JavaHexEditor.jar">
-			<manifest>
-				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
-				<attribute name="Class-Path" value="." />
-				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
-				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
-			</manifest>
-			<zipfileset src="../lib/jar-in-jar-loader.zip" />
-			<fileset dir="../../net.sourceforge.javahexeditor/bin">
-				<exclude name="net/sourceforge/javahexeditor/test/**" />
-			</fileset>
-			<fileset dir="../bin" />
-			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
-			<zipfileset dir="../lib/win32-x86" includes="swt.jar" />
-		</jar>
-
-		<echo message="Windows x86 (64-bit)" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os"/>
-		<delete file="../out/win32-x86_64/JavaHexEditor.jar" />
-		<jar destfile="../out/win32-x86_64/JavaHexEditor.jar">
-			<manifest>
-				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
-				<attribute name="Class-Path" value="." />
-				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
-				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
-			</manifest>
-			<zipfileset src="../lib/jar-in-jar-loader.zip" />
-			<fileset dir="../../net.sourceforge.javahexeditor/bin">
-				<exclude name="net/sourceforge/javahexeditor/test/**" />
-			</fileset>
-			<fileset dir="../bin" />
-			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
-			<zipfileset dir="../lib/win32-x86_64" includes="swt.jar" />
-		</jar>
-
+		<antcall target="create_platform_jar">
+			<param name="platform" value="linux-x86" />
+			<param name="platform_text" value="Linux - x86 (32-bit)" />
+		</antcall>
+		<antcall target="create_platform_jar">
+			<param name="platform" value="linux-x86_64" />
+			<param name="platform_text" value="Linux - x86 (64-bit)" />
+		</antcall>
+		<antcall target="create_platform_jar">
+			<param name="platform" value="macosx-x86" />
+			<param name="platform_text" value="Mac OS X - x86 (32-bit)" />
+		</antcall>
+		<antcall target="create_platform_jar">
+			<param name="platform" value="macosx-x86_64" />
+			<param name="platform_text" value="Mac OS X - x86 (64-bit)" />
+		</antcall>
+		<antcall target="create_platform_jar">
+			<param name="platform" value="win32-x86" />
+			<param name="platform_text" value="Windows - x86 (32-bit)" />
+		</antcall>
+		<antcall target="create_platform_jar">
+			<param name="platform" value="win32-x86_64" />
+			<param name="platform_text" value="Windows - x86 (64-bit)" />
+		</antcall>
 
 		<!-- Create exe wrappers/scripts -->
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86/JavaHexEditor.sh" />
@@ -112,18 +60,51 @@
 		<delete file="../out/win32-x86_64/JavaHexEditor.jar" />
 
 		<!-- Create zip files for upload -->
-		<delete file="../out/linux-x86/javahexeditor-linux-x86.zip" />
-		<zip destfile="../out/javahexeditor-linux-x86.zip" basedir="../out/linux-x86" />
-		<delete file="../out/linux-x86_64/javahexeditor-linux-x86_64.zip" />
-		<zip destfile="../out/javahexeditor-linux-x86_64.zip" basedir="../out/linux-x86_64" />
-		<delete file="../out/win32-x86/javahexeditor-win32-x86.zip" />
-		<zip destfile="../out/javahexeditor-win32-x86.zip" basedir="../out/win32-x86" />
-		<delete file="../out/win32-x86_64/javahexeditor-win32-x86_64.zip" />
-		<zip destfile="../out/javahexeditor-win32-x86_64.zip" basedir="../out/win32-x86_64" />
+		<antcall target="create_platform_zip">
+			<param name="platform" value="linux-x86" />
+		</antcall>
+		<antcall target="create_platform_zip">
+			<param name="platform" value="linux-x86_64" />
+		</antcall>
+		<antcall target="create_platform_zip">
+			<param name="platform" value="macosx-x86" />
+		</antcall>
+		<antcall target="create_platform_zip">
+			<param name="platform" value="macosx-x86_64" />
+		</antcall>
+		<antcall target="create_platform_zip">
+			<param name="platform" value="win32-x86" />
+		</antcall>
+		<antcall target="create_platform_zip">
+			<param name="platform" value="win32-x86_64" />
+		</antcall>
+	</target>
 
-		<delete dir="../out/linux-x86" />
-		<delete dir="../out/linux-x86_64" />
-		<delete dir="../out/win32-x86" />
-		<delete dir="../out/win32-x86_64" />
+	<target name="create_platform_jar">
+		<echo message="Creating '${platform_text}' as ${platform}."/>
+		<echo message="${platform_text}" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os" />
+		<mkdir dir="../out/${platform}" />
+		<delete file="../out/${platform}/JavaHexEditor.jar" />
+		<jar destfile="../out/${platform}/JavaHexEditor.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="net.sourceforge.javahexeditor.standalone.HexEditor" />
+				<attribute name="Rsrc-Class-Path" value="./ org.eclipse.osgi.jar swt.jar" />
+			</manifest>
+			<zipfileset src="../lib/jar-in-jar-loader.zip" />
+			<fileset dir="../../net.sourceforge.javahexeditor/bin">
+				<exclude name="net/sourceforge/javahexeditor/test/**" />
+			</fileset>
+			<fileset dir="../bin" />
+			<zipfileset dir="../lib" includes="org.eclipse.osgi.jar" />
+			<zipfileset dir="../lib/${platform}" includes="swt.jar" />
+		</jar>
+	</target>
+
+	<target name="create_platform_zip">
+		<delete file="../out/${platform}/javahexeditor-${platform}.zip" />
+		<zip destfile="../out/javahexeditor-${platform}.zip" basedir="../out/${platform}" />
+		<delete dir="../out/${platform}" />
 	</target>
 </project>
