@@ -9,10 +9,12 @@
 			<arg value="+%Y-%m-%d %H:%M:%S" />
 			<redirector output="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.version" />
 		</exec>
+		<loadfile property="version" srcfile="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.version" />
 
 		<!-- Copy built-in documentation to web site folder for upload -->
 		<!-- The destination folders are excluded from source code versioning -->
 		<copy file="../../net.sourceforge.javahexeditor/src/help/index.html" todir="../../net.sourceforge.javahexeditor.site" overwrite="true" />
+		<replace file="../../net.sourceforge.javahexeditor.site/index.html" token="&lt;p id=&quot;version&quot;&gt;" value="&lt;p&gt;This is version ${version} of the program. " />
 		<mkdir dir="../../net.sourceforge.javahexeditor.site/images" />
 		<copy todir="../../net.sourceforge.javahexeditor.site/images" overwrite="true">
 			<fileset dir="../../net.sourceforge.javahexeditor/src/images" />
@@ -48,6 +50,8 @@
 		<!-- Create exe wrappers/scripts -->
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86/JavaHexEditor.sh" />
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86_64/JavaHexEditor.sh" />
+		<copy file="../build/JavaHexEditor.sh" tofile="../out/macosx-x86/JavaHexEditor.sh" />
+		<copy file="../build/JavaHexEditor.sh" tofile="../out/macosx-x86_64/JavaHexEditor.sh" />
 		<exec executable="C:\Program Files (x86)\Launch4j\launch4jc.exe">
 			<arg value="./JavaHexEditor-win32-x86.launch4j.xml" />
 		</exec>
@@ -81,7 +85,7 @@
 	</target>
 
 	<target name="create_platform_jar">
-		<echo message="Creating '${platform_text}' as ${platform}."/>
+		<echo message="Creating '${platform_text}' as ${platform}." />
 		<echo message="${platform_text}" file="..\..\net.sourceforge.javahexeditor\bin\net\sourceforge\javahexeditor\Manager.os" />
 		<mkdir dir="../out/${platform}" />
 		<delete file="../out/${platform}/JavaHexEditor.jar" />
