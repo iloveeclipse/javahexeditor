@@ -68,7 +68,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public final class HexEditor {
 
-    private static final String ICON_PATH = "images/javahexeditor-16x16.png";
+    private static final String ICON_PATH = "images/javahexeditor-48x48.png";
 
     Shell shell;
     HexEditorMenu menu;
