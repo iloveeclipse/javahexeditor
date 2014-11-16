@@ -48,10 +48,20 @@
 		</antcall>
 
 		<!-- Create exe wrappers/scripts -->
+
+		<!-- Copy Linux shell script -->
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86/JavaHexEditor.sh" />
 		<copy file="../build/JavaHexEditor.sh" tofile="../out/linux-x86_64/JavaHexEditor.sh" />
-		<copy file="../build/JavaHexEditor.sh" tofile="../out/macosx-x86/JavaHexEditor.sh" />
-		<copy file="../build/JavaHexEditor.sh" tofile="../out/macosx-x86_64/JavaHexEditor.sh" />
+
+		<!-- Create Mac OS X app folder -->
+		<antcall target="create_macosx_app">
+			<param name="platform" value="macosx-x86" />
+		</antcall>
+		<antcall target="create_macosx_app">
+			<param name="platform" value="macosx-x86_64" />
+		</antcall>
+		
+		<!-- Create Windows executable -->
 		<exec executable="C:\Program Files (x86)\Launch4j\launch4jc.exe">
 			<arg value="./JavaHexEditor-win32-x86.launch4j.xml" />
 		</exec>
@@ -60,6 +70,8 @@
 		</exec>
 
 		<!-- Remove jars that have been wrapped before zipping -->
+		<delete file="../out/macosx-x86/JavaHexEditor.jar" />
+		<delete file="../out/macosx-x86_64/JavaHexEditor.jar" />
 		<delete file="../out/win32-x86/JavaHexEditor.jar" />
 		<delete file="../out/win32-x86_64/JavaHexEditor.jar" />
 
@@ -106,9 +118,18 @@
 		</jar>
 	</target>
 
+	<target name="create_macosx_app">
+		<mkdir dir="../out/${platform}/javahexeditor.app" />
+		<!-- The ".icns" file was created using http://iconverticons.com/online -->
+		<jarbundler dir="../out/${platform}/" name="javahexeditor" copyright="copyright" mainclass="net.sourceforge.javahexeditor.standalone.HexEditor" jar="../out/${platform}/JavaHexEditor.jar" jvmversion="1.6+" vmoptions="-Xms256M" shortname="Java Hex Editor" build="$${version}" icon="../../net.sourceforge.javahexeditor/src/images/javahexeditor-48x48.icns" />
+		<copy todir="../out/${platform}/javahexeditor.app/Contents/MacOS" overwrite="true">
+			<fileset file="./JavaApplicationStub" />
+		</copy>
+	</target>
 	<target name="create_platform_zip">
 		<delete file="../out/${platform}/javahexeditor-${platform}.zip" />
 		<zip destfile="../out/javahexeditor-${platform}.zip" basedir="../out/${platform}" />
 		<delete dir="../out/${platform}" />
 	</target>
+
 </project>
