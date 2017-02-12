@@ -87,7 +87,7 @@ public final class FileOpenAction implements IObjectActionDelegate {
             files = new File[selectedObjects.length];
             for (int i = 0; i < selectedObjects.length; i++) {
                 File file = getResource(selectedObjects[i]);
-                if (files != null && file.isFile()) {
+                if (file != null && file.isFile()) {
                     files[i] = file;
                     enabled = true;
                 }
