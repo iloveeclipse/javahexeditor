@@ -23,6 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -70,6 +74,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
@@ -171,6 +176,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         IEditorInput unresolved = getEditorInput();
         File systemFile = null;
         IFile localFile = null;
+        String inputName = null;
         if (unresolved instanceof FileEditorInput) {
             localFile = ((FileEditorInput) unresolved).getFile();
         } else if (unresolved instanceof IPathEditorInput) { // eg.
@@ -194,26 +200,49 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
                     systemFile = new File(uri);
                 }
             }
+        } else if(unresolved instanceof IStorageEditorInput) {
+            // TODO this is just a hack to get the editor opened on history entries
+            // Ideally we would open not files but streams.
+            IStorageEditorInput input = (IStorageEditorInput) unresolved;
+            try {
+                Path tmpDir = Files.createTempDirectory(null);
+                Path tmpFile = tmpDir.resolve(input.getStorage().getName());
+                systemFile = tmpFile.toFile();
+                systemFile.createNewFile();
+                systemFile.deleteOnExit();
+                Files.copy(input.getStorage().getContents(), systemFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                if (input.getClass().getName().contains("FileRevisionEditorInput")) {
+                    inputName = tmpFile.getFileName() + " (from history)";
+                } else {
+                    inputName = null;
+                }
+            } catch (Exception e) {
+                HexEditorPlugin.logError("Error on opening: " + localFile, e);
+            }
         }
         // charset
         if (localFile != null) {
             systemFile = localFile.getLocation().toFile();
             try {
                 charset = localFile.getCharset(true);
-            } catch (CoreException e1) {
-                e1.printStackTrace();
+            } catch (CoreException e) {
+                HexEditorPlugin.logError("Error on opening: " + localFile, e);
             }
-        }
-        // open file
-        try {
-            manager.openFile(systemFile, charset);
-        } catch (IOException ex) {
-            statusLineManager.setErrorMessage(ex.getMessage());
-            systemFile = null;
         }
 
         if (systemFile != null) {
-            setPartName(systemFile.getName());
+            try {
+                // open file
+                manager.openFile(systemFile, charset);
+            } catch (Exception ex) {
+                HexEditorPlugin.logError("Error on opening: " + localFile, ex);
+                statusLineManager.setErrorMessage(ex.getMessage());
+                systemFile = null;
+            }
+            if(inputName == null) {
+                inputName = systemFile.getName();
+            }
+            setPartName(inputName);
         } else {
             setPartName(Texts.EMPTY);
         }
@@ -293,8 +322,12 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
     public void dispose() {
         IPreferenceStore store = HexEditorPlugin.getDefault()
                 .getPreferenceStore();
-        store.removePropertyChangeListener(preferencesChangeListener);
-        hexTexts.dispose();
+        if(preferencesChangeListener != null) {
+            store.removePropertyChangeListener(preferencesChangeListener);
+        }
+        if(hexTexts != null) {
+            hexTexts.dispose();
+        }
     }
 
     @Override
@@ -302,7 +335,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         monitor.beginTask(Texts.EDITOR_MESSAGE_SAVING_FILE_PLEASE_WAIT,
                 IProgressMonitor.UNKNOWN);
         try {
-            getManager().saveFile();
+            getManager().saveFile(monitor);
         } catch (IOException ex) {
             statusLineManager.setErrorMessage(ex.getMessage());
         }
@@ -401,9 +434,9 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         setSite(site);
         if (!(input instanceof IPathEditorInput)
                 && !(input instanceof ILocationProvider)
-                && (!(input instanceof IURIEditorInput))) {
-            throw new PartInitException("Input '" + input.toString()
-            + "'is not a file");
+                && (!(input instanceof IURIEditorInput))
+                && (!(input instanceof IStorageEditorInput))) {
+            throw new PartInitException("Input '" + input.toString() + "'is not a file");
         }
         setInput(input);
         // When opening an external file the workbench (Eclipse 3.1) calls
@@ -464,7 +497,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
             if (selection) {
                 manager.doSaveSelectionAs(file);
             } else {
-                manager.saveAsFile(file);
+                manager.saveAsFile(file, monitor);
             }
         } catch (IOException ex) {
             monitor.done();

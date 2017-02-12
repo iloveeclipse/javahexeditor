@@ -33,6 +33,7 @@ import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
 import net.sourceforge.javahexeditor.BinaryContentFinder.Match;
 import net.sourceforge.javahexeditor.common.SWTUtility;
 import net.sourceforge.javahexeditor.common.TextUtility;
+import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -1299,10 +1300,13 @@ public final class HexTexts extends Composite {
     }
 
     public byte getValue(long pos) {
+        if(myContent == null) {
+            return -1;
+        }
         try {
             myContent.get(ByteBuffer.wrap(tmpRawBuffer, 0, 1), null, pos);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            HexEditorPlugin.logError("Unexpected IO error at position " + pos, e);
         }
         return tmpRawBuffer[0];
     }

@@ -19,17 +19,18 @@
  */
 package net.sourceforge.javahexeditor;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
-import net.sourceforge.javahexeditor.common.ResourceUtility;
-import net.sourceforge.javahexeditor.common.SWTUtility;
-import net.sourceforge.javahexeditor.common.TextUtility;
-import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
-
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
@@ -46,6 +47,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+
+import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
+import net.sourceforge.javahexeditor.common.ResourceUtility;
+import net.sourceforge.javahexeditor.common.SWTUtility;
+import net.sourceforge.javahexeditor.common.TextUtility;
+import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
 
 /**
  * Manager of the javahexeditor application, either in its stand-alone or
@@ -591,17 +598,18 @@ public final class Manager {
      *
      * @param file
      *            The new file, not <code>null</code>.
+     * @param monitor
      *
      * @throws IOException
      *             If the operation fails
      */
-    public void saveAsFile(File file) throws IOException {
+    public void saveAsFile(File file, IProgressMonitor monitor) throws IOException {
         if (file == null) {
             throw new IllegalArgumentException(
                     "Parameter 'file' must not be null.");
         }
         if (file.equals(contentFile)) {
-            saveFile();
+            saveFile(monitor);
             return;
         }
 
@@ -624,6 +632,7 @@ public final class Manager {
         try {
             content = new BinaryContent(file);
             contentFile = file;
+            touchFile(monitor);
         } catch (IOException ex) {
             TextUtility.format(
                     Texts.MANAGER_SAVE_MESSAGE_CANNOT_READ_FROM_SAVED_FILE,
@@ -634,21 +643,39 @@ public final class Manager {
 
     /**
      * Perform save action on opened file
+     * @param monitor
      *
      * @throws IOException
      *             If the operation fails
      */
-    public void saveFile() throws IOException {
+    public void saveFile(IProgressMonitor monitor) throws IOException {
         try {
             content.get(contentFile);
             content.dispose();
             content = new BinaryContent(contentFile);
+            touchFile(monitor);
         } catch (IOException e) {
             // error handling below
             HexEditorPlugin.logError("Error during save...", e);
             content = new BinaryContent();
         }
         hexTexts.setContentProvider(content);
+    }
+
+    IFile getResource() {
+        return ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(
+                new Path(contentFile.getAbsolutePath()));
+    }
+
+    void touchFile(IProgressMonitor monitor){
+        IFile file = getResource();
+        if(file.exists()) {
+            try {
+                file.appendContents(new ByteArrayInputStream(new byte[0]), true, true, monitor);
+            } catch (CoreException e) {
+                HexEditorPlugin.logError("Failed to touch: " + contentFile, e);
+            }
+        }
     }
 
     /**
