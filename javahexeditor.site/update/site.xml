@@ -3,7 +3,7 @@
    <description name="Java Hex Editor" url="http://javahexeditor.sourceforge.net/update">
       Update site of the Java Hex Editor
    </description>
-   <feature url="features/net.sourceforge.javahexeditor_0.5.0.qualifier.jar" id="net.sourceforge.javahexeditor" version="0.5.0.qualifier">
+   <feature url="features/net.sourceforge.javahexeditor_0.5.0.201702122109.jar" id="net.sourceforge.javahexeditor" version="0.5.0.201702122109">
       <category name="Java Hex Editor"/>
    </feature>
    <category-def name="Java Hex Editor" label="Java Hex Editor"/>
