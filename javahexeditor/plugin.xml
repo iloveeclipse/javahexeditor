@@ -36,24 +36,6 @@
             primary="true"/>
    </extension>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="false"
-            id="javahexeditor.objectContribution"
-            objectClass="org.eclipse.core.runtime.IAdaptable">
-         <action
-               class="net.sourceforge.javahexeditor.plugin.actions.FileOpenAction"
-               enablesFor="+"
-               icon="src/images/javahexeditor-16x16.png"
-               id="javahexeditor.fileopen.menu"
-               label="%action.label"
-               menubarPath="additions"
-               style="push"
-               tooltip="%action.tooltip">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
             file-extensions="bin"
