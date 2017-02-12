@@ -2,17 +2,17 @@
  * javahexeditor, a java hex editor
  * Copyright (C) 2006, 2009 Jordi Bergenthal, pestatije(-at_)users.sourceforge.net
  * The official javahexeditor site is sourceforge.net/projects/javahexeditor
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -40,16 +40,16 @@ public final class HexEditorPlugin extends AbstractUIPlugin {
      * The constructor.
      */
     public HexEditorPlugin() {
-	findReplaceHistory = new FindReplaceHistory();
+        findReplaceHistory = new FindReplaceHistory();
     }
 
     /**
      * Returns the shared instance.
-     * 
+     *
      * @return The shared instance, not <code>null</code>.
      */
     public static HexEditorPlugin getDefault() {
-	return plugin;
+        return plugin;
     }
 
     /**
@@ -57,8 +57,8 @@ public final class HexEditorPlugin extends AbstractUIPlugin {
      */
     @Override
     public void start(BundleContext context) throws Exception {
-	super.start(context);
-	plugin = this;
+        super.start(context);
+        plugin = this;
     }
 
     /**
@@ -66,16 +66,16 @@ public final class HexEditorPlugin extends AbstractUIPlugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-	super.stop(context);
-	plugin = null;
+        super.stop(context);
+        plugin = null;
     }
 
     /**
      * Gets the find-replace history.
-     * 
+     *
      * @return The modifiable find-replace history, not <code>null</code>.
      */
     public FindReplaceHistory getFindReplaceHistory() {
-	return findReplaceHistory;
+        return findReplaceHistory;
     }
 }

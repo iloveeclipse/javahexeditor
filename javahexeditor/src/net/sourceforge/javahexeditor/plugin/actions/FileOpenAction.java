@@ -30,7 +30,7 @@ public final class FileOpenAction implements IObjectActionDelegate {
      * Creation is public.
      */
     public FileOpenAction() {
-	super();
+        super();
     }
 
     @Override
@@ -40,85 +40,85 @@ public final class FileOpenAction implements IObjectActionDelegate {
     @Override
     public void run(IAction action) {
 
-	if (!isEnabled()) {
-	    throw new IllegalStateException("Action is not enabled");
-	}
+        if (!isEnabled()) {
+            throw new IllegalStateException("Action is not enabled");
+        }
 
-	for (int i = 0; i < files.length; i++) {
+        for (int i = 0; i < files.length; i++) {
 
-	    if (files[i] == null) {
-		continue;
-	    }
+            if (files[i] == null) {
+                continue;
+            }
 
-	    IFile file = ResourcesPlugin.getWorkspace().getRoot()
-		    .getFileForLocation(new Path(files[i].getPath()));
+            IFile file = ResourcesPlugin.getWorkspace().getRoot()
+                    .getFileForLocation(new Path(files[i].getPath()));
 
-	    if (file == null) {
-		continue;
-	    }
-	    IEditorInput editorInput = new FileEditorInput(file);
+            if (file == null) {
+                continue;
+            }
+            IEditorInput editorInput = new FileEditorInput(file);
 
-	    IWorkbenchWindow window = PlatformUI.getWorkbench()
-		    .getActiveWorkbenchWindow();
-	    IWorkbenchPage page = window.getActivePage();
-	    try {
-		page.openEditor(editorInput, HexEditor.ID, true,
-			org.eclipse.ui.IWorkbenchPage.MATCH_INPUT
-				| org.eclipse.ui.IWorkbenchPage.MATCH_ID);
+            IWorkbenchWindow window = PlatformUI.getWorkbench()
+                    .getActiveWorkbenchWindow();
+            IWorkbenchPage page = window.getActivePage();
+            try {
+                page.openEditor(editorInput, HexEditor.ID, true,
+                        org.eclipse.ui.IWorkbenchPage.MATCH_INPUT
+                        | org.eclipse.ui.IWorkbenchPage.MATCH_ID);
 
-	    } catch (PartInitException ex) {
-		throw new RuntimeException(ex);
-	    }
+            } catch (PartInitException ex) {
+                throw new RuntimeException(ex);
+            }
 
-	}
+        }
     }
 
     @Override
     public void selectionChanged(IAction action, ISelection selection) {
-	currentSelection = selection instanceof IStructuredSelection ? (IStructuredSelection) selection
-		: null;
-	action.setEnabled(isEnabled());
+        currentSelection = selection instanceof IStructuredSelection ? (IStructuredSelection) selection
+                : null;
+        action.setEnabled(isEnabled());
     }
 
     private boolean isEnabled() {
-	boolean enabled = false;
-	if (currentSelection != null) {
-	    Object[] selectedObjects = currentSelection.toArray();
-	    files = new File[selectedObjects.length];
-	    for (int i = 0; i < selectedObjects.length; i++) {
-		File file = getResource(selectedObjects[i]);
-		if (files != null && file.isFile()) {
-		    files[i] = file;
-		    enabled = true;
-		}
-	    }
-	} else {
-	    files = null;
-	}
-	return enabled;
+        boolean enabled = false;
+        if (currentSelection != null) {
+            Object[] selectedObjects = currentSelection.toArray();
+            files = new File[selectedObjects.length];
+            for (int i = 0; i < selectedObjects.length; i++) {
+                File file = getResource(selectedObjects[i]);
+                if (files != null && file.isFile()) {
+                    files[i] = file;
+                    enabled = true;
+                }
+            }
+        } else {
+            files = null;
+        }
+        return enabled;
     }
 
     private File getResource(Object object) {
-	if (object instanceof IResource) {
-	    return ((IResource) object).getLocation().toFile();
-	}
-	if (object instanceof File) {
-	    return (File) object;
-	}
-	if (object instanceof IAdaptable) {
-	    IAdaptable adaptable = (IAdaptable) object;
+        if (object instanceof IResource) {
+            return ((IResource) object).getLocation().toFile();
+        }
+        if (object instanceof File) {
+            return (File) object;
+        }
+        if (object instanceof IAdaptable) {
+            IAdaptable adaptable = (IAdaptable) object;
 
-	    IResource resource = (IResource) adaptable
-		    .getAdapter(IResource.class);
-	    if (resource != null) {
-		return resource.getLocation().toFile();
-	    }
-	    File file = (File) adaptable.getAdapter(File.class);
-	    if (file != null) {
-		return file;
-	    }
-	}
-	return null;
+            IResource resource = (IResource) adaptable
+                    .getAdapter(IResource.class);
+            if (resource != null) {
+                return resource.getLocation().toFile();
+            }
+            File file = (File) adaptable.getAdapter(File.class);
+            if (file != null) {
+                return file;
+            }
+        }
+        return null;
     }
 
 }
