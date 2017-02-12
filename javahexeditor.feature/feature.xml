@@ -2,8 +2,8 @@
 <feature
       id="net.sourceforge.javahexeditor"
       label="Java Hex Editor"
-      version="0.4.9"
-      provider-name="pestatije, anb0s, peterdell"
+      version="0.5.0"
+      provider-name="Andrey Loskutov"
       plugin="net.sourceforge.javahexeditor">
 
    <description url="http://javahexeditor.sourceforge.net">
