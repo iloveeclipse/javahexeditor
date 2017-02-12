@@ -28,6 +28,7 @@ import java.util.Set;
 
 import net.sourceforge.javahexeditor.BinaryContent;
 import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
+import net.sourceforge.javahexeditor.HexTexts;
 import net.sourceforge.javahexeditor.Manager;
 import net.sourceforge.javahexeditor.Preferences;
 import net.sourceforge.javahexeditor.Texts;
@@ -134,6 +135,8 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
 
     private IStatusLineManager statusLineManager;
 
+    private HexTexts hexTexts;
+
     public HexEditor() {
         super();
         manager = new Manager();
@@ -160,7 +163,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         HexEditorPlugin plugin = HexEditorPlugin.getDefault();
         getManager().setTextFont(HexEditorPreferences.getFontData());
         manager.setFindReplaceHistory(plugin.getFindReplaceHistory());
-        manager.createEditorPart(parent);
+        hexTexts = manager.createEditorPart(parent);
         FillLayout fillLayout = new FillLayout();
         parent.setLayout(fillLayout);
 
@@ -291,6 +294,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         IPreferenceStore store = HexEditorPlugin.getDefault()
                 .getPreferenceStore();
         store.removePropertyChangeListener(preferencesChangeListener);
+        hexTexts.dispose();
     }
 
     @Override
@@ -481,6 +485,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
     public void setFocus() {
         // useless. It is called before ActionBarContributor.setActiveEditor()
         // so focusing is done there
+        hexTexts.setFocus();
     }
 
     @Override

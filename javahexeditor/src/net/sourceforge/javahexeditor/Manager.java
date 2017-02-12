@@ -28,6 +28,7 @@ import net.sourceforge.javahexeditor.BinaryContent.RangeSelection;
 import net.sourceforge.javahexeditor.common.ResourceUtility;
 import net.sourceforge.javahexeditor.common.SWTUtility;
 import net.sourceforge.javahexeditor.common.TextUtility;
+import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -119,7 +120,7 @@ public final class Manager {
      *            Composite where the part will be created, not
      *            <code>null</code>.
      */
-    public void createEditorPart(Composite parent) {
+    public HexTexts createEditorPart(Composite parent) {
         if (parent == null) {
             throw new IllegalArgumentException(
                     "Parameter 'parent' must not be null.");
@@ -174,6 +175,7 @@ public final class Manager {
             }
             listOfLongListeners = null;
         }
+        return hexTexts;
     }
 
     /**
@@ -637,56 +639,16 @@ public final class Manager {
      *             If the operation fails
      */
     public void saveFile() throws IOException {
-        boolean successful = false;
-        String errorMessage = Texts.MANAGER_SAVE_MESSAGE_CANNOT_CREATE_TEMP_FILE_WITH_UNIQUE_NAME;
-        File tempFile = null;
-        // It can happen that in two successive "Save File"'s the first one
-        // didn't get the temp file deleted due to limitations in the OS
-        // (Windows). With this loop it's possible to save many times
-        for (int tries = 9999; tries >= 0 && !successful; --tries) {
-            try {
-                // + "-9" is to avoid IllegalArgumentException, because the
-                // prefix must be at least 3 characters long.
-                tempFile = File.createTempFile(contentFile.getName() + "-9"
-                        + tries, ".tmp", contentFile.getParentFile());
-                successful = true;
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+        try {
+            content.get(contentFile);
+            content.dispose();
+            content = new BinaryContent(contentFile);
+        } catch (IOException e) {
+            // error handling below
+            HexEditorPlugin.logError("Error during save...", e);
+            content = new BinaryContent();
         }
-        if (tempFile != null) {
-            successful = false;
-            try {
-                errorMessage = TextUtility.format(
-                        Texts.MANAGER_SAVE_MESSAGE_CANNOT_WRITE_ON_TEMP_FILE,
-                        tempFile.getAbsolutePath());
-                content.get(tempFile);
-                content.dispose();
-                content = new BinaryContent();
-                errorMessage = TextUtility.format(
-                        Texts.MANAGER_SAVE_MESSAGE_CANNOT_OVERWRITE_FILE,
-                        contentFile.getAbsolutePath(),
-                        tempFile.getAbsolutePath());
-
-                BinaryContentClipboard.deleteFileALaMs(contentFile);
-                // Successful delete or not try
-                if (tempFile.renameTo(contentFile)) {
-                    // renaming anyway
-                    errorMessage = TextUtility
-                            .format(Texts.MANAGER_SAVE_MESSAGE_CANNOT_READ_FROM_SAVED_FILE,
-                                    contentFile.getAbsolutePath());
-                    content = new BinaryContent(contentFile);
-                    successful = true;
-                }
-            } catch (IOException e) {
-                // error handling below
-            }
-            hexTexts.setContentProvider(content);
-        }
-        if (!successful) {
-            throw new IOException(errorMessage);
-        }
-
+        hexTexts.setContentProvider(content);
     }
 
     /**
