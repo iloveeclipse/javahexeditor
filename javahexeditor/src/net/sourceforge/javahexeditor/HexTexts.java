@@ -682,9 +682,9 @@ public final class HexTexts extends Composite {
         styledText.setEditable(false);
         styledText.setEnabled(false);
         styledText.setBackground(colorLightShadow);
-        styledText.setForeground(Display.getCurrent().getSystemColor(
-                SWT.COLOR_BLACK));
-        fontDefault = new Font(Display.getCurrent(), fontDataDefault);
+        Display display = Display.getCurrent();
+        styledText.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+        fontDefault = new Font(display, fontDataDefault);
         fontCurrent = fontDefault;
         styledText.setFont(fontCurrent);
         GC styledTextGC = new GC(styledText);
@@ -706,8 +706,7 @@ public final class HexTexts extends Composite {
         column1Layout.horizontalSpacing = 0;
         column1Layout.marginWidth = 0;
         column1.setLayout(column1Layout);
-        column1.setBackground(Display.getCurrent().getSystemColor(
-                SWT.COLOR_WIDGET_NORMAL_SHADOW));
+        column1.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
         GridData gridDataColumn1 = new GridData(SWT.BEGINNING, SWT.FILL, false,
                 true);
         column1.setLayoutData(gridDataColumn1);
@@ -728,8 +727,7 @@ public final class HexTexts extends Composite {
         header1Text.setEditable(false);
         header1Text.setEnabled(false);
         header1Text.setBackground(colorLightShadow);
-        header1Text.setForeground(Display.getCurrent().getSystemColor(
-                SWT.COLOR_WHITE));
+        header1Text.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
         header1Text.setLayoutData(gridData);
         header1Text.setFont(fontCurrent);
         refreshHeader();
