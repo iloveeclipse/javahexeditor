@@ -21,6 +21,8 @@ package net.sourceforge.javahexeditor.plugin;
 
 import net.sourceforge.javahexeditor.FindReplaceHistory;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -77,5 +79,15 @@ public final class HexEditorPlugin extends AbstractUIPlugin {
      */
     public FindReplaceHistory getFindReplaceHistory() {
         return findReplaceHistory;
+    }
+
+    public static void logError(String message, Throwable e) {
+        if (message == null) {
+            message = e.getMessage();
+            if (message == null) {
+                message = e.toString();
+            }
+        }
+        getDefault().getLog().log(new Status(IStatus.ERROR, ID, IStatus.OK, message, e));
     }
 }
