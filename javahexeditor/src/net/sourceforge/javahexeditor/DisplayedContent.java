@@ -182,7 +182,7 @@ final class DisplayedContent implements StyledTextContent {
             listener.textChanging(event);
         }
         myData.insert(event.start, text);
-        Log.log(this, "Event 1: start={0}, newCharCount={1}, newLineCount={2}",
+        Log.trace(this, "Event 1: start={0}, newCharCount={1}, newLineCount={2}",
                 event.start, event.newCharCount, event.newLineCount);
 
         TextChangedEvent changedEvent = new TextChangedEvent(this);
@@ -209,7 +209,7 @@ final class DisplayedContent implements StyledTextContent {
         } else {
             myData.delete(0, event.replaceCharCount);
         }
-        Log.log(this, "Event 2: start={0}, newCharCount={1}, newLineCount={2}",
+        Log.trace(this, "Event 2: start={0}, newCharCount={1}, newLineCount={2}",
                 event.start, event.newCharCount, event.newLineCount);
 
         changedEvent = new TextChangedEvent(this);

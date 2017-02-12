@@ -19,6 +19,7 @@
  */
 package net.sourceforge.javahexeditor.common;
 
+import net.sourceforge.javahexeditor.plugin.HexEditorPlugin;
 
 /**
  * Utility class to issue log messages.
@@ -27,11 +28,12 @@ package net.sourceforge.javahexeditor.common;
  */
 public final class Log {
 
+    static final boolean DEBUG = HexEditorPlugin.getDefault().isDebugging();
+
     /**
      * Creation is private.
      */
     private Log() {
-
     }
 
     public static void logError(String message, Object[] parameters,
@@ -40,20 +42,20 @@ public final class Log {
             throw new IllegalArgumentException(
                     "Parameter 'message' must not be null.");
         }
-        log("ERROR: ", message, parameters);
-        if (th != null) {
-            th.printStackTrace(System.out);
+        String m = createMessage("ERROR: ", message, parameters);
+        HexEditorPlugin.logError(m, th);
+    }
+
+    public static void trace(Object owner, String message, Object... parameters) {
+        if(DEBUG) {
+            String m = createMessage(owner, message, parameters);
+            System.out.println(m);
         }
     }
 
-    public static void log(Object owner, String message, Object... parameters) {
-        if (owner == null) {
-            throw new IllegalArgumentException(
-                    "Parameter 'owner' must not be null.");
-        }
+    private static String createMessage(Object owner, String message, Object... parameters) {
         if (message == null) {
-            throw new IllegalArgumentException(
-                    "Parameter 'message' must not be null.");
+            message = "";
         }
         String[] stringParameters = null;
         if (parameters != null) {
@@ -62,8 +64,7 @@ public final class Log {
                 stringParameters[i] = String.valueOf(parameters[i]);
             }
         }
-        System.out.println(String.valueOf(owner) + ":"
-                + TextUtility.format(message, stringParameters));
+        return owner + ":" + TextUtility.format(message, stringParameters);
     }
 
 }

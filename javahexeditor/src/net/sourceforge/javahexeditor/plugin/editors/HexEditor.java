@@ -262,7 +262,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
         manager.addLongSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Log.log(this, "Long selection: {0}", e);
+                Log.trace(this, "Long selection: {0}", e);
                 if (selectionListeners == null) {
                     return;
                 }
@@ -395,7 +395,7 @@ public final class HexEditor extends EditorPart implements ISelectionProvider {
     @Override
     public void init(IEditorSite site, final IEditorInput input)
             throws PartInitException {
-        Log.log(this, "init starts with selection provider {0}",
+        Log.trace(this, "init starts with selection provider {0}",
                 site.getSelectionProvider());
 
         setSite(site);
